@@ -43,7 +43,7 @@ body {
 
 .hero-content {
   position: relative;
-  max-width: 800px;
+  max-width: 50rem;
   padding-inline: 3.5rem;
 }
 
@@ -64,7 +64,7 @@ body {
 /* Bullet list */
 .hero-list {
   list-style: none;
-  padding-top: 32px;
+  padding-top: 2rem;
   padding: 0;
   margin: 0;
   display: grid;
@@ -78,9 +78,9 @@ body {
 }
 
 .check {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 62.44rem;
   border: 1px solid rgba(148, 163, 184, 0.7);
   display: inline-flex;
   align-items: center;
@@ -114,7 +114,7 @@ body {
 
 .auth-card {
   width: 100%;
-  max-width: 760px;
+  max-width: 47.5rem;
   background-color: #ffffff;
   border-radius: 1.2rem;
   padding: 2.2rem 2.3rem 2.6rem;
@@ -132,9 +132,9 @@ body {
 }
 
 .logo-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 62.44rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -220,15 +220,15 @@ input[type="password"]:focus {
 }
 
 .checkbox input[type="checkbox"] {
-  width: 14px;
-  height: 14px;
+  width: 0.875rem;
+  height: 0.875rem;
 }
 
 /* Buttons */
 
 .btn-primary {
   width: 100%;
-  border-radius: 999px;
+  border-radius: 62.44rem;
   border: none;
   padding: 0.75rem 1rem;
   font-size: 0.9rem;
@@ -283,7 +283,7 @@ input[type="password"]:focus {
 
 .btn-google {
   width: 100%;
-  border-radius: 999px;
+  border-radius: 62.44rem;
   border: 1px solid #979797;
   background-color: #e7e7e7;
   padding: 0.65rem 1rem;
@@ -360,6 +360,7 @@ input[type="password"]:focus {
 
 /* Responsive */
 
+
 @media (max-width: 900px) {
   .page {
     grid-template-columns: 1fr;
@@ -373,3 +374,81 @@ input[type="password"]:focus {
     padding: 2rem 1.5rem;
   }
 }
+
+@media (max-width: 1366px) {
+
+  /* Layout */
+  .page {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* Hero side */
+  .hero-content {
+    padding-inline: 2.5rem;
+    max-width: 30rem;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .hero-list h3 {
+    font-size: 1.2rem;
+  }
+
+  .hero-list p {
+    font-size: 0.8rem;
+  }
+
+  /* Auth side */
+  .auth {
+    padding: 1.5rem 2rem;
+  }
+
+  .auth-card {
+    max-width: 30rem;
+    padding: 1.8rem 2rem 2.2rem;
+  }
+
+  .logo-icon {
+    width: 2rem;
+    height: 2rem;
+    font-size: 1.8rem;
+
+  }
+
+  .logo-title {
+    font-size: 1.5rem;
+  }
+
+  .logo-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .field {
+    font-size: 0.85rem;
+    padding-top: 0.4rem;
+  }
+
+  input[type="email"],
+  input[type="password"] {
+    font-size: 0.75rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .btn-primary,
+  .btn-google {
+    font-size: 0.55rem;
+    padding: 0.65rem 0.9rem;
+  }
+
+  .divider {
+    font-size: 0.6rem;
+    padding: 16px 0;
+  }
+}
+
