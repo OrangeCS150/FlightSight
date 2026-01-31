@@ -303,6 +303,7 @@ body {
 .continue-btn-container {
   display: flex;
   justify-content: flex-end;
+  flex-direction: column;
 }
 
 .continue-btn {
@@ -336,14 +337,18 @@ body {
 }
 
 /* Right side: Calendar & search button */
-.right-section {
-  flex: 1; /* bigger than left */
+.calendar-right-section {
+  flex: 2; /* bigger than left */
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
 
+.card.calendar-card {
+  height: 600px;
+  overflow-y: auto;
+}
 
 /* Search Flights button */
 #searchFlights {
@@ -404,11 +409,11 @@ body {
   box-shadow:#2563eb 0px 4px 8px rgba(37, 99, 235, 0.2);
 }
 
-#calendarContainer {
-  width: 100%;
+.date-card {
+  display: flex;
+  justify-content: center;
+  padding-top: 12px;
 }
-
-
 
 /* =================== Responsive =================== */
 @media (max-width: 992px) {
