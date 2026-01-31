@@ -25,12 +25,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (calendarContainer && typeof flatpickr !== "undefined") {
     const fp = flatpickr(calendarContainer, {
-      mode: "range",
+      mode: tripType === "round" ? "range" : "single",
       minDate: "today",
       dateFormat: "M d, Y",
       inline: true,
       allowInput: false,
       showMonths: window.innerWidth < 768 ? 1 : 2,
+      onReady: function(selectedDates, dateStr, instance) {
+        // Initial scaling
+        scaleFlatpickr(instance);
+
+        // Re-scale on window resize
+        window.addEventListener("resize", () => scaleFlatpickr(instance));
+      },
       onChange(selectedDates) {
         if (tripType === "one" && selectedDates.length >= 1) {
           localStorage.setItem("departureDate", selectedDates[0].toISOString());
@@ -45,6 +52,29 @@ document.addEventListener("DOMContentLoaded", () => {
         updateSearchButton();
       },
     });
+
+    function scaleFlatpickr(instance, padding = 40) {
+      const rightSection = document.querySelector(".calendar-right-section");
+      const calendar = instance.calendarContainer;
+
+      if (!rightSection || !calendar) return;
+
+      // Wait until the browser has rendered the calendar
+      requestAnimationFrame(() => {
+        // Remove any existing scale
+        calendar.style.transform = "";
+
+        const containerWidth = rightSection.clientWidth - padding * 2;
+        const calendarWidth = calendar.offsetWidth;
+
+        // Compute scale factor (limit max to 1)
+        const scale = containerWidth / calendarWidth;
+
+        calendar.style.transform = `scale(${scale})`;
+        calendar.style.transformOrigin = "top center";
+      });
+    }
+
 
     roundTripBtn?.addEventListener("click", () => {
       tripType = "round";
