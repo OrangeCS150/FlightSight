@@ -1,0 +1,112 @@
+/* =========================================================
+   FlightSight — SAFETY RATING
+   ========================================================= */
+
+:root{
+  --bg:#0b0f19;
+  --text:#eaf0ff;
+  --muted:rgba(234,240,255,.72);
+  --border:rgba(234,240,255,.10);
+  --shadow: 0 10px 30px rgba(0,0,0,.28);
+
+  --accent:#2a3cff;
+
+  --goodbg: rgba(0,255,160,.08);
+  --goodbd: rgba(0,255,160,.22);
+  --warnbg: rgba(255,211,88,.08);
+  --warnbd: rgba(255,211,88,.25);
+  --badbg: rgba(255,80,80,.08);
+  --badbd: rgba(255,80,80,.22);
+}
+
+.fs-card{
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  box-shadow: var(--shadow);
+  margin-bottom:14px;
+}
+
+/* Route summary */
+#safety-origin,
+#safety-destination,
+#safety-airline{
+  font-weight:700;
+}
+
+#safety-note{
+  color: var(--muted);
+  font-size:13px;
+  margin-top:6px;
+}
+
+/* Score */
+#safety-score{
+  font-size:34px;
+  font-weight:900;
+}
+
+/* Tier label */
+#safety-tier-label{
+  display:inline-block;
+  margin-top:6px;
+  padding:6px 12px;
+  border-radius:999px;
+  border:1px solid var(--border);
+  background: rgba(0,0,0,.18);
+  font-size:12px;
+  color: var(--muted);
+}
+
+/* Optional tier coloring */
+[data-safety-tier="excellent"] #safety-tier-label{
+  border-color: var(--goodbd);
+  background: var(--goodbg);
+}
+[data-safety-tier="moderate"] #safety-tier-label{
+  border-color: var(--warnbd);
+  background: var(--warnbg);
+}
+[data-safety-tier="higher"] #safety-tier-label{
+  border-color: var(--badbd);
+  background: var(--badbg);
+}
+
+/* Breakdown grid */
+#safety-breakdown{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap:10px;
+  margin-top:14px;
+}
+
+@media (max-width: 900px){
+  #safety-breakdown{
+    grid-template-columns: 1fr;
+  }
+}
+
+.safety-metric{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:10px;
+  background: rgba(0,0,0,.14);
+}
+
+.safety-metric .label{
+  font-size:12px;
+  color: var(--muted);
+}
+
+.safety-metric .value{
+  font-size:16px;
+  font-weight:800;
+  margin-top:4px;
+}
+
+.safety-metric .detail{
+  font-size:12px;
+  color: var(--muted);
+  margin-top:6px;
+}

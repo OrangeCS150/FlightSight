@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FlightSight – Emissions Results</title>
+
+  <!-- Page CSS (separate) -->
+  <link rel="stylesheet" href="../css/emissions.css" />
+</head>
+<body>
+  <div class="fs-shell">
+
+    <header class="fs-topbar">
+      <div class="fs-brand">
+        <span class="fs-logo"></span>
+        <span class="fs-brand-name">Flight Sight</span>
+      </div>
+
+      <div class="fs-top-actions">
+        <button class="fs-chip" type="button">My Trips</button>
+        <button class="fs-chip" type="button">Saved Flights</button>
+        <button class="fs-btn fs-btn-ghost" type="button">Sign Out</button>
+      </div>
+    </header>
+
+    <main class="fs-layout">
+      <!-- LEFT COLUMN -->
+      <section class="fs-col">
+        <h1 class="fs-title">Emissions & Trip Insights</h1>
+        <p class="fs-subtitle">See CO₂ emissions, seat outlook, weather, and data insights.</p>
+
+        <!-- Recommended Airline (optional endpoint) -->
+        <article class="fs-card fs-accent-green" id="recommendationCard">
+          <div class="fs-card-head">
+            <h2>Recommended Airline</h2>
+            <span class="fs-badge">UC10</span>
+          </div>
+          <p class="fs-big" id="recommendedAirline">Loading...</p>
+          <p class="fs-muted">Based on price trends, seat availability, and overall performance.</p>
+        </article>
+
+        <!-- Seat Availability + Weather -->
+        <article class="fs-card">
+          <div class="fs-card-head">
+            <h2>Seat & Weather Snapshot</h2>
+            <div class="fs-pill-row">
+              <span class="fs-pill" id="seatPill">Seats: —</span>
+              <span class="fs-pill" id="weatherPill">Weather: —</span>
+            </div>
+          </div>
+
+          <div class="fs-progress-wrap">
+            <div class="fs-muted">Seat Availability Indicator</div>
+            <div class="fs-progress">
+              <div class="fs-progress-bar" id="seatBar" style="width:60%"></div>
+            </div>
+            <div class="fs-progress-label">
+              <span class="fs-muted">0%</span>
+              <span class="fs-muted" id="seatPct">60%</span>
+              <span class="fs-muted">100%</span>
+            </div>
+          </div>
+
+          <div class="fs-row-actions">
+            <button class="fs-btn" id="btnSeatWeather" type="button">Refresh Seat + Weather</button>
+          </div>
+        </article>
+
+        <!-- Data Analysis -->
+        <article class="fs-card">
+          <div class="fs-card-head">
+            <h2>Data Analysis (UC15)</h2>
+            <span class="fs-badge">Prototype</span>
+          </div>
+
+          <p class="fs-muted">Pulls summarized insights from the dataset analysis endpoint.</p>
+
+          <div class="fs-analysis-grid">
+            <div class="fs-kpi">
+              <div class="fs-muted">Average Price</div>
+              <div class="fs-kpi-val" id="kpiAvgPrice">—</div>
+            </div>
+            <div class="fs-kpi">
+              <div class="fs-muted">Cheapest City</div>
+              <div class="fs-kpi-val" id="kpiCheapestCity">—</div>
+            </div>
+            <div class="fs-kpi">
+              <div class="fs-muted">Busiest Month</div>
+              <div class="fs-kpi-val" id="kpiBusiestMonth">—</div>
+            </div>
+          </div>
+
+          <details class="fs-details">
+            <summary>Raw JSON</summary>
+            <pre class="fs-code" id="analysisJson">{}</pre>
+          </details>
+
+          <div class="fs-row-actions">
+            <button class="fs-btn" id="btnAnalysis" type="button">Run Analysis</button>
+          </div>
+        </article>
+      </section>
+
+      <!-- RIGHT COLUMN -->
+      <aside class="fs-col">
+        <!-- CO2 Emissions -->
+        <article class="fs-card fs-accent-green">
+          <div class="fs-card-head">
+            <h2>CO₂ Emissions (UC6)</h2>
+            <span class="fs-badge">Live</span>
+          </div>
+
+          <div class="fs-big" id="co2Big">—</div>
+          <div class="fs-muted" id="co2Note">Airline: —</div>
+
+          <div class="fs-divider"></div>
+
+          <div class="fs-line">
+            <span class="fs-muted">Interpretation</span>
+            <strong id="co2Tier">—</strong>
+          </div>
+          <div class="fs-muted fs-small" id="co2Hint">
+            Emissions depend on aircraft type, load factor, and routing.
+          </div>
+
+          <div class="fs-row-actions">
+            <button class="fs-btn fs-btn-wide" id="btnEmissions" type="button">
+              Refresh Emissions
+            </button>
+          </div>
+        </article>
+
+        <!-- Continue -->
+        <article class="fs-card">
+          <div class="fs-card-head">
+            <h2>Next Step</h2>
+          </div>
+          <button class="fs-btn fs-btn-wide" type="button">Continue →</button>
+        </article>
+      </aside>
+    </main>
+
+    <footer class="fs-footer">
+      <span class="fs-muted fs-small">FlightSight prototype UI — emissions results view</span>
+    </footer>
+  </div>
+
+  <!-- Page JS (separate) -->
+  <script src="../js/emissions.js"></script>
+</body>
+</html>

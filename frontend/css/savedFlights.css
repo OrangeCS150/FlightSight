@@ -1,0 +1,120 @@
+/* =========================================================
+   FlightSight — SAVED FLIGHTS / COMPARISON
+   ========================================================= */
+
+:root{
+  --text:#eaf0ff;
+  --muted:rgba(234,240,255,.72);
+  --border:rgba(234,240,255,.10);
+  --shadow: 0 10px 30px rgba(0,0,0,.28);
+  --accent:#2a3cff;
+}
+
+/* Table */
+table{
+  width:100%;
+  border-collapse: separate;
+  border-spacing:0;
+}
+
+thead th{
+  font-size:12px;
+  text-align:left;
+  color: var(--muted);
+  padding:12px;
+  border-bottom:1px solid var(--border);
+}
+
+tbody td{
+  padding:12px;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+
+tbody tr{
+  background: rgba(0,0,0,.14);
+}
+
+tbody tr:hover{
+  background: rgba(255,255,255,.05);
+}
+
+/* Route info */
+.route-label{
+  font-weight:700;
+}
+
+.route-safety-score,
+.route-price,
+.route-ontime{
+  font-weight:600;
+}
+
+/* Checkbox */
+.compare-checkbox{
+  width:16px;
+  height:16px;
+  accent-color: var(--accent);
+  cursor:pointer;
+}
+
+/* Remove button */
+.remove-city-pair-btn{
+  width:32px;
+  height:32px;
+  border-radius:10px;
+  border:1px solid var(--border);
+  background: rgba(255,80,80,.10);
+  color: rgba(255,160,160,.95);
+  cursor:pointer;
+}
+
+.remove-city-pair-btn:hover{
+  filter:brightness(1.1);
+}
+
+/* Compare button */
+#compare-selected-btn{
+  margin-top:12px;
+  padding:10px 14px;
+  border-radius:12px;
+  border:1px solid rgba(42,60,255,.35);
+  background: rgba(42,60,255,.18);
+  color: var(--text);
+  cursor:pointer;
+}
+
+/* Metric selector */
+#compare-metric-select{
+  width:100%;
+  margin-top:10px;
+  padding:10px 12px;
+  border-radius:12px;
+  background: rgba(0,0,0,.18);
+  border:1px solid var(--border);
+  color: var(--text);
+}
+
+/* Comparison cards */
+.comparison-results{
+  margin-top:16px;
+}
+
+.comparison-card{
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:12px;
+  background: rgba(0,0,0,.16);
+  box-shadow: var(--shadow);
+  margin-top:10px;
+}
+
+.comparison-card h4{
+  margin:0 0 6px;
+  font-size:14px;
+}
+
+.comparison-card p{
+  font-size:13px;
+  color: var(--muted);
+}
