@@ -8,15 +8,18 @@
   </head>
 
   <body>
+    <!-- NAVBAR -->
     <header class="navbar">
-      <div class="logo"> Flight Sight</div>
-      <nav>
-        <a href="booking.html">My Trips</a>
-        <a href="booking.html#saved">Saved Flights</a>
-        <button class="signout" onclick="location.href='login.html'">
-        Sign Out
-        </button>
-      </nav>
+      <div class="container navbar-inner">
+        <div class="logo">✈️ Flight Sight</div>
+        <nav>
+          <a href="booking.html">My Trips</a>
+          <a href="booking.html#saved">Saved Flights</a>
+          <button class="signout" onclick="location.href='login.html'">
+          Sign Out
+          </button>
+        </nav>
+      </div>
     </header>
 
     <section class="hero">
@@ -36,7 +39,7 @@
       </p>
 
       <div class="cards">
-        <div class="card">
+        <div class="card" id ="safety-btn">
           <div class="icon blue">🛡️</div>
           <h3>Safety Ratings</h3>
           <p>
@@ -45,7 +48,7 @@
           </p>
         </div>
 
-        <div class="card">
+        <div class="card" id ="route-btn">
           <div class="icon green">🍃</div>
           <h3>Environmental Impact</h3>
           <p>
@@ -54,7 +57,7 @@
           </p>
         </div>
 
-        <div class="card">
+        <div class="card" id ="demand-btn">
           <div class="icon orange">📈</div>
           <h3>Demand Heat Map</h3>
           <p>
@@ -63,7 +66,7 @@
           </p>
         </div>
 
-        <div class="card">
+        <div class="card" id ="saved-btn">
           <div class="icon purple">📈</div>
           <h3>Saved Flights</h3>
           <p>
@@ -72,20 +75,11 @@
             predictions.
           </p>
         </div>
-
-        <div class="card">
-          <div class="icon red">📈</div>
-          <h3>Smart Comparisons</h3>
-          <p>
-            Compare similar flights side-by-side to find the best option based
-            on safety, environmental impact, price, and seat availability.
-          </p>
-        </div>
       </div>
     </section>
-    <button id="ai-button" class="ai-button">?</button>
 
     <!-- AI Assistant Popup -->
+     <button id="ai-button" class="ai-button">?</button>
     <div id="ai-box" class="ai-box hidden">
       <div class="ai-header">
         <span>Flight Sight Assistant</span>
