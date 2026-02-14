@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FlightSight – Complete Your Booking</title>
   <link rel="stylesheet" href="../css/booking.css">
+  <link rel="stylesheet" href="../css/aiAssist.css" />
 </head>
 <body>
   <div class="fs-shell">
@@ -250,6 +251,25 @@
     </main>
   </div>
 
+  <!-- AI Assistant Popup -->
+  <button id="ai-button" class="ai-button">?</button>
+  <div id="ai-box" class="ai-box hidden">
+    <div class="ai-header">
+      <span>Flight Sight Assistant</span>
+      <button id="ai-close" class="ai-close">✕</button>
+    </div>
+
+    <div class="ai-messages">
+      <p class="ai-placeholder">Ask me anything about flights!</p>
+    </div>
+
+    <div class="ai-input-row">
+      <input type="text" id="ai-input" placeholder="Type your question..." />
+      <button id="ai-send">Send</button>
+    </div>
+  </div>
+
+  <script src="../js/AIAssist.js"></script>
   <script src="../js/booking.js"></script>
 </body>
 </html>
