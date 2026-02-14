@@ -19,6 +19,11 @@
   --greenbd: rgba(0,255,160,.22);
 }
 
+body {
+  background: #f9f9f9;
+  color: #111;
+}
+
 /* Navbar */
 .navbar {
   display: flex;

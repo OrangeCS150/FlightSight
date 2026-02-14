@@ -11,8 +11,8 @@ document.addEventListener("DOMContentLoaded", () => {
     window.location.href = "safety.html";
   });
 
-  document.getElementById("route-btn").addEventListener("click", function () {
-    window.location.href = "route.html";
+  document.getElementById("impact-btn").addEventListener("click", function () {
+    window.location.href = "envImpact.html";
   });
 
   document.getElementById("demand-btn").addEventListener("click", function () {
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("saved-btn").addEventListener("click", function () {
-    window.location.href = "saved.html";
+    window.location.href = "savedFlights.html";
   });
 
 });
