@@ -1,0 +1,27 @@
+{
+  "name": "flightsight",
+  "version": "1.0.0",
+  "description": "Members (5):\r   * Alexandra Real Perez\r   * Preston Huynh\r   * Lesly Castellanos Ibanez\r   * Zarya Amin\r   * Jonell Felix Santiago",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZaryaA101/FlightSight.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/ZaryaA101/FlightSight/issues"
+  },
+  "homepage": "https://github.com/ZaryaA101/FlightSight#readme",
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1"
+  }
+}

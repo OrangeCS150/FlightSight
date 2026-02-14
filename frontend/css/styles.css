@@ -1,0 +1,441 @@
+/* =================== Home Page =================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #f9f9f9;
+  color: #111;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* NAVBAR */
+.navbar {
+  background: white;
+  border-bottom: 1px solid #ddd;
+}
+
+.navbar .logo {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.navbar-inner {
+  height: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar nav a {
+  margin-right: 20px;
+  text-decoration: none;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.signout {
+  padding: 6px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  background: white;
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(
+      rgba(37, 99, 235, 0.8),
+      rgba(37, 99, 235, 0.8)
+    ),
+    url('https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1470&q=80');
+  background-size: cover;
+  background-position: center;
+  height: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-bottom: 24px;
+}
+
+.search-btn {
+  background: white;
+  color: #2563eb;
+  border: none;
+  padding: 14px 200px;
+  font-size: 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+.search-btn:hover {
+  background: #e0e7ff;
+}
+
+.hint {
+  display: block;
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: 0.9;
+}
+
+/* Why Section */
+.why {
+  padding: 60px 40px;
+  text-align: center;
+}
+
+.why h2 {
+  font-size: 2rem;
+  margin-bottom: 8px;
+}
+
+.why .subtitle {
+  color: #555;
+  margin-bottom: 40px;
+}
+
+/* Cards */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card h3 {
+  margin-bottom: 8px;
+}
+
+.card p {
+  color: #555;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* Icons */
+.icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  font-size: 20px;
+}
+
+.icon.blue { background: #dbeafe; }
+.icon.green { background: #dcfce7; }
+.icon.orange { background: #ffedd5; }
+.icon.purple { background: #ede9fe; }
+.icon.red { background: #fee2e2; }
+
+/* =================== Flight Route =================== */
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 40px;
+}
+
+.back-link {
+  font-size: 32px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #2563eb;
+}
+
+.muted {
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+/* Layout */
+.flight-container {
+  display: flex;
+  gap: 24px;
+  padding: 40px;
+  min-height: calc(100vh - 120px);
+}
+
+/* Left: Map Section */
+.map-section {
+  flex: 1.4;
+}
+
+.world-map {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  border-radius: 12px;
+  border: 1px solid #ccc;
+  margin: 12px 0;
+}
+
+/* Map Legend */
+.legend {
+  display: flex;
+  gap: 20px;
+  margin-top: 12px;
+  font-size: 0.85rem;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.dot.green { background: #22c55e; }
+.dot.blue { background: #3b82f6; }
+.dot.red { background: #ef4444; }
+
+/* Right Section */
+.right-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* User Input */
+.user-input input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 6px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+.user-input label {
+  display: block;
+  margin-top: 12px;
+  font-weight: 500;
+}
+
+/* Available Airports */
+.available-airports ul {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.available-airports li {
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  transition: 0.2s;
+  font-weight: bold;
+}
+
+.available-airports li:hover {
+  background: #f1f5f9;
+}
+
+/* Suggestions Dropdown */
+.autocomplete {
+  position: relative;
+}
+
+.suggestions {
+  position: absolute;
+  width: 100%;
+  max-height: 160px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-top: 4px;
+  padding: 0;
+  list-style: none;
+  z-index: 20;
+  display: none;
+}
+
+.suggestions li {
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.suggestions li:hover {
+  background-color: #f1f5f9;
+}
+
+/* =================== Continue Button =================== */
+.continue-btn-container {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+}
+
+.continue-btn {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.continue-btn:hover {
+  background-color: #3b82f6;
+}
+
+/* =================== Calendar Page =================== */
+.flight-container {
+  display: flex;
+  gap: 24px;
+  padding: 40px;
+  min-height: calc(100vh - 120px);
+}
+
+.left-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Right side: Calendar & search button */
+.calendar-right-section {
+  flex: 2; /* bigger than left */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+
+.card.calendar-card {
+  height: 600px;
+  overflow-y: auto;
+}
+
+/* Search Flights button */
+#searchFlights {
+  bottom: 20px;
+  padding: 14px 28px;
+  font-size: 16px;
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+#searchFlights:hover {
+  background-color: #3b82f6;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 40px;
+  border-bottom: 1px solid #e5e7eb;
+  background: white;
+}
+
+.trip-type {
+  display: flex;
+  gap: 10px;
+}
+
+.trip-type button {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+}
+
+.trip-type .active {
+  background: #020617;
+  color: white;
+  border: none;
+}
+
+.route-box {
+  background: #eff6ff;
+  border-left: 4px solid #2563eb;
+}
+
+.card.info-box {
+  padding: 20px;
+  border-radius: 12px;
+  border-color: #3b82f6;
+  box-shadow:#2563eb 0px 4px 8px rgba(37, 99, 235, 0.2);
+}
+
+.date-card {
+  display: flex;
+  justify-content: center;
+  padding-top: 12px;
+}
+
+/* =================== Responsive =================== */
+@media (max-width: 992px) {
+  .flight-container {
+    flex-direction: column;
+  }
+}
+
+
+/* Mobile */
+@media (max-width: 980px){
+  .fs-layout{grid-template-columns: 1fr}
+  .fs-summary-grid{grid-template-columns: repeat(2, minmax(0,1fr))}
+  .fs-analysis-grid{grid-template-columns: 1fr}
+}

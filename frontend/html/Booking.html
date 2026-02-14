@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FlightSight – Complete Your Booking</title>
+  <link rel="stylesheet" href="../css/booking.css">
+  <link rel="stylesheet" href="../css/aiAssist.css" />
+</head>
+<body>
+  <div class="fs-shell">
+
+    <body>
+    <header class="navbar">
+      <div class="logo"> Flight Sight</div>
+      <nav>
+        <a href="booking.html">My Trips</a>
+        <a href="booking.html#saved">Saved Flights</a>
+        <button class="signout" onclick="location.href='login.html'">
+        Sign Out
+        </button>
+      </nav>
+    </header>
+
+    <main class="fs-layout">
+      <!-- LEFT COLUMN -->
+      <section class="fs-col">
+        <!-- Airline Recommendation -->
+<article class="fs-card fs-accent-green" id="recommendationCard">
+  <div class="fs-card-head">
+    <h2>Recommended Airline</h2>
+    <span class="fs-badge">UC10</span>
+  </div>
+  <p class="fs-big" id="recommendedAirline">Loading...</p>
+  <p class="fs-muted">
+    Based on price trends, seat availability, and overall performance.
+  </p>
+</article>
+
+        <h1 class="fs-title">Complete Your Booking</h1>
+        <p class="fs-subtitle">Delta Air Lines · Flight DL161</p>
+
+        <!-- Flight Summary -->
+        <article class="fs-card">
+          <div class="fs-card-head">
+            <h2>Flight Summary</h2>
+            <span class="fs-badge">Round Trip</span>
+          </div>
+
+          <div class="fs-summary-grid">
+            <div class="fs-summary-item">
+              <div class="fs-muted">Departure</div>
+              <div class="fs-strong">11:30 AM</div>
+              <div class="fs-muted">Chicago (ORD)</div>
+            </div>
+
+            <div class="fs-summary-item">
+              <div class="fs-muted">Duration</div>
+              <div class="fs-strong">6h 45m</div>
+              <div class="fs-muted">1 stop</div>
+            </div>
+
+            <div class="fs-summary-item">
+              <div class="fs-muted">Arrival</div>
+              <div class="fs-strong">7:45 PM</div>
+              <div class="fs-muted">Cairo (CAI)</div>
+            </div>
+
+            <div class="fs-summary-item">
+              <div class="fs-muted">Dates</div>
+              <div class="fs-strong">Jan 10, 2026</div>
+              <div class="fs-muted">Return: Jan 20, 2026</div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Seat Availability Prediction -->
+        <article class="fs-card">
+          <div class="fs-card-head">
+            <h2>Seat Availability Prediction</h2>
+            <span class="fs-pill" id="seatPill">Current: —</span>
+          </div>
+
+          <div class="fs-progress-wrap">
+            <div class="fs-muted">Current Availability</div>
+            <div class="fs-progress">
+              <div class="fs-progress-bar" id="seatBar" style="width:47%"></div>
+            </div>
+            <div class="fs-progress-label">
+              <span class="fs-muted">0%</span>
+              <span class="fs-muted" id="seatPct">47%</span>
+              <span class="fs-muted">100%</span>
+            </div>
+          </div>
+
+          <div class="fs-splits">
+            <div class="fs-split"><span>Economy</span><span>40%</span></div>
+            <div class="fs-split"><span>Premium</span><span>30%</span></div>
+            <div class="fs-split"><span>Business</span><span>21%</span></div>
+          </div>
+
+          <div class="fs-alert">
+            <strong>ML Prediction:</strong> Limited seats expected — book soon.
+          </div>
+
+          <div class="fs-row-actions">
+            <button class="fs-btn" id="btnSeatWeather">Refresh Seat + Weather</button>
+          </div>
+        </article>
+
+        <!-- Weather Forecast -->
+        <article class="fs-card">
+          <div class="fs-card-head">
+            <h2>Weather Forecast</h2>
+            <span class="fs-pill" id="weatherPill">—</span>
+          </div>
+
+          <div class="fs-weather-grid">
+            <div class="fs-weather-box">
+              <div class="fs-muted">Departure (Chicago)</div>
+              <div class="fs-weather-stat"><span>Temp</span><strong>76°F</strong></div>
+              <div class="fs-weather-stat"><span>Precip</span><strong>28%</strong></div>
+              <div class="fs-weather-stat"><span>Wind</span><strong>16 mph</strong></div>
+            </div>
+            <div class="fs-weather-box">
+              <div class="fs-muted">Arrival (Cairo)</div>
+              <div class="fs-weather-stat"><span>Temp</span><strong>81°F</strong></div>
+              <div class="fs-weather-stat"><span>Precip</span><strong>24%</strong></div>
+              <div class="fs-weather-stat"><span>Wind</span><strong>10 mph</strong></div>
+            </div>
+          </div>
+
+          <div class="fs-note">
+            Overall Weather Score: <strong>85%</strong> — Good conditions
+          </div>
+        </article>
+
+        <!-- Seat Class -->
+        <article class="fs-card">
+          <div class="fs-card-head">
+            <h2>Select Your Seat Class</h2>
+          </div>
+
+          <div class="fs-choice selected">
+            <div>
+              <div class="fs-strong">Economy Class</div>
+              <div class="fs-muted">Standard seating with basic amenities</div>
+            </div>
+            <div class="fs-muted">Included</div>
+          </div>
+
+          <div class="fs-choice">
+            <div>
+              <div class="fs-strong">Premium Economy</div>
+              <div class="fs-muted">Extra legroom and enhanced service</div>
+            </div>
+            <div class="fs-strong">+$110</div>
+          </div>
+
+          <div class="fs-choice">
+            <div>
+              <div class="fs-strong">Business Class</div>
+              <div class="fs-muted">Lie-flat seats, premium meals, priority boarding</div>
+            </div>
+            <div class="fs-strong">+$252</div>
+          </div>
+        </article>
+
+        <!-- NEW: Data Analysis Feature -->
+        <article class="fs-card">
+          <div class="fs-card-head">
+            <h2>Data Analysis (UC15)</h2>
+            <span class="fs-badge">Prototype</span>
+          </div>
+
+          <p class="fs-muted">
+            Pulls summarized insights from the dataset analysis endpoint.
+          </p>
+
+          <div class="fs-analysis-grid">
+            <div class="fs-kpi">
+              <div class="fs-muted">Average Price</div>
+              <div class="fs-kpi-val" id="kpiAvgPrice">—</div>
+            </div>
+            <div class="fs-kpi">
+              <div class="fs-muted">Cheapest City</div>
+              <div class="fs-kpi-val" id="kpiCheapestCity">—</div>
+            </div>
+            <div class="fs-kpi">
+              <div class="fs-muted">Busiest Month</div>
+              <div class="fs-kpi-val" id="kpiBusiestMonth">—</div>
+            </div>
+          </div>
+
+          <details class="fs-details">
+            <summary>Raw JSON</summary>
+            <pre class="fs-code" id="analysisJson">{}</pre>
+          </details>
+
+          <div class="fs-row-actions">
+            <button class="fs-btn" id="btnAnalysis">Run Analysis</button>
+          </div>
+        </article>
+      </section>
+
+      <!-- RIGHT COLUMN -->
+      <aside class="fs-col">
+        <!-- Price Breakdown -->
+        <article class="fs-card">
+          <div class="fs-card-head">
+            <h2>Price Breakdown</h2>
+          </div>
+
+          <div class="fs-line"><span>Base Fare</span><strong>$366</strong></div>
+          <div class="fs-line"><span>Taxes & Fees</span><strong>$44</strong></div>
+          <div class="fs-divider"></div>
+          <div class="fs-line total"><span>Total</span><strong>$410</strong></div>
+          <div class="fs-muted fs-small">per person</div>
+        </article>
+
+        <!-- Safety Rating -->
+        <article class="fs-card fs-accent-green">
+          <div class="fs-card-head">
+            <h2>Safety Rating</h2>
+          </div>
+          <div class="fs-big">79%</div>
+          <div class="fs-muted">Excellent safety record</div>
+        </article>
+
+        <!-- CO2 Emissions -->
+        <article class="fs-card fs-accent-green">
+          <div class="fs-card-head">
+            <h2>CO₂ Emissions (UC6)</h2>
+          </div>
+          <div class="fs-big" id="co2Big">—</div>
+          <div class="fs-muted" id="co2Note">Low environmental impact</div>
+
+          <div class="fs-row-actions">
+            <button class="fs-btn" id="btnEmissions">Refresh Emissions</button>
+          </div>
+        </article>
+
+        <!-- Saved / Continue -->
+        <article class="fs-card">
+          <div class="fs-card-head">
+            <h2>Saved</h2>
+          </div>
+          <button class="fs-btn fs-btn-wide">Continue to Website →</button>
+        </article>
+      </aside>
+    </main>
+  </div>
+
+  <!-- AI Assistant Popup -->
+  <button id="ai-button" class="ai-button">?</button>
+  <div id="ai-box" class="ai-box hidden">
+    <div class="ai-header">
+      <span>Flight Sight Assistant</span>
+      <button id="ai-close" class="ai-close">✕</button>
+    </div>
+
+    <div class="ai-messages">
+      <p class="ai-placeholder">Ask me anything about flights!</p>
+    </div>
+
+    <div class="ai-input-row">
+      <input type="text" id="ai-input" placeholder="Type your question..." />
+      <button id="ai-send">Send</button>
+    </div>
+  </div>
+
+  <script src="../js/AIAssist.js"></script>
+  <script src="../js/booking.js"></script>
+</body>
+</html>

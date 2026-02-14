@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Flight Sight — Sign in</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="../css/login.css" />
+    <link rel="stylesheet" href="../css/aiAssist.css" />
+  </head>
+  <body>
+    <div class="page">
+      <!-- LEFT SIDE: Marketing / Hero -->
+      <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <h1>Fly safer, Fly greener, Fly smarter</h1>
+          <p class="hero-subtitle">
+            Flight Sight helps you compare flights based on price, safety
+            ratings, environmental impact, weather conditions, and seat
+            availability—all in one place.
+          </p>
+
+          <ul class="hero-list">
+            <li>
+              <span class="check">✔</span>
+              <div>
+                <h3>Safety First</h3>
+                <p>Compare safety ratings across airlines and routes.</p>
+              </div>
+            </li>
+            <li>
+              <span class="check">✔</span>
+              <div>
+                <h3>Best Price</h3>
+                <p>Compare flight prices across all options.</p>
+              </div>
+            </li>
+            <li>
+              <span class="check">✔</span>
+              <div>
+                <h3>Environmental Impact</h3>
+                <p>Track emissions and environmental footprint.</p>
+              </div>
+            </li>
+            <li>
+              <span class="check">✔</span>
+              <div>
+                <h3>Weather Insights</h3>
+                <p>View weather forecasts for your travel dates.</p>
+              </div>
+            </li>
+            <li>
+              <span class="check">✔</span>
+              <div>
+                <h3>Seat Availability</h3>
+                <p>ML-powered predictions for seat space and capacity.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- RIGHT SIDE: Login Card -->
+      <section class="auth">
+        <div class="auth-card">
+          <div class="logo-row">
+            <div class="logo-icon">✈️</div>
+            <div>
+              <h2 class="logo-title">Flight Sight</h2>
+              <p class="logo-subtitle">
+                Safety Ratings &amp; Environmental Impact
+              </p>
+            </div>
+          </div>
+
+          <form id="login-form" class="form">
+            <label class="field">
+              <span>Email address</span>
+              <input
+                type="email"
+                id="email"
+                placeholder="you@example.com"
+                autocomplete="email"
+                required
+              />
+            </label>
+
+            <label class="field">
+              <div class="field-row">
+                <span>Password</span>
+                <a href="#" class="link-small">Forgot password?</a>
+              </div>
+              <input
+                type="password"
+                id="password"
+                placeholder="••••••••"
+                autocomplete="current-password"
+                required
+              />
+            </label>
+
+            <div class="form-row">
+              <label class="checkbox">
+                <input type="checkbox" id="remember" />
+                <span>Remember me for 30 days</span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn-primary">Log in</button>
+          </form>
+
+          <p class="auth-text">
+            Don’t have an account?
+            <a href="signup.html" class="link">Sign up for free</a>
+          </p>
+
+          <div class="divider">
+            <span>Or continue with</span>
+          </div>
+
+          <button class="btn-google" type="button">
+            <span class="google-icon">G</span>
+            <span>Google</span>
+          </button>
+
+          <div id="message" class="message" aria-live="polite"></div>
+        </div>
+
+        <!-- Optional little help button like in the screenshot -->
+        <button class="help-bubble" type="button">?</button>
+      </section>
+    </div>
+
+    <script src="../js/login_signup.js" defer></script>
+  </body>
+</html>

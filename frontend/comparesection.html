@@ -1,0 +1,110 @@
+<!-- ===================== COMPARE SECTION ===================== -->
+<section class="compare-section" aria-labelledby="compare-title">
+  <h2 id="compare-title">Compare City Pairs</h2>
+
+  <!-- Quick selection controls -->
+  <div class="compare-controls">
+    <label for="compare-metric-select">Compare by:</label>
+    <select id="compare-metric-select" name="compare-metric">
+      <option value="safety_score">Safety Score</option>
+      <option value="co2_per_passenger">CO₂ per Passenger</option>
+      <option value="avg_price">Average Ticket Price</option>
+      <option value="on_time">On-time Performance</option>
+    </select>
+
+    <button type="button" id="compare-selected-btn">
+      Compare Selected
+    </button>
+  </div>
+
+  <!-- Comparison table -->
+  <div class="compare-table-wrapper">
+    <table class="compare-table" aria-describedby="compare-help-text">
+      <thead>
+        <tr>
+          <th scope="col">Select</th>
+          <th scope="col">Route</th>
+          <th scope="col">Airline</th>
+          <th scope="col">Safety Score</th>
+          <th scope="col">CO₂ / Passenger</th>
+          <th scope="col">Avg Price</th>
+          <th scope="col">On-time</th>
+          <th scope="col">Remove</th>
+        </tr>
+      </thead>
+      <tbody id="compare-routes-body">
+        <!-- Example row 1 -->
+        <tr data-city-pair-id="route-1">
+          <td>
+            <input
+              type="checkbox"
+              class="compare-checkbox"
+              data-city-pair-id="route-1"
+            />
+          </td>
+          <td class="route-label">
+            <span class="route-origin">SFO</span> → <span class="route-destination">JFK</span>
+          </td>
+          <td class="route-airline">Example Air</td>
+          <td class="route-safety-score">8.9</td>
+          <td class="route-co2">145 kg</td>
+          <td class="route-price">$320</td>
+          <td class="route-ontime">87%</td>
+          <td>
+            <button
+              type="button"
+              class="remove-city-pair-btn"
+              data-city-pair-id="route-1"
+              aria-label="Remove SFO to JFK"
+            >
+              ✕
+            </button>
+          </td>
+        </tr>
+
+        <!-- Example row 2 -->
+        <tr data-city-pair-id="route-2">
+          <td>
+            <input
+              type="checkbox"
+              class="compare-checkbox"
+              data-city-pair-id="route-2"
+            />
+          </td>
+          <td class="route-label">
+            <span class="route-origin">LAX</span> → <span class="route-destination">ORD</span>
+          </td>
+          <td class="route-airline">Skyways</td>
+          <td class="route-safety-score">8.3</td>
+          <td class="route-co2">132 kg</td>
+          <td class="route-price">$280</td>
+          <td class="route-ontime">82%</td>
+          <td>
+            <button
+              type="button"
+              class="remove-city-pair-btn"
+              data-city-pair-id="route-2"
+              aria-label="Remove LAX to ORD"
+            >
+              ✕
+            </button>
+          </td>
+        </tr>
+
+        <!-- Additional rows can be injected here by JS -->
+      </tbody>
+    </table>
+
+    <p id="compare-help-text" class="compare-help">
+      Select two or more routes using the checkboxes, then click
+      <strong>“Compare Selected”</strong> to see a detailed comparison.
+    </p>
+  </div>
+
+  <!-- Where you can render comparison output (charts, text, etc.) -->
+  <div id="compare-output" class="compare-output" aria-live="polite">
+    <!-- JS can populate this with charts or side-by-side cards -->
+  </div>
+</section>
+
+<hr />
