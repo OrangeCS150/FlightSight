@@ -102,3 +102,47 @@
 .ai-input-row button:hover {
   background: #3b82f6;
 }
+
+
+/* typing-dot style (keeps current three-dot look) */
+.ai-message.typing {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.ai-message.typing .dot {
+  width: 7px;
+  height: 7px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.25;
+  animation: dotPulse 1s infinite;
+}
+.ai-message.typing .dot:nth-child(2) { animation-delay: 0.12s; }
+.ai-message.typing .dot:nth-child(3) { animation-delay: 0.24s; }
+
+@keyframes dotPulse {
+  0% { opacity: 0.25; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-4px); }
+  100% { opacity: 0.25; transform: translateY(0); }
+}
+
+/* caret / cursor for the end of typed text (subtle) */
+.ai-message.assistant::after {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  margin-left: 6px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.0) 100%);
+  vertical-align: text-bottom;
+  animation: caretBlink 1s steps(1) infinite;
+}
+
+@keyframes caretBlink {
+  0%, 40% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* remove caret after typing finishes (we'll remove via JS if desired) */
+.ai-message.assistant.typed::after { opacity: 0; }
