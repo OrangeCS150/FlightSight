@@ -8,11 +8,10 @@
   <link rel="stylesheet" href="../css/aiAssist.css" />
 </head>
 <body>
-  <div class="fs-shell">
-
-    <body>
-    <header class="navbar">
-      <div class="logo"> Flight Sight</div>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <div class="logo">✈️ Flight Sight</div>
       <nav>
         <a href="booking.html">My Trips</a>
         <a href="booking.html#saved">Saved Flights</a>
@@ -20,25 +19,36 @@
         Sign Out
         </button>
       </nav>
-    </header>
+    </div>
+  </header>
+
+  <section class="page-header">
+    <div class="container header-inner">
+      <a href="calendar.html" class="back-link">←</a>
+      <div>
+        <h1>Complete Your Booking</h1>
+        <p>Delta Air Lines · Flight DL161</p>
+      </div>
+    </div>
+  </section>
+
+
+  <div class="fs-shell">
 
     <main class="fs-layout">
       <!-- LEFT COLUMN -->
       <section class="fs-col">
         <!-- Airline Recommendation -->
-<article class="fs-card fs-accent-green" id="recommendationCard">
-  <div class="fs-card-head">
-    <h2>Recommended Airline</h2>
-    <span class="fs-badge">UC10</span>
-  </div>
-  <p class="fs-big" id="recommendedAirline">Loading...</p>
-  <p class="fs-muted">
-    Based on price trends, seat availability, and overall performance.
-  </p>
-</article>
-
-        <h1 class="fs-title">Complete Your Booking</h1>
-        <p class="fs-subtitle">Delta Air Lines · Flight DL161</p>
+        <article class="fs-card fs-accent-green" id="recommendationCard">
+          <div class="fs-card-head">
+            <h2>Recommended Airline</h2>
+            <span class="fs-badge">UC10</span>
+          </div>
+          <p class="fs-big" id="recommendedAirline">Loading...</p>
+          <p class="fs-muted">
+            Based on price trends, seat availability, and overall performance.
+          </p>
+        </article>
 
         <!-- Flight Summary -->
         <article class="fs-card">
