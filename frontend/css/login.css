@@ -389,7 +389,7 @@ input[type="password"]:focus {
   }
 
   .hero h1 {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
 
   .hero-subtitle {
@@ -414,6 +414,14 @@ input[type="password"]:focus {
     padding: 1.8rem 2rem 2.2rem;
   }
 
+  .auth-text {
+    font-size: 0.8rem;
+  }
+
+  .checkbox {
+    font-size: 0.8rem;
+  }
+
   .logo-icon {
     width: 2rem;
     height: 2rem;
@@ -434,6 +442,10 @@ input[type="password"]:focus {
     padding-top: 0.4rem;
   }
 
+  .link-small {
+    font-size: 0.8rem;
+  }
+
   input[type="email"],
   input[type="password"] {
     font-size: 0.75rem;
@@ -451,4 +463,6 @@ input[type="password"]:focus {
     padding: 16px 0;
   }
 }
+
+
 

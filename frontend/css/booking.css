@@ -206,6 +206,7 @@ body {
   margin-top:10px;
   background: rgba(0,0,0,.14);
 }
+
 .fs-choice.selected{
   border-color: rgba(42,60,255,.35);
   background: rgba(42,60,255,.12);
