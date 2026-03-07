@@ -1,4 +1,4 @@
-/* AI ASSISTANT WIDGET */
+/* AI assistant widget */
 
 .ai-button {
   position: fixed;
@@ -103,7 +103,7 @@
   background: #3b82f6;
 }
 
-/* Quick questions row */
+/* Quick questions */
 .ai-quick {
   display: flex;
   flex-direction: column;   /* stack vertically */
@@ -118,15 +118,15 @@
 }
 
 .ai-quick-btn {
-  width: 100%;              /* full width */
+  width: 100%;          
   padding: 10px 12px;
-  border-radius: 8px;       /* less pill, more menu-style */
+  border-radius: 8px;       /* menu-style for the options */
   border: 1px solid #334155;
   background: rgba(255, 255, 255, 0.06);
   color: white;
   font-size: 14px;
   cursor: pointer;
-  text-align: left;         /* looks more like a menu */
+  text-align: left;         
   transition: 0.15s ease;
 }
 
@@ -134,7 +134,7 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
-/* --- Open/close animation for the whole assistant --- */
+/* Open and close animation for the assistant*/
 .ai-box {
   opacity: 0;
   transform: translateY(10px) scale(0.98);
@@ -148,7 +148,7 @@
   pointer-events: auto;
 }
 
-/* --- Staggered reveal for quick options --- */
+/* Staggered display instead of immediate display */
 .ai-quick-btn {
   opacity: 0;
   transform: translateY(8px);
@@ -161,7 +161,7 @@
   transform: translateY(0);
 }
 
-/* Optional: a subtle pop on hover */
+/* Hover for aesthetics */
 .ai-quick-btn:hover {
   transform: translateY(-1px);
 }
@@ -195,7 +195,7 @@
   border-bottom-left-radius: 4px;
 }
 
-/* Typing animation */
+/* Typing animation just for looks*/
 .ai-message.typing {
   display: flex;
   gap: 4px;
@@ -233,3 +233,46 @@
     transform: translateY(0);
   }
 }
+
+/* typing-dot style (keeps current three-dot look) */
+.ai-message.typing {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.ai-message.typing .dot {
+  width: 7px;
+  height: 7px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0.25;
+  animation: dotPulse 1s infinite;
+}
+.ai-message.typing .dot:nth-child(2) { animation-delay: 0.12s; }
+.ai-message.typing .dot:nth-child(3) { animation-delay: 0.24s; }
+
+@keyframes dotPulse {
+  0% { opacity: 0.25; transform: translateY(0); }
+  50% { opacity: 1; transform: translateY(-4px); }
+  100% { opacity: 0.25; transform: translateY(0); }
+}
+
+/* caret / cursor for the end of typed text (subtle) */
+.ai-message.assistant::after {
+  content: "";
+  display: inline-block;
+  width: 8px;
+  height: 14px;
+  margin-left: 6px;
+  background: linear-gradient(90deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.0) 100%);
+  vertical-align: text-bottom;
+  animation: caretBlink 1s steps(1) infinite;
+}
+
+@keyframes caretBlink {
+  0%, 40% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+/* remove caret after typing finishes (we'll remove via JS if desired) */
+.ai-message.assistant.typed::after { opacity: 0; }
