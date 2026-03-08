@@ -1,0 +1,100 @@
+/* ===== Compare Section ===== */
+
+.btn.primary {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+  }
+  .btn.primary:hover { filter: brightness(0.95); }
+  
+  .compare-card {
+    background: white;
+    padding: 22px;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+    margin: 20px 0 25px;
+  }
+  
+  .compare-header h2 { font-size: 18px; margin-bottom: 4px; }
+  .compare-header p { color: #6b7280; font-size: 14px; }
+  
+  .compare-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+    margin-top: 14px;
+  }
+  
+  .compare-field span {
+    display: block;
+    font-size: 12px;
+    color: #6b7280;
+    margin-bottom: 6px;
+  }
+  
+  .compare-select {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    background: white;
+  }
+  
+  .compare-message {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #b45309;
+  }
+  
+  .compare-results { margin-top: 16px; }
+  
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  
+  .compare-col {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 12px;
+  }
+  
+  .compare-name { font-weight: 700; }
+  .compare-meta { color: #6b7280; font-size: 13px; margin-top: 2px; }
+  
+  .compare-table {
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  
+  .compare-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  
+  .compare-head {
+    background: #f3f4f6;
+    font-weight: 600;
+  }
+  
+  .compare-cell {
+    padding: 10px 12px;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .compare-head .compare-cell { border-top: none; }
+  .compare-cell.metric { color: #374151; }
+  
+  @media (max-width: 900px) {
+    .compare-controls { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr; }
+    .compare-row { grid-template-columns: 1fr; }
+    .compare-head { display: none; }
+    .compare-cell.metric { background: #f3f4f6; font-weight: 600; }
+  }

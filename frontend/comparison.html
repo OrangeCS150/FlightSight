@@ -1,0 +1,45 @@
+<!-- COMPARE SECTION -->
+<section class="compare-card" aria-labelledby="compareTitle">
+    <div class="compare-header">
+      <h2 id="compareTitle">Compare saved flights</h2>
+      <p>Select two saved flights (airlines) to compare key metrics.</p>
+    </div>
+  
+    <div class="compare-controls">
+      <label class="compare-field">
+        <span>Flight A</span>
+        <select id="compareSelectA" class="compare-select"></select>
+      </label>
+  
+      <label class="compare-field">
+        <span>Flight B</span>
+        <select id="compareSelectB" class="compare-select"></select>
+      </label>
+  
+      <button id="compareBtn" class="btn primary">Compare</button>
+    </div>
+  
+    <div id="compareMessage" class="compare-message" role="status" aria-live="polite"></div>
+  
+    <div id="compareResults" class="compare-results" hidden>
+      <div class="compare-grid">
+        <div class="compare-col">
+          <div class="compare-name" id="compareNameA"></div>
+          <div class="compare-meta" id="compareMetaA"></div>
+        </div>
+        <div class="compare-col">
+          <div class="compare-name" id="compareNameB"></div>
+          <div class="compare-meta" id="compareMetaB"></div>
+        </div>
+      </div>
+  
+      <div class="compare-table" role="table" aria-label="Flight comparison">
+        <div class="compare-row compare-head" role="row">
+          <div class="compare-cell metric" role="columnheader">Metric</div>
+          <div class="compare-cell" role="columnheader">Flight A</div>
+          <div class="compare-cell" role="columnheader">Flight B</div>
+        </div>
+        <div id="compareRows"></div>
+      </div>
+    </div>
+  </section>
