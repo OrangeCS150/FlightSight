@@ -184,7 +184,8 @@ input[type="password"] {
   border: 1px solid #979797;
   background-color: #e7e7e7;
   padding: 0.7rem 0.85rem;
-  color: #e5e7eb;
+  color: #111827;
+  caret-color: #111827;
   font-size: 1.2rem;
   outline: none;
   transition: border 0.15s ease, box-shadow 0.15s ease;

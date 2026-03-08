@@ -1,166 +1,147 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Environmental Impact Ratings</title>
-  <link rel="stylesheet" href="../css/ratings.css">
-  <link rel="stylesheet" href="../css/aiAssist.css" />
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Environmental Impact Ratings</title>
+    <link rel="stylesheet" href="../css/ratings.css" />
+    <link rel="stylesheet" href="../css/aiAssist.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <header class="navbar">
+      <div class="container navbar-inner">
+        <div class="logo">✈️ Flight Sight</div>
+        <nav>
+          <a href="Booking.html">My Trips</a>
+          <a href="booking.html#saved">Saved Flights</a>
+          <button class="signout" onclick="location.href = 'login.html'">
+            Sign Out
+          </button>
+        </nav>
+      </div>
+    </header>
 
-<!-- NAVBAR -->
-<header class="navbar">
-<div class="container navbar-inner">
-    <div class="logo">✈️ Flight Sight</div>
-    <nav>
-    <a href="booking.html">My Trips</a>
-    <a href="booking.html#saved">Saved Flights</a>
-    <button class="signout" onclick="location.href='login.html'">
-    Sign Out
-    </button>
-    </nav>
-</div>
-</header>
-
-<section class="page-header">
-  <div class="container header-inner">
-    <a href="homePage.html" class="back-link">←</a>
-    <div>
-      <h1>Environmental Impact Ratings</h1>
-      <p>Carbon emissions and sustainability metrics across 20 major airlines</p>
-    </div>
-  </div>
-</section>
-
-<main class="container">
-
-  <section class="stats">
-    <div class="stat-card">
-      <h4>Avg Carbon Rating</h4>
-      <h2>78.8</h2>
-      <p>out of 100</p>
-    </div>
-
-    <div class="stat-card">
-      <h4>Avg CO₂ Emissions</h4>
-      <h2>92.5</h2>
-      <p>g/km per passenger</p>
-    </div>
-
-    <div class="stat-card">
-      <h4>Avg SAF Usage</h4>
-      <h2>5.7%</h2>
-      <p>Sustainable fuel</p>
-    </div>
-
-    <div class="stat-card">
-      <h4>Carbon Offset</h4>
-      <h2>16</h2>
-      <p>airlines offer programs</p>
-    </div>
-  </section>
-
-  <div class="tabs">
-    <button class="tab active" data-filter="all">All Airlines</button>
-    <button class="tab" data-filter="eco">Eco Leaders</button>
-    <button class="tab" data-filter="saf">SAF Adoption</button>
-    <button class="tab" data-filter="offset">Carbon Offset</button>
-  </div>
-
-  <section class="airline-list">
-
-  <div class="airline-card" data-category="all eco offset">
-    <div class="airline-header">
-      <div class="left">
-        <div class="logo-box">AS</div>
+    <section class="page-header">
+      <div class="container header-inner">
+        <a href="homePage.html" class="back-link">←</a>
         <div>
-          <h3>Alaska Airlines</h3>
-          <span class="badge">Excellent</span>
-          <span class="green-tag">Carbon Offset</span>
+          <h1>Environmental Impact Ratings</h1>
+          <p>
+            Carbon emissions and sustainability metrics across 20 major airlines
+          </p>
         </div>
       </div>
-      <div class="rank">#1</div>
-    </div>
+    </section>
 
-    <div class="progress-wrapper">
-      <span>88/100</span>
-      <div class="progress-bar">
-        <div class="progress-fill" data-score="88"></div>
-      </div>
-    </div>
-
-    <div class="details">
-      <div><strong>CO₂ per km</strong><br>82g</div>
-      <div><strong>SAF Usage</strong><br>10%</div>
-      <div><strong>Fleet Efficiency</strong><br>89/100</div>
-      <div><strong>Renewable Energy</strong><br>40%</div>
-      <div><strong>Waste Reduction</strong><br>60%</div>
-    </div>
-
-    <div class="program-tags">
-      <span>Carbon Offset</span>
-      <span>SAF Investment</span>
-      <span>Forest Conservation</span>
-    </div>
-  </div>
-
-  <div class="airline-card" data-category="all eco saf offset">
-    <div class="airline-header">
-      <div class="left">
-        <div class="logo-box">NH</div>
-        <div>
-          <h3>ANA All Nippon Airways</h3>
-          <span class="badge">Excellent</span>
-          <span class="green-tag">Carbon Offset</span>
+    <main class="container">
+      <section class="stats">
+        <div class="stat-card">
+          <h4>Avg Carbon Rating</h4>
+          <h2>78.8</h2>
+          <p>out of 100</p>
         </div>
+
+        <div class="stat-card">
+          <h4>Avg CO₂ Emissions</h4>
+          <h2>92.5</h2>
+          <p>g/km per passenger</p>
+        </div>
+
+        <div class="stat-card">
+          <h4>Avg SAF Usage</h4>
+          <h2>5.7%</h2>
+          <p>Sustainable fuel</p>
+        </div>
+
+        <div class="stat-card">
+          <h4>Carbon Offset</h4>
+          <h2>16</h2>
+          <p>airlines offer programs</p>
+        </div>
+      </section>
+
+      <div class="tabs">
+        <button class="tab active" data-filter="all">All Airlines</button>
+        <button class="tab" data-filter="eco">Eco Leaders</button>
+        <button class="tab" data-filter="saf">SAF Adoption</button>
+        <button class="tab" data-filter="offset">Carbon Offset</button>
       </div>
-      <div class="rank">#2</div>
-    </div>
 
-    <div class="progress-wrapper">
-      <span>87/100</span>
-      <div class="progress-bar">
-        <div class="progress-fill" data-score="87"></div>
-      </div>
-    </div>
+      <section class="airline-list">
+        <div class="airline-card" data-category="all eco offset">
+          <div class="airline-header">
+            <div class="left">
+              <div class="logo-box">AS</div>
+              <div>
+                <h3>Alaska Airlines</h3>
+                <span class="badge">Excellent</span>
+                <span class="green-tag">Carbon Offset</span>
+              </div>
+            </div>
+            <div class="rank">#1</div>
+          </div>
 
-    <div class="details">
-      <div><strong>CO₂ per km</strong><br>83g</div>
-      <div><strong>SAF Usage</strong><br>9%</div>
-      <div><strong>Fleet Efficiency</strong><br>88/100</div>
-      <div><strong>Renewable Energy</strong><br>42%</div>
-      <div><strong>Waste Reduction</strong><br>62%</div>
-    </div>
+          <div class="progress-wrapper">
+            <span>88/100</span>
+            <div class="progress-bar">
+              <div class="progress-fill" data-score="88"></div>
+            </div>
+          </div>
 
-    <div class="program-tags">
-      <span>Carbon Offset</span>
-      <span>SAF Investment</span>
-      <span>Clean Energy</span>
-    </div>
-  </div>
+          <div class="details">
+            <div><strong>CO₂ per km</strong><br />82g</div>
+            <div><strong>SAF Usage</strong><br />10%</div>
+            <div><strong>Fleet Efficiency</strong><br />89/100</div>
+            <div><strong>Renewable Energy</strong><br />40%</div>
+            <div><strong>Waste Reduction</strong><br />60%</div>
+          </div>
 
-  </section>
-</main>
+          <div class="program-tags">
+            <span>Carbon Offset</span>
+            <span>SAF Investment</span>
+            <span>Forest Conservation</span>
+          </div>
+        </div>
 
-<!-- AI Assistant Popup -->
-  <button id="ai-button" class="ai-button">?</button>
-  <div id="ai-box" class="ai-box hidden">
-    <div class="ai-header">
-      <span>Flight Sight Assistant</span>
-      <button id="ai-close" class="ai-close">✕</button>
-    </div>
+        <div class="airline-card" data-category="all eco saf offset">
+          <div class="airline-header">
+            <div class="left">
+              <div class="logo-box">NH</div>
+              <div>
+                <h3>ANA All Nippon Airways</h3>
+                <span class="badge">Excellent</span>
+                <span class="green-tag">Carbon Offset</span>
+              </div>
+            </div>
+            <div class="rank">#2</div>
+          </div>
 
-    <div class="ai-messages">
-      <p class="ai-placeholder">Ask me anything about flights!</p>
-    </div>
+          <div class="progress-wrapper">
+            <span>87/100</span>
+            <div class="progress-bar">
+              <div class="progress-fill" data-score="87"></div>
+            </div>
+          </div>
 
-    <div class="ai-input-row">
-      <input type="text" id="ai-input" placeholder="Type your question..." />
-      <button id="ai-send">Send</button>
-    </div>
-  </div>
+          <div class="details">
+            <div><strong>CO₂ per km</strong><br />83g</div>
+            <div><strong>SAF Usage</strong><br />9%</div>
+            <div><strong>Fleet Efficiency</strong><br />88/100</div>
+            <div><strong>Renewable Energy</strong><br />42%</div>
+            <div><strong>Waste Reduction</strong><br />62%</div>
+          </div>
 
-  <script src="../js/AIAssist.js"></script>
-  <script src="../js/envImpact.js"></script>
-</body>
+          <div class="program-tags">
+            <span>Carbon Offset</span>
+            <span>SAF Investment</span>
+            <span>Clean Energy</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="../js/assistantLoader.js"></script>
+    <script src="../js/AIAssist.js"></script>
+    <script src="../js/envImpact.js"></script>
+  </body>
 </html>
