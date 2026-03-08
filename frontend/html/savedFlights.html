@@ -1,226 +1,208 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Saved Flights</title>
-  <link rel="stylesheet" href="../css/savedFlights.css">
-  <link rel="stylesheet" href="../css/aiAssist.css" />
-</head>
-<body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Saved Flights</title>
+    <link rel="stylesheet" href="../css/savedFlights.css" />
+    <link rel="stylesheet" href="../css/aiAssist.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <header class="navbar">
+      <div class="container navbar-inner">
+        <div class="logo">✈️ Flight Sight</div>
+        <nav>
+          <a href="Booking.html">My Trips</a>
+          <a href="Booking.html#saved">Saved Flights</a>
+          <button class="signout" onclick="location.href = 'login.html'">
+            Sign Out
+          </button>
+        </nav>
+      </div>
+    </header>
 
-<!-- NAVBAR -->
-<header class="navbar">
-    <div class="container navbar-inner">
-    <div class="logo">✈️ Flight Sight</div>
-    <nav>
-        <a href="booking.html">My Trips</a>
-        <a href="booking.html#saved">Saved Flights</a>
-        <button class="signout" onclick="location.href='login.html'">
-        Sign Out
-        </button>
-    </nav>
-    </div>
-</header>
-
-<!-- PAGE HEADER -->
-<section class="page-header">
-    <div class="container header-inner">
-    <a href="homePage.html" class="back-link">←</a>
-    <div>
-        <h1>Saved Flights</h1>
-        <p>Your saved bookings with comprehensive flight data</p>
-    </div>
-    </div>
-</section>
-
-<main class="container">
-
-    <!-- Flight Card -->
-    <div class="flight-card">
-
-        <div class="flight-top">
+    <!-- PAGE HEADER -->
+    <section class="page-header">
+      <div class="container header-inner">
+        <a href="homePage.html" class="back-link">←</a>
         <div>
+          <h1>Saved Flights</h1>
+          <p>Your saved bookings with comprehensive flight data</p>
+        </div>
+      </div>
+    </section>
+
+    <main class="container">
+      <!-- Flight Card -->
+      <div class="flight-card">
+        <div class="flight-top">
+          <div>
             <div class="airline-name">British Airways</div>
             <div>Flight BA117</div>
-        </div>
-        <div class="saved-date">Saved Oct 28, 2025</div>
+          </div>
+          <div class="saved-date">Saved Oct 28, 2025</div>
         </div>
 
         <div class="route">
-        <div>
+          <div>
             <div class="city">New York (JFK)</div>
             <div class="time">8:00 PM</div>
-        </div>
+          </div>
 
-        <div class="duration">7h 0m</div>
+          <div class="duration">7h 0m</div>
 
-        <div>
+          <div>
             <div class="city">London (LHR)</div>
             <div class="time">8:00 AM +1</div>
-        </div>
+          </div>
         </div>
 
         <div class="info-grid">
-        <div class="info-box safety">
-            <strong>Safety Rating</strong><br>
+          <div class="info-box safety">
+            <strong>Safety Rating</strong><br />
             9.2/10
-        </div>
+          </div>
 
-        <div class="info-box environmental">
-            <strong>Environmental</strong><br>
+          <div class="info-box environmental">
+            <strong>Environmental</strong><br />
             7.8/10
-        </div>
+          </div>
 
-        <div class="info-box weather">
-            <strong>Weather</strong><br>
-            D: Clear, 42°F<br>
+          <div class="info-box weather">
+            <strong>Weather</strong><br />
+            D: Clear, 42°F<br />
             A: Cloudy, 48°F
-        </div>
+          </div>
 
-        <div class="info-box seat">
-            <strong>Seat Availability</strong><br>
+          <div class="info-box seat">
+            <strong>Seat Availability</strong><br />
             87% - High
-        </div>
+          </div>
         </div>
 
         <div class="actions">
-        <div class="price">$450 <span style="font-size:12px;color:#6b7280;">per person</span></div>
-        <button class="btn view-btn">View</button>
-        <button class="btn delete delete-btn">Delete</button>
+          <div class="price">
+            $450 <span style="font-size: 12px; color: #6b7280">per person</span>
+          </div>
+          <button class="btn view-btn">View</button>
+          <button class="btn delete delete-btn">Delete</button>
         </div>
+      </div>
 
-    </div>
-
-    <div class="flight-card">
+      <div class="flight-card">
         <div class="flight-top">
-            <div>
-                <div class="airline-name">Virgin Atlantic</div>
-                <div>Flight VS4</div>
-            </div>
-            <div class="saved-date">Saved Oct 28, 2025</div>
+          <div>
+            <div class="airline-name">Virgin Atlantic</div>
+            <div>Flight VS4</div>
+          </div>
+          <div class="saved-date">Saved Oct 28, 2025</div>
         </div>
 
         <div class="route">
-            <div>
-                <div class="city">New York (JFK)</div>
-                <div class="time">8:15 PM</div>
-            </div>
+          <div>
+            <div class="city">New York (JFK)</div>
+            <div class="time">8:15 PM</div>
+          </div>
 
-            <div class="duration">7h 0m</div>
+          <div class="duration">7h 0m</div>
 
-            <div>
-                <div class="city">London (LHR)</div>
-                <div class="time">8:15 AM +1</div>
-            </div>
+          <div>
+            <div class="city">London (LHR)</div>
+            <div class="time">8:15 AM +1</div>
+          </div>
         </div>
 
         <div class="info-grid">
-            <div class="info-box safety">
-                <strong>Safety Rating</strong><br>
-                8.8/10
-            </div>
+          <div class="info-box safety">
+            <strong>Safety Rating</strong><br />
+            8.8/10
+          </div>
 
-            <div class="info-box environmental">
-                <strong>Environmental</strong><br>
-                8.5/10
-            </div>
+          <div class="info-box environmental">
+            <strong>Environmental</strong><br />
+            8.5/10
+          </div>
 
-            <div class="info-box weather">
-                <strong>Weather</strong><br>
-                D: Clear, 44°F<br>
-                A: Light Rain, 50°F
-            </div>
+          <div class="info-box weather">
+            <strong>Weather</strong><br />
+            D: Clear, 44°F<br />
+            A: Light Rain, 50°F
+          </div>
 
-            <div class="info-box seat">
-                <strong>Seat Availability</strong><br>
-                65% - Moderate
-            </div>
+          <div class="info-box seat">
+            <strong>Seat Availability</strong><br />
+            65% - Moderate
+          </div>
         </div>
 
         <div class="actions">
-            <div class="price">$425 <span style="font-size:12px;color:#6b7280;">per person</span></div>
-            <button class="btn view-btn">View</button>
-            <button class="btn delete delete-btn">Delete</button>
+          <div class="price">
+            $425 <span style="font-size: 12px; color: #6b7280">per person</span>
+          </div>
+          <button class="btn view-btn">View</button>
+          <button class="btn delete delete-btn">Delete</button>
         </div>
-    </div>
+      </div>
 
-    <!-- Flight Card -->
-    <div class="flight-card">
-
+      <!-- Flight Card -->
+      <div class="flight-card">
         <div class="flight-top">
-            <div>
-                <div class="airline-name">Delta Air Lines</div>
-                <div>Flight DL1</div>
-            </div>
-            <div class="saved-date">Saved Oct 27, 2025</div>
+          <div>
+            <div class="airline-name">Delta Air Lines</div>
+            <div>Flight DL1</div>
+          </div>
+          <div class="saved-date">Saved Oct 27, 2025</div>
         </div>
 
         <div class="route">
-            <div>
-                <div class="city">New York (JFK)</div>
-                <div class="time">8:30 PM</div>
-            </div>
+          <div>
+            <div class="city">New York (JFK)</div>
+            <div class="time">8:30 PM</div>
+          </div>
 
-            <div class="duration">7h 5m</div>
+          <div class="duration">7h 5m</div>
 
-            <div>
-                <div class="city">London (LHR)</div>
-                <div class="time">8:35 AM +1</div>
-            </div>
+          <div>
+            <div class="city">London (LHR)</div>
+            <div class="time">8:35 AM +1</div>
+          </div>
         </div>
 
         <div class="info-grid">
-            <div class="info-box safety">
-                <strong>Safety Rating</strong><br>
-                9.4/10
-            </div>
+          <div class="info-box safety">
+            <strong>Safety Rating</strong><br />
+            9.4/10
+          </div>
 
-            <div class="info-box environmental">
-                <strong>Environmental</strong><br>
-                7.1/10
-            </div>
+          <div class="info-box environmental">
+            <strong>Environmental</strong><br />
+            7.1/10
+          </div>
 
-            <div class="info-box weather">
-                <strong>Weather</strong><br>
-                D: Clear, 43°F<br>
-                A: Overcast, 49°F
-            </div>
+          <div class="info-box weather">
+            <strong>Weather</strong><br />
+            D: Clear, 43°F<br />
+            A: Overcast, 49°F
+          </div>
 
-            <div class="info-box seat">
-                <strong>Seat Availability</strong><br>
-                42% - Limited
-            </div>
+          <div class="info-box seat">
+            <strong>Seat Availability</strong><br />
+            42% - Limited
+          </div>
         </div>
 
         <div class="actions">
-            <div class="price">$480 <span style="font-size:12px;color:#6b7280;">per person</span></div>
-            <button class="btn view-btn">View</button>
-            <button class="btn delete delete-btn">Delete</button>
+          <div class="price">
+            $480 <span style="font-size: 12px; color: #6b7280">per person</span>
+          </div>
+          <button class="btn view-btn">View</button>
+          <button class="btn delete delete-btn">Delete</button>
         </div>
+      </div>
+    </main>
 
-    </div>
-
-</main>
-
-  <!-- AI Assistant Popup -->
-  <button id="ai-button" class="ai-button">?</button>
-  <div id="ai-box" class="ai-box hidden">
-    <div class="ai-header">
-      <span>Flight Sight Assistant</span>
-      <button id="ai-close" class="ai-close">✕</button>
-    </div>
-
-    <div class="ai-messages">
-      <p class="ai-placeholder">Ask me anything about flights!</p>
-    </div>
-
-    <div class="ai-input-row">
-      <input type="text" id="ai-input" placeholder="Type your question..." />
-      <button id="ai-send">Send</button>
-    </div>
-  </div>
-
-  <script src="../js/AIAssist.js"></script>
-  <script src="../js/savedFlights.js"></script>
-</body>
+    <script src="../js/assistantLoader.js"></script>
+    <script src="../js/AIAssist.js"></script>
+    <script src="../js/savedFlights.js"></script>
+  </body>
 </html>

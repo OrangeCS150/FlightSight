@@ -184,7 +184,8 @@ input[type="password"] {
   border: 1px solid #979797;
   background-color: #e7e7e7;
   padding: 0.7rem 0.85rem;
-  color: #e5e7eb;
+  color: #111827;
+  caret-color: #111827;
   font-size: 1.2rem;
   outline: none;
   transition: border 0.15s ease, box-shadow 0.15s ease;
@@ -389,7 +390,7 @@ input[type="password"]:focus {
   }
 
   .hero h1 {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
 
   .hero-subtitle {
@@ -414,6 +415,14 @@ input[type="password"]:focus {
     padding: 1.8rem 2rem 2.2rem;
   }
 
+  .auth-text {
+    font-size: 0.8rem;
+  }
+
+  .checkbox {
+    font-size: 0.8rem;
+  }
+
   .logo-icon {
     width: 2rem;
     height: 2rem;
@@ -434,6 +443,10 @@ input[type="password"]:focus {
     padding-top: 0.4rem;
   }
 
+  .link-small {
+    font-size: 0.8rem;
+  }
+
   input[type="email"],
   input[type="password"] {
     font-size: 0.75rem;
@@ -451,4 +464,6 @@ input[type="password"]:focus {
     padding: 16px 0;
   }
 }
+
+
 
