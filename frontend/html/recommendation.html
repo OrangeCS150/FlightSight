@@ -1,0 +1,66 @@
+<!-- RECOMMENDATION CHAT / PROMPT ENGINEER -->
+ <script src="../js/recommendationChat.js"></script>
+<section class="ai-card" aria-labelledby="aiTitle">
+  <div class="ai-head">
+    <h2 id="aiTitle">AI Recommendation Assistant</h2>
+    <p>Prompt engineer your preferences, get suggestions, and save your chat history.</p>
+  </div>
+
+  <div class="ai-layout">
+    <!-- Prompt Engineer Panel -->
+    <aside class="ai-panel">
+      <h3>Prompt Engineer</h3>
+
+      <label class="ai-label">
+        <span>Goal</span>
+        <textarea id="aiGoal" rows="3" placeholder="e.g., Find the best flight based on safety + price under $500."></textarea>
+      </label>
+
+      <label class="ai-label">
+        <span>Constraints</span>
+        <textarea id="aiConstraints" rows="3" placeholder="e.g., Nonstop only, depart after 6pm, prefer higher seat availability."></textarea>
+      </label>
+
+      <label class="ai-label">
+        <span>Style / Output</span>
+        <select id="aiStyle">
+          <option value="concise">Concise summary</option>
+          <option value="detailed">Detailed comparison</option>
+          <option value="ranked">Ranked shortlist</option>
+          <option value="explain">Explain reasoning</option>
+        </select>
+      </label>
+
+      <button class="btn primary" id="aiBuildPromptBtn">Build prompt</button>
+
+      <div class="ai-suggestions">
+        <div class="ai-suggestions-title">Quick prompts</div>
+        <div class="ai-chip-row" id="aiChips"></div>
+      </div>
+
+      <div class="ai-panel-actions">
+        <button class="btn" id="aiExportBtn">Export log</button>
+        <button class="btn delete" id="aiClearBtn">Clear log</button>
+      </div>
+
+      <div class="ai-status" id="aiStatus" aria-live="polite"></div>
+    </aside>
+
+    <!-- Chat Panel -->
+    <div class="ai-chat">
+      <div class="ai-messages" id="aiMessages" role="log" aria-live="polite"></div>
+
+      <div class="ai-inputbar">
+        <input
+          id="aiInput"
+          type="text"
+          placeholder="Ask for recommendations (saved automatically)..."
+          autocomplete="off"
+        />
+        <button class="btn primary" id="aiSendBtn">Send</button>
+      </div>
+
+      <div class="ai-hints" id="aiHints"></div>
+    </div>
+  </div>
+</section>
