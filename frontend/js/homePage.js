@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.getElementById("demand-btn").addEventListener("click", function () {
-    window.location.href = "demand.html";
+    window.location.href = "demandHeatMap.html";
   });
 
   document.getElementById("saved-btn").addEventListener("click", function () {

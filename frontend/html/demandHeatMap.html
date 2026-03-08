@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Demand Heat Map - Flight Sight</title>
+  <link rel="stylesheet" href="../css/demandHeatMap.css" />
+</head>
+<body>
+  <div class="header">
+    <div class="header-container">
+      <div class="header-content">
+        <button class="back-button" aria-label="Go back" onclick="window.location.href='homePage.html'">
+          <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <div class="header-info">
+          <div class="icon-wrapper">
+            <svg class="icon-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+          </div>
+          <div>
+            <h1>Demand Heat Map</h1>
+            <p class="subtitle">Global flight demand analysis and pricing patterns</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-container">
+    <div class="content-wrapper">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">What is the Demand Heat Map?</h2>
+          <p class="card-description">
+            Our demand heat map uses machine learning predictions to visualize flight demand surges
+            and pricing patterns across major cities worldwide. This helps you understand when and
+            where flights are in high demand, allowing you to make smarter booking decisions.
+          </p>
+        </div>
+        <div class="card-content">
+          <div class="demand-grid">
+            <div class="demand-card high">
+              <div class="demand-header">
+                <div class="demand-indicator high-demand"></div>
+                <span class="demand-label">High Demand</span>
+              </div>
+              <p class="demand-text">
+                Peak travel periods with limited availability and higher prices
+              </p>
+            </div>
+
+            <div class="demand-card moderate">
+              <div class="demand-header">
+                <div class="demand-indicator moderate-demand"></div>
+                <span class="demand-label">Moderate Demand</span>
+              </div>
+              <p class="demand-text">
+                Balanced availability with reasonable pricing options
+              </p>
+            </div>
+
+            <div class="demand-card low">
+              <div class="demand-header">
+                <div class="demand-indicator low-demand"></div>
+                <span class="demand-label">Low Demand</span>
+              </div>
+              <p class="demand-text">
+                Off-peak periods with better deals and more availability
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Global Demand Overview</h2>
+          <p class="card-description">
+            Interactive heat map showing flight demand intensity across major cities
+          </p>
+        </div>
+
+        <div class="card-content">
+          <div class="controls">
+            <div class="control-buttons">
+              <button id="zoomInBtn" class="control-btn" type="button">
+                <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
+                </svg>
+                Zoom In
+              </button>
+
+              <button id="zoomOutBtn" class="control-btn" type="button">
+                <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM13 10H7" />
+                </svg>
+                Zoom Out
+              </button>
+
+              <button id="resetMapBtn" class="control-btn" type="button">
+                <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+                Reset
+              </button>
+
+              <button id="toggleHeatmap" class="control-btn" type="button">
+                Show Heatmap
+              </button>
+            </div>
+
+            <div id="zoomInfo" class="zoom-info">
+              Zoom: 1.0x • Drag to pan
+            </div>
+          </div>
+
+          <div id="map" class="map-container"></div>
+
+          <div class="legend">
+            <div class="legend-item">
+              <div class="legend-dot" style="background-color: #10b981;"></div>
+              <span class="legend-text">Low (0-45%)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background-color: #3b82f6;"></div>
+              <span class="legend-text">Medium (45-60%)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background-color: #f59e0b;"></div>
+              <span class="legend-text">High (60-75%)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background-color: #dc2626;"></div>
+              <span class="legend-text">Very High (75-90%)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-dot" style="background-color: #7c3aed;"></div>
+              <span class="legend-text">Peak (90-100%)</span>
+            </div>
+          </div>
+
+          <div class="top-cities">
+            <h3 class="section-title">Top Demand Cities</h3>
+            <div class="cities-grid">
+              <div class="city-card" style="border-left-color: #7c3aed;">
+                <div class="city-card-header">
+                  <div>
+                    <p class="city-card-name">Tokyo</p>
+                    <p class="city-card-routes">15 routes</p>
+                  </div>
+                  <div class="city-card-badge" style="background-color: #7c3aed;">95%</div>
+                </div>
+                <div class="city-card-price">Avg: <span>$850</span></div>
+              </div>
+
+              <div class="city-card" style="border-left-color: #7c3aed;">
+                <div class="city-card-header">
+                  <div>
+                    <p class="city-card-name">London</p>
+                    <p class="city-card-routes">12 routes</p>
+                  </div>
+                  <div class="city-card-badge" style="background-color: #7c3aed;">92%</div>
+                </div>
+                <div class="city-card-price">Avg: <span>$650</span></div>
+              </div>
+
+              <div class="city-card" style="border-left-color: #dc2626;">
+                <div class="city-card-header">
+                  <div>
+                    <p class="city-card-name">Paris</p>
+                    <p class="city-card-routes">10 routes</p>
+                  </div>
+                  <div class="city-card-badge" style="background-color: #dc2626;">88%</div>
+                </div>
+                <div class="city-card-price">Avg: <span>$580</span></div>
+              </div>
+
+              <div class="city-card" style="border-left-color: #dc2626;">
+                <div class="city-card-header">
+                  <div>
+                    <p class="city-card-name">New York</p>
+                    <p class="city-card-routes">8 routes</p>
+                  </div>
+                  <div class="city-card-badge" style="background-color: #dc2626;">85%</div>
+                </div>
+                <div class="city-card-price">Avg: <span>$450</span></div>
+              </div>
+
+              <div class="city-card" style="border-left-color: #dc2626;">
+                <div class="city-card-header">
+                  <div>
+                    <p class="city-card-name">Hong Kong</p>
+                    <p class="city-card-routes">11 routes</p>
+                  </div>
+                  <div class="city-card-badge" style="background-color: #dc2626;">85%</div>
+                </div>
+                <div class="city-card-price">Avg: <span>$720</span></div>
+              </div>
+
+              <div class="city-card" style="border-left-color: #dc2626;">
+                <div class="city-card-header">
+                  <div>
+                    <p class="city-card-name">Shanghai</p>
+                    <p class="city-card-routes">10 routes</p>
+                  </div>
+                  <div class="city-card-badge" style="background-color: #dc2626;">83%</div>
+                </div>
+                <div class="city-card-price">Avg: <span>$680</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-box">
+            <div class="info-content">
+              <div class="info-icon">
+                <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <p class="info-title">Interactive Demand Map</p>
+                <p class="info-text">
+                  Use zoom controls to explore cities worldwide. Click on any marker to see detailed demand
+                  information. Larger circles and warmer colors indicate higher demand. Drag to pan around the map.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card tips-card">
+        <div class="card-header">
+          <div class="tips-header">
+            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <h2 class="card-title tips-title">Booking Tips</h2>
+          </div>
+        </div>
+        <div class="card-content">
+          <ul class="tips-list">
+            <li class="tip-item"><span class="tip-bullet">•</span><span>Book flights to low-demand cities for better prices and availability</span></li>
+            <li class="tip-item"><span class="tip-bullet">•</span><span>High-demand periods often coincide with holidays and major events</span></li>
+            <li class="tip-item"><span class="tip-bullet">•</span><span>Consider flying mid-week or during shoulder seasons for optimal pricing</span></li>
+            <li class="tip-item"><span class="tip-bullet">•</span><span>Use the heat map to compare demand across different regions and plan accordingly</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/demandHeatMap.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-fTzgkWYat5GUk8RksTgkQy0lXVlfgSU&libraries=visualization&loading=async&callback=initDemandHeatMap" async defer></script>
+</body>
+</html>

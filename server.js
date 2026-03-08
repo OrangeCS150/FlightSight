@@ -172,11 +172,6 @@ app.delete("/members/:id", async (req, res) => {
   }
 });
 
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () =>
-  console.log(`Server running on http://localhost:${PORT}`)
-);
 
 //ZARYA'S FEATURES
 
@@ -190,9 +185,123 @@ app.get("/seatweather", (req, res) => {
   res.json({ seat_status: "Available", weather: "Clear" });
 });
 
-//Recommendation System
+//Recommendation System (legacy endpoint)
 app.get("/recommendation", (req, res) => {
   res.json({ best_airline: "United Airlines" });
+});
+
+//Recommendation System UC10 - POST endpoint for airline recommendation
+app.post("/api/recommendation", (req, res) => {
+  try {
+    const { airlines } = req.body;
+
+    // Validation
+    if (!airlines || !Array.isArray(airlines) || airlines.length === 0) {
+      return res.status(400).json({
+        error: "Invalid request. Please provide an array of airlines with at least 1 airline."
+      });
+    }
+
+    // Define feature metadata
+    const features = {
+      price: { betterAsLower: true, weight: 0.25 },
+      safetyRating: { betterAsLower: false, weight: 0.20 },
+      emissionScore: { betterAsLower: true, weight: 0.15 },
+      duration: { betterAsLower: true, weight: 0.10 },
+      stops: { betterAsLower: true, weight: 0.10 },
+      seatAvailabilityPrediction: { betterAsLower: false, weight: 0.10 },
+      weatherScore: { betterAsLower: false, weight: 0.10 }
+    };
+
+    // Normalize each feature using min-max normalization
+    const normalized = airlines.map(airline => {
+      const normalized_obj = { ...airline };
+
+      Object.entries(features).forEach(([feature, meta]) => {
+        if (!(feature in airline)) {
+          normalized_obj[feature] = 0;
+          return;
+        }
+
+        // Find min and max for this feature across all airlines
+        const values = airlines
+          .map(a => a[feature])
+          .filter(v => typeof v === 'number' && !isNaN(v));
+
+        if (values.length === 0) {
+          normalized_obj[`${feature}_norm`] = 1;
+          return;
+        }
+
+        const min = Math.min(...values);
+        const max = Math.max(...values);
+        const range = max - min;
+
+        let normalized_value;
+        if (range === 0) {
+          // All values are the same
+          normalized_value = 1;
+        } else if (meta.betterAsLower) {
+          // For "lower is better": invert so higher normalized = better
+          normalized_value = (max - airline[feature]) / range;
+        } else {
+          // For "higher is better"
+          normalized_value = (airline[feature] - min) / range;
+        }
+
+        normalized_obj[`${feature}_norm`] = Math.max(0, Math.min(1, normalized_value));
+      });
+
+      return normalized_obj;
+    });
+
+    // Calculate weighted score for each airline
+    const rankedAirlines = normalized.map(airline => {
+      let totalScore = 0;
+      const scoreBreakdown = {};
+
+      Object.entries(features).forEach(([feature, meta]) => {
+        const normalizedScore = airline[`${feature}_norm`] || 0;
+        const weightedContribution = normalizedScore * meta.weight;
+        totalScore += weightedContribution;
+
+        scoreBreakdown[feature] = {
+          normalizedScore: parseFloat(normalizedScore.toFixed(3)),
+          weight: meta.weight,
+          contribution: parseFloat(weightedContribution.toFixed(3))
+        };
+      });
+
+      return {
+        airline: {
+          airlineName: airline.airlineName,
+          price: airline.price,
+          safetyRating: airline.safetyRating,
+          emissionScore: airline.emissionScore,
+          duration: airline.duration,
+          stops: airline.stops,
+          seatAvailabilityPrediction: airline.seatAvailabilityPrediction,
+          weatherScore: airline.weatherScore
+        },
+        totalScore: parseFloat(totalScore.toFixed(3)),
+        scoreBreakdown: scoreBreakdown
+      };
+    });
+
+    // Sort by total score (descending)
+    rankedAirlines.sort((a, b) => b.totalScore - a.totalScore);
+
+    const recommendedAirline = rankedAirlines[0];
+
+    res.json({
+      recommendedAirline: recommendedAirline.airline,
+      rankedAirlines: rankedAirlines,
+      scoreBreakdown: recommendedAirline.scoreBreakdown
+    });
+  } catch (err) {
+    console.error("POST /api/recommendation error:", err);
+    res.status(500).json({ error: "Internal server error." });
+  }
 });
 
 //Dataset Analysis
@@ -212,3 +321,43 @@ app.get("/heatmap", (req, res) => {
     { city: "Chicago", demand: 60 }
   ]);
 });
+
+// Demand Heatmap - Airport Frequency Analysis
+app.get("/api/demand-heatmap", (req, res) => {
+  try {
+    // Mock data for major airports with realistic demand scores
+    const demandData = [
+      { airport: "LAX", lat: 33.9416, lng: -118.4085, demandScore: 82 },
+      { airport: "JFK", lat: 40.6413, lng: -73.7781, demandScore: 95 },
+      { airport: "ORD", lat: 41.9742, lng: -87.9073, demandScore: 88 },
+      { airport: "ATL", lat: 33.6407, lng: -84.4277, demandScore: 100 },
+      { airport: "LHR", lat: 51.4700, lng: -0.4543, demandScore: 92 },
+      { airport: "CDG", lat: 49.0097, lng: 2.5479, demandScore: 85 },
+      { airport: "DXB", lat: 25.2532, lng: 55.3657, demandScore: 90 },
+      { airport: "NRT", lat: 35.7720, lng: 140.3929, demandScore: 78 },
+      { airport: "SFO", lat: 37.6213, lng: -122.3790, demandScore: 75 },
+      { airport: "DFW", lat: 32.8998, lng: -97.0403, demandScore: 80 },
+      { airport: "DEN", lat: 39.8561, lng: -104.6737, demandScore: 72 },
+      { airport: "SEA", lat: 47.4502, lng: -122.3088, demandScore: 68 },
+      { airport: "MIA", lat: 25.7959, lng: -80.2870, demandScore: 70 },
+      { airport: "BOS", lat: 42.3656, lng: -71.0096, demandScore: 65 },
+      { airport: "LAS", lat: 36.0840, lng: -115.1537, demandScore: 73 },
+      { airport: "MCO", lat: 28.4312, lng: -81.3081, demandScore: 67 },
+      { airport: "SYD", lat: -33.9399, lng: 151.1753, demandScore: 76 },
+      { airport: "HKG", lat: 22.3080, lng: 113.9185, demandScore: 87 },
+      { airport: "SIN", lat: 1.3644, lng: 103.9915, demandScore: 89 },
+      { airport: "FRA", lat: 50.0379, lng: 8.5622, demandScore: 83 }
+    ];
+    
+    res.json(demandData);
+  } catch (err) {
+    console.error("GET /api/demand-heatmap error:", err);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () =>
+  console.log(`Server running on http://localhost:${PORT}`)
+);
