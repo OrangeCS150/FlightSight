@@ -1,66 +1,59 @@
 <!-- RECOMMENDATION CHAT / PROMPT ENGINEER -->
- <script src="../js/recommendationChat.js"></script>
-<section class="ai-card" aria-labelledby="aiTitle">
-  <div class="ai-head">
-    <h2 id="aiTitle">AI Recommendation Assistant</h2>
-    <p>Prompt engineer your preferences, get suggestions, and save your chat history.</p>
+<section class="reco-card" aria-labelledby="recoTitle">
+  <div class="reco-head">
+    <div>
+      <h2 id="recoTitle">Recommendations</h2>
+      <p>Personalized picks based on your priorities and your saved flights.</p>
+    </div>
+    <button class="btn" id="recoRefreshBtn" type="button">Refresh</button>
   </div>
 
-  <div class="ai-layout">
-    <!-- Prompt Engineer Panel -->
-    <aside class="ai-panel">
-      <h3>Prompt Engineer</h3>
+  <div class="reco-controls">
+    <div class="reco-control">
+      <div class="reco-label">What matters most?</div>
+      <div class="reco-sliders">
+        <label class="reco-slider">
+          <span>Price</span>
+          <input id="wPrice" type="range" min="0" max="10" value="5" />
+          <strong id="wPriceVal">5</strong>
+        </label>
 
-      <label class="ai-label">
-        <span>Goal</span>
-        <textarea id="aiGoal" rows="3" placeholder="e.g., Find the best flight based on safety + price under $500."></textarea>
-      </label>
+        <label class="reco-slider">
+          <span>Safety</span>
+          <input id="wSafety" type="range" min="0" max="10" value="7" />
+          <strong id="wSafetyVal">7</strong>
+        </label>
 
-      <label class="ai-label">
-        <span>Constraints</span>
-        <textarea id="aiConstraints" rows="3" placeholder="e.g., Nonstop only, depart after 6pm, prefer higher seat availability."></textarea>
-      </label>
+        <label class="reco-slider">
+          <span>Environmental</span>
+          <input id="wEnv" type="range" min="0" max="10" value="4" />
+          <strong id="wEnvVal">4</strong>
+        </label>
 
-      <label class="ai-label">
-        <span>Style / Output</span>
-        <select id="aiStyle">
-          <option value="concise">Concise summary</option>
-          <option value="detailed">Detailed comparison</option>
-          <option value="ranked">Ranked shortlist</option>
-          <option value="explain">Explain reasoning</option>
-        </select>
-      </label>
-
-      <button class="btn primary" id="aiBuildPromptBtn">Build prompt</button>
-
-      <div class="ai-suggestions">
-        <div class="ai-suggestions-title">Quick prompts</div>
-        <div class="ai-chip-row" id="aiChips"></div>
+        <label class="reco-slider">
+          <span>Seat availability</span>
+          <input id="wSeat" type="range" min="0" max="10" value="3" />
+          <strong id="wSeatVal">3</strong>
+        </label>
       </div>
+    </div>
 
-      <div class="ai-panel-actions">
-        <button class="btn" id="aiExportBtn">Export log</button>
-        <button class="btn delete" id="aiClearBtn">Clear log</button>
+    <div class="reco-control">
+      <div class="reco-label">Notes (optional)</div>
+      <input
+        id="recoNotes"
+        class="reco-notes"
+        type="text"
+        placeholder="e.g., prefer lower price under $500, avoid limited seats"
+      />
+      <div class="reco-subactions">
+        <button class="btn primary" id="recoSavePrefsBtn" type="button">Save preferences</button>
+        <button class="btn delete" id="recoClearPrefsBtn" type="button">Reset</button>
       </div>
-
-      <div class="ai-status" id="aiStatus" aria-live="polite"></div>
-    </aside>
-
-    <!-- Chat Panel -->
-    <div class="ai-chat">
-      <div class="ai-messages" id="aiMessages" role="log" aria-live="polite"></div>
-
-      <div class="ai-inputbar">
-        <input
-          id="aiInput"
-          type="text"
-          placeholder="Ask for recommendations (saved automatically)..."
-          autocomplete="off"
-        />
-        <button class="btn primary" id="aiSendBtn">Send</button>
-      </div>
-
-      <div class="ai-hints" id="aiHints"></div>
     </div>
   </div>
+
+  <div id="recoMessage" class="reco-message" role="status" aria-live="polite"></div>
+
+  <div class="reco-grid" id="recoGrid"></div>
 </section>

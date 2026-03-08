@@ -1,250 +1,283 @@
 (function () {
   "use strict";
 
-  // ---- Storage key (change if you want per-user login) ----
-  // If you have a real auth system, replace "demoUser" with the logged-in user id/email.
-  const USER_KEY = localStorage.getItem("flightSight_userKey") || "demoUser";
-  const STORAGE_KEY = `flightSight_chatlog_${USER_KEY}`;
+  const PREF_KEY = "flightSight_recoPrefs_v1";
 
-  // ---- UI elements ----
-  const el = {
-    goal: document.getElementById("aiGoal"),
-    constraints: document.getElementById("aiConstraints"),
-    style: document.getElementById("aiStyle"),
-    buildPromptBtn: document.getElementById("aiBuildPromptBtn"),
-    chips: document.getElementById("aiChips"),
-    exportBtn: document.getElementById("aiExportBtn"),
-    clearBtn: document.getElementById("aiClearBtn"),
-    status: document.getElementById("aiStatus"),
-
-    messages: document.getElementById("aiMessages"),
-    input: document.getElementById("aiInput"),
-    sendBtn: document.getElementById("aiSendBtn"),
-    hints: document.getElementById("aiHints"),
-  };
-
-  if (!el.messages || !el.input || !el.sendBtn) return;
-
-  // ---- Helpers ----
-  function nowISO() {
-    return new Date().toISOString();
+  function cleanText(el) {
+    return (el?.textContent || "").replace(/\s+/g, " ").trim();
   }
 
-  function loadLog() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      const parsed = raw ? JSON.parse(raw) : [];
-      return Array.isArray(parsed) ? parsed : [];
-    } catch {
-      return [];
-    }
+  function parseNumberFromRating(text) {
+    // handles "9.2/10" or "7.8/10"
+    const m = String(text || "").match(/(\d+(?:\.\d+)?)/);
+    return m ? Number(m[1]) : null;
   }
 
-  function saveLog(log) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(log));
-    el.status && (el.status.textContent = `Saved (${log.length} messages) for ${USER_KEY}`);
+  function parsePercent(text) {
+    // handles "87% - High"
+    const m = String(text || "").match(/(\d+)\s*%/);
+    return m ? Number(m[1]) : null;
   }
 
-  function pushMessage(role, text, extra = {}) {
-    const log = loadLog();
-    log.push({
-      id: crypto?.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(),
-      role,
-      text: String(text || "").trim(),
-      ts: nowISO(),
-      ...extra,
+  function parsePrice(text) {
+    // handles "$450 per person"
+    const m = String(text || "").match(/\$\s*(\d+(?:\.\d{1,2})?)/);
+    return m ? Number(m[1]) : null;
+  }
+
+  function getFlights() {
+    return Array.from(document.querySelectorAll(".flight-card")).map((card) => {
+      const airline = cleanText(card.querySelector(".airline-name"));
+      const flightNumber =
+        cleanText(card.querySelector(".flight-number")) ||
+        cleanText(card.querySelector(".flight-top div > div:nth-child(2)"));
+
+      const cities = card.querySelectorAll(".route .city");
+      const departCity = cleanText(cities[0]);
+      const arriveCity = cleanText(cities[1]);
+
+      const duration = cleanText(card.querySelector(".route .duration"));
+
+      const safetyTxt = cleanText(card.querySelector(".info-box.safety")).replace(/^Safety Rating\s*/i, "");
+      const envTxt = cleanText(card.querySelector(".info-box.environmental")).replace(/^Environmental\s*/i, "");
+      const seatTxt = cleanText(card.querySelector(".info-box.seat")).replace(/^Seat Availability\s*/i, "");
+      const priceTxt = cleanText(card.querySelector(".price"));
+
+      const safety = parseNumberFromRating(safetyTxt);       // 0..10
+      const env = parseNumberFromRating(envTxt);             // 0..10
+      const seat = parsePercent(seatTxt);                    // 0..100
+      const price = parsePrice(priceTxt);                    // dollars
+
+      const id = (card.dataset.flightId || `${airline}-${flightNumber}`).replace(/[^a-z0-9_-]+/gi, "_");
+
+      return { id, airline, flightNumber, departCity, arriveCity, duration, safety, env, seat, price, _card: card };
     });
-    saveLog(log);
-    render(log);
   }
 
-  function escapeHtml(s) {
-    return String(s)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+  function clamp01(x) {
+    if (x == null || Number.isNaN(x)) return 0;
+    return Math.max(0, Math.min(1, x));
   }
 
-  function formatTime(ts) {
+  function normalizePrice(price, minP, maxP) {
+    // lower is better => map to 1..0
+    if (price == null || minP == null || maxP == null || maxP === minP) return 0.5;
+    return clamp01(1 - (price - minP) / (maxP - minP));
+  }
+
+  function normalize10(x) {
+    if (x == null) return 0.5;
+    return clamp01(x / 10);
+  }
+
+  function normalizeSeat(p) {
+    if (p == null) return 0.5;
+    return clamp01(p / 100);
+  }
+
+  function loadPrefs() {
     try {
-      return new Date(ts).toLocaleString();
+      const raw = localStorage.getItem(PREF_KEY);
+      const p = raw ? JSON.parse(raw) : null;
+      if (!p) return null;
+      return p;
     } catch {
-      return ts;
+      return null;
     }
   }
 
-  function render(log) {
-    el.messages.innerHTML = "";
-    log.forEach((m) => {
-      const wrap = document.createElement("div");
-      wrap.className = `ai-msg ${m.role === "user" ? "user" : "assistant"}`;
+  function savePrefs(prefs) {
+    localStorage.setItem(PREF_KEY, JSON.stringify(prefs));
+  }
 
-      const bubble = document.createElement("div");
-      bubble.className = "ai-bubble";
-      bubble.innerHTML = `
-        <div>${escapeHtml(m.text)}</div>
-        <div class="ai-meta">${m.role} • ${escapeHtml(formatTime(m.ts))}</div>
+  function setSliderVal(id, val) {
+    const el = document.getElementById(id);
+    const label = document.getElementById(id + "Val");
+    if (el) el.value = String(val);
+    if (label) label.textContent = String(val);
+  }
+
+  function readWeights() {
+    const wPrice = Number(document.getElementById("wPrice")?.value || 0);
+    const wSafety = Number(document.getElementById("wSafety")?.value || 0);
+    const wEnv = Number(document.getElementById("wEnv")?.value || 0);
+    const wSeat = Number(document.getElementById("wSeat")?.value || 0);
+    const notes = String(document.getElementById("recoNotes")?.value || "").trim();
+
+    const sum = wPrice + wSafety + wEnv + wSeat || 1;
+
+    return {
+      wPrice: wPrice / sum,
+      wSafety: wSafety / sum,
+      wEnv: wEnv / sum,
+      wSeat: wSeat / sum,
+      notes,
+    };
+  }
+
+  function scoreFlights(flights, weights) {
+    const prices = flights.map((f) => f.price).filter((x) => typeof x === "number");
+    const minP = prices.length ? Math.min(...prices) : null;
+    const maxP = prices.length ? Math.max(...prices) : null;
+
+    return flights.map((f) => {
+      const nPrice = normalizePrice(f.price, minP, maxP);
+      const nSafety = normalize10(f.safety);
+      const nEnv = normalize10(f.env);
+      const nSeat = normalizeSeat(f.seat);
+
+      const score =
+        weights.wPrice * nPrice +
+        weights.wSafety * nSafety +
+        weights.wEnv * nEnv +
+        weights.wSeat * nSeat;
+
+      const score100 = Math.round(score * 100);
+
+      const reasons = [];
+      reasons.push(`Price: ${f.price != null ? `$${f.price}` : "—"} (${Math.round(nPrice * 100)} / 100)`);
+      reasons.push(`Safety: ${f.safety != null ? `${f.safety}/10` : "—"} (${Math.round(nSafety * 100)} / 100)`);
+      reasons.push(`Environmental: ${f.env != null ? `${f.env}/10` : "—"} (${Math.round(nEnv * 100)} / 100)`);
+      reasons.push(`Seats: ${f.seat != null ? `${f.seat}%` : "—"} (${Math.round(nSeat * 100)} / 100)`);
+
+      return { ...f, score, score100, reasons };
+    });
+  }
+
+  function renderRecommendations(items) {
+    const grid = document.getElementById("recoGrid");
+    const msg = document.getElementById("recoMessage");
+    if (!grid || !msg) return;
+
+    if (!items.length) {
+      grid.innerHTML = "";
+      msg.textContent = "Save flights to see recommendations.";
+      return;
+    }
+
+    msg.textContent = `Top picks from your saved flights.`;
+
+    grid.innerHTML = "";
+    items.forEach((f) => {
+      const card = document.createElement("div");
+      card.className = "reco-item";
+
+      const routeText =
+        `${f.departCity || "—"} → ${f.arriveCity || "—"}`;
+
+      card.innerHTML = `
+        <div class="reco-top">
+          <div>
+            <div class="reco-airline">${f.airline || "Airline"}</div>
+            <div class="reco-flight">${f.flightNumber || ""} • ${f.duration || ""}</div>
+          </div>
+          <div class="reco-score">${f.score100} / 100</div>
+        </div>
+
+        <div class="reco-route">
+          ${routeText}<br/>
+          <small>${f.price != null ? `$${f.price} per person` : "Price unavailable"}</small>
+        </div>
+
+        <div class="reco-reasons">
+          <strong>Why this one:</strong><br/>
+          • ${f.reasons[0]}<br/>
+          • ${f.reasons[1]}<br/>
+          • ${f.reasons[2]}<br/>
+          • ${f.reasons[3]}
+        </div>
+
+        <div class="reco-actions">
+          <button class="btn" type="button" data-scroll="${f.id}">View card</button>
+        </div>
       `;
 
-      wrap.appendChild(bubble);
-      el.messages.appendChild(wrap);
-    });
-
-    // scroll to bottom
-    el.messages.scrollTop = el.messages.scrollHeight;
-  }
-
-  // ---- “Further suggestions” logic ----
-  const suggestionRules = [
-    {
-      match: /cheap|budget|under\s*\$|price/i,
-      hint: "Try: “Rank options by price, then break ties by safety rating.”",
-    },
-    {
-      match: /safe|safety/i,
-      hint: "Try: “Prioritize safety rating ≥ 9.0 and explain the tradeoffs.”",
-    },
-    {
-      match: /environment|eco|co2|green/i,
-      hint: "Try: “Prefer highest environmental score; show top 2 and why.”",
-    },
-    {
-      match: /seat|availability|full/i,
-      hint: "Try: “Filter seat availability to High/Moderate only; show best value.”",
-    },
-    {
-      match: /compare|versus|vs/i,
-      hint: "Try: “Compare Flight A vs Flight B across price, safety, environment, duration.”",
-    },
-  ];
-
-  function updateHints(text) {
-    const t = String(text || "");
-    const hits = suggestionRules.filter((r) => r.match.test(t)).map((r) => r.hint);
-    el.hints.textContent = hits.length ? hits[0] : "Tip: Use Goal + Constraints to build strong prompts.";
-  }
-
-  // ---- Quick prompt chips (prompt engineering helpers) ----
-  const chips = [
-    "Compare two airlines and explain tradeoffs.",
-    "Rank saved flights by best value (safety + price).",
-    "Prefer nonstop + lowest price under $500.",
-    "Optimize for environmental score first, then safety.",
-    "Summarize in 3 bullets + recommendation.",
-  ];
-
-  function initChips() {
-    if (!el.chips) return;
-    el.chips.innerHTML = "";
-    chips.forEach((text) => {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "ai-chip";
-      b.textContent = text;
-      b.addEventListener("click", () => {
-        el.input.value = text;
-        el.input.focus();
-        updateHints(text);
+      card.querySelector('button[data-scroll]')?.addEventListener("click", () => {
+        f._card?.scrollIntoView({ behavior: "smooth", block: "start" });
+        f._card?.animate([{ transform: "scale(1)" }, { transform: "scale(1.01)" }, { transform: "scale(1)" }], {
+          duration: 350
+        });
       });
-      el.chips.appendChild(b);
+
+      grid.appendChild(card);
     });
   }
 
-  // ---- Build prompt (prompt engineer → chat input) ----
-  function buildPrompt() {
-    const goal = el.goal?.value?.trim();
-    const constraints = el.constraints?.value?.trim();
-    const style = el.style?.value || "concise";
-
-    const parts = [];
-    if (goal) parts.push(`Goal: ${goal}`);
-    if (constraints) parts.push(`Constraints: ${constraints}`);
-    parts.push(`Output style: ${style}`);
-
-    // This is the “prompt engineered” message the user sends.
-    const prompt = parts.join("\n");
-    el.input.value = prompt;
-    el.input.focus();
-    updateHints(prompt);
+  function wireSliderLabel(id) {
+    const input = document.getElementById(id);
+    const label = document.getElementById(id + "Val");
+    if (!input || !label) return;
+    label.textContent = input.value;
+    input.addEventListener("input", () => (label.textContent = input.value));
   }
 
-  // ---- Send message (demo assistant response) ----
-  // Replace this block later with your real recommendation engine / API call.
-  function fakeAssistantResponse(userText) {
-    // You can wire this to your compare data / saved flights data later.
-    // For now it demonstrates “further suggestions” and preserved chat logs.
-    const suggestions = [
-      "If you want a tighter result, add a budget and a minimum safety rating.",
-      "Ask me to rank flights by: price, safety, environmental, duration, seat availability.",
-      "If comparing airlines, specify: ‘A vs B’ and which metrics matter most.",
-    ];
+  function refresh() {
+    const flights = getFlights();
+    const weights = readWeights();
 
-    const response =
-      `Got it. I saved your request.\n\n` +
-      `Next refinements you can try:\n` +
-      `• ${suggestions[0]}\n` +
-      `• ${suggestions[1]}\n` +
-      `• ${suggestions[2]}\n\n` +
-      `If you want, paste: “Use my saved flights and recommend the best option.”`;
+    if (flights.length < 1) {
+      renderRecommendations([]);
+      return;
+    }
 
-    return response;
+    const scored = scoreFlights(flights, weights)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+
+    renderRecommendations(scored);
   }
 
-  function send() {
-    const text = el.input.value.trim();
-    if (!text) return;
-
-    pushMessage("user", text);
-    el.input.value = "";
-    updateHints("");
-
-    // demo assistant
-    const reply = fakeAssistantResponse(text);
-    pushMessage("assistant", reply, { model: "demo" });
-  }
-
-  // ---- Export / Clear ----
-  function exportLog() {
-    const log = loadLog();
-    const blob = new Blob([JSON.stringify(log, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `flightSight_chatlog_${USER_KEY}.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-
-    URL.revokeObjectURL(url);
-  }
-
-  function clearLog() {
-    localStorage.removeItem(STORAGE_KEY);
-    render([]);
-    el.status && (el.status.textContent = `Cleared log for ${USER_KEY}`);
-  }
-
-  // ---- Init ----
   function init() {
-    const log = loadLog();
-    render(log);
-    initChips();
-    updateHints("");
+    wireSliderLabel("wPrice");
+    wireSliderLabel("wSafety");
+    wireSliderLabel("wEnv");
+    wireSliderLabel("wSeat");
 
-    el.sendBtn.addEventListener("click", send);
-    el.input.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") send();
+    const prefs = loadPrefs();
+    if (prefs) {
+      setSliderVal("wPrice", prefs.wPrice);
+      setSliderVal("wSafety", prefs.wSafety);
+      setSliderVal("wEnv", prefs.wEnv);
+      setSliderVal("wSeat", prefs.wSeat);
+      const notesEl = document.getElementById("recoNotes");
+      if (notesEl) notesEl.value = prefs.notes || "";
+    }
+
+    document.getElementById("recoRefreshBtn")?.addEventListener("click", refresh);
+
+    document.getElementById("recoSavePrefsBtn")?.addEventListener("click", () => {
+      const p = {
+        wPrice: Number(document.getElementById("wPrice")?.value || 0),
+        wSafety: Number(document.getElementById("wSafety")?.value || 0),
+        wEnv: Number(document.getElementById("wEnv")?.value || 0),
+        wSeat: Number(document.getElementById("wSeat")?.value || 0),
+        notes: String(document.getElementById("recoNotes")?.value || "").trim(),
+      };
+      savePrefs(p);
+      document.getElementById("recoMessage").textContent = "Preferences saved.";
+      refresh();
     });
-    el.input.addEventListener("input", (e) => updateHints(e.target.value));
 
-    el.buildPromptBtn?.addEventListener("click", buildPrompt);
-    el.exportBtn?.addEventListener("click", exportLog);
-    el.clearBtn?.addEventListener("click", clearLog);
+    document.getElementById("recoClearPrefsBtn")?.addEventListener("click", () => {
+      localStorage.removeItem(PREF_KEY);
+      setSliderVal("wPrice", 5);
+      setSliderVal("wSafety", 7);
+      setSliderVal("wEnv", 4);
+      setSliderVal("wSeat", 3);
+      const notesEl = document.getElementById("recoNotes");
+      if (notesEl) notesEl.value = "";
+      document.getElementById("recoMessage").textContent = "Preferences reset.";
+      refresh();
+    });
 
-    el.status && (el.status.textContent = `Loaded (${log.length} messages) for ${USER_KEY}`);
+    // If your delete button removes cards, refresh recos after deletes:
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest(".delete-btn");
+      if (!btn) return;
+      setTimeout(refresh, 350);
+    });
+
+    refresh();
   }
 
   document.addEventListener("DOMContentLoaded", init);
