@@ -14,7 +14,7 @@ import random
 
 # Configuration - adjust paths and sample size as needed
 sample_size = 2000000
-file_path = "C:/Users/jonel/Downloads/itineraries.csv/itineraries.csv"
+file_path = "C:/Users/OWNER/Downloads/itineraries.csv/itineraries.csv"
 output_path = "flights_sample.csv"
 chunk_size = 100000
 
