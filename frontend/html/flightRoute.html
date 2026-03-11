@@ -26,8 +26,8 @@
           Click on any airport to select as departure or destination
         </p>
 
-        <img src="../pictures/world_map.png" class="world-map" />
-
+        <div id="map"></div>
+        
         <div class="legend">
           <span class="dot green"></span> Departure
           <span class="dot blue"></span> Destination
@@ -41,9 +41,19 @@
 
       <!-- RIGHT COLUMN -->
       <div class="right-section">
+        <!-- INSTRUCTIONS -->
+        <div class="card info-box">
+          <strong>Select your routes:</strong>
+          <p>
+            Click on your departure airport first, then click on your destination airport
+            to complete your selection. 
+            You can click on the map, search manually, or choose from the list of available airports.
+          </p>
+        </div>
+
         <!-- SEARCH CARD -->
         <div class="user-input card">
-          <h3>Or Search Manually</h3>
+          <h3>Search Manually</h3>
 
           <label>Departure Airport</label>
           <div class="autocomplete">
@@ -69,21 +79,7 @@
           <h3>Available Airports</h3>
           <p class="muted">All airports we currently serve</p>
 
-          <ul id="airportList">
-            <li data-code="JFK">JFK - New York</li>
-            <li data-code="LAX">LAX - Los Angeles</li>
-            <li data-code="ORD">ORD - Chicago</li>
-            <li data-code="LHR">LHR - London</li>
-            <li data-code="CDG">CDG - Paris</li>
-            <li data-code="FRA">FRA - Frankfurt</li>
-            <li data-code="DXB">DXB - Dubai</li>
-            <li data-code="SIN">SIN - Singapore</li>
-            <li data-code="PEK">PEK - Beijing</li>
-            <li data-code="MEX">MEX - Mexico City</li>
-            <li data-code="GRU">GRU - São Paulo</li>
-            <li data-code="NRT">NRT - Tokyo</li>
-            <li data-code="SYD">SYD - Sydney</li>
-          </ul>
+          <ul id="airportList"></ul>
         </div>
 
         <!-- CONTINUE -->
@@ -96,5 +92,10 @@
     <script src="../js/assistantLoader.js"></script>
     <script src="../js/AIAssist.js"></script>
     <script src="../js/flightRoute.js"></script>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCp_AMneKP1hVkXzMyMS2utb7AT-40LDlI&libraries=geometry&callback=initMap"
+      async
+      defer
+    ></script>
   </body>
 </html>
