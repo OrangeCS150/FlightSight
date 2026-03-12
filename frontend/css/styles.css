@@ -200,10 +200,9 @@ body {
   flex: 1.4;
 }
 
-.world-map {
+#map {
   width: 100%;
-  height: auto;
-  object-fit: contain;
+  height: 550px;
   border-radius: 12px;
   border: 1px solid #ccc;
   margin: 12px 0;
@@ -228,6 +227,10 @@ body {
 .dot.green { background: #22c55e; }
 .dot.blue { background: #3b82f6; }
 .dot.red { background: #ef4444; }
+
+.plane-rotated {
+  transform-origin: center;
+}
 
 /* Right Section */
 .right-section {
@@ -307,6 +310,16 @@ body {
 
 .suggestions li:hover {
   background-color: #f1f5f9;
+}
+
+input.selected-departure {
+  background-color: #d4edda; /* light green */
+  font-weight: bold;
+}
+
+input.selected-destination {
+  background-color: #cce5ff; /* light blue */
+  font-weight: bold;
 }
 
 /* =================== Continue Button =================== */
@@ -407,9 +420,16 @@ body {
   border: none;
 }
 
-.route-box {
-  background: #eff6ff;
-  border-left: 4px solid #2563eb;
+#departureInfo {
+  background: #d4edda;
+  border-left: 4px solid #22c55e;
+  padding-left: 8px;
+}
+
+#destinationInfo {
+  background: #cce5ff;
+  border-left: 4px solid #3b82f6;
+  padding-left: 8px;
 }
 
 .card.info-box {
