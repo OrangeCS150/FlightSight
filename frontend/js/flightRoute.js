@@ -340,6 +340,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   });
 
+  /* ================= INITIALIZE MAP ================= */
+  if (document.getElementById("map")) {
+    initMap();
+  }
+
   /* ================= CONTINUE BUTTON ================= */
 
   if (continueBtn) {
