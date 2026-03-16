@@ -18,8 +18,17 @@ function getStoredRoute() {
   if (!originRaw || !destinationRaw) return null;
 
   try {
-    const origin = JSON.parse(originRaw);
-    const destination = JSON.parse(destinationRaw);
+    const parsedOrigin = JSON.parse(originRaw);
+    const parsedDestination = JSON.parse(destinationRaw);
+
+    const origin =
+      typeof parsedOrigin === "string"
+        ? { code: parsedOrigin, name: parsedOrigin }
+        : parsedOrigin;
+    const destination =
+      typeof parsedDestination === "string"
+        ? { code: parsedDestination, name: parsedDestination }
+        : parsedDestination;
 
     // Basic validation
     if (!origin || !destination) return null;
@@ -28,6 +37,12 @@ function getStoredRoute() {
 
     return { origin, destination };
   } catch {
+    if (originRaw && destinationRaw) {
+      return {
+        origin: { code: originRaw, name: originRaw },
+        destination: { code: destinationRaw, name: destinationRaw },
+      };
+    }
     return null;
   }
 }
@@ -116,7 +131,24 @@ document.addEventListener("DOMContentLoaded", () => {
 /* ================= EXISTING BOOKING PAGE LOGIC (UNCHANGED) ================= */
 async function refreshEmissions() {
   // expects: { co2: 180, airline: "Delta" }  (your server returns similar)
-  const d = await getJSON("/emissions");
+  const route = getStoredRoute();
+  const origin = route?.origin?.code || "";
+  const destination = route?.destination?.code || "";
+
+  console.log("Selected route:", origin || "N/A", "->", destination || "N/A");
+
+  let emissionsPath = "/emissions";
+  if (origin && destination) {
+    emissionsPath = `/emissions?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
+  }
+
+  console.log("Calling emissions API:", emissionsPath);
+
+  const response = await fetch(emissionsPath);
+  if (!response.ok) throw new Error(`${emissionsPath} failed: ${response.status}`);
+  const d = await response.json();
+  console.log("Emissions API response:", d);
+
   const co2Big = document.getElementById("co2Big");
   const co2Note = document.getElementById("co2Note");
   if (co2Big) co2Big.textContent = `${d.co2} kg`;
