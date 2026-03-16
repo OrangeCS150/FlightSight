@@ -2,63 +2,29 @@ document.addEventListener("DOMContentLoaded", () => {
   /* ================= FLIGHT ROUTE PAGE LOGIC ================= */
   const continueBtn = document.querySelector(".continue-btn");
   const airportElements = document.querySelectorAll("#airportList li");
+  const originInput = document.getElementById("origin");
+  const destinationInput = document.getElementById("destination");
 
   if (airportElements.length) {
-    const airports = Array.from(airportElements).map((li) => ({
-      code: li.dataset.code,
-      name: li.textContent,
-    }));
-
     let selectedOrigin = null;
     let selectedDestination = null;
+    let selecting = "origin";
 
-    function setupAutocomplete(inputId, suggestionId, onSelect) {
-      const input = document.getElementById(inputId);
-      const suggestions = document.getElementById(suggestionId);
-      if (!input || !suggestions) return;
+    airportElements.forEach((airportEl) => {
+      airportEl.addEventListener("click", () => {
+        const code = airportEl.dataset.code;
+        if (!code) return;
 
-      input.addEventListener("input", () => {
-        const value = input.value.toLowerCase();
-        suggestions.innerHTML = "";
-
-        if (!value) {
-          suggestions.style.display = "none";
-          return;
-        }
-
-        const matches = airports.filter(
-          (a) =>
-            a.name.toLowerCase().includes(value) ||
-            a.code.toLowerCase().includes(value)
-        );
-
-        matches.forEach((airport) => {
-          const li = document.createElement("li");
-          li.textContent = airport.name;
-          li.addEventListener("click", () => {
-            input.value = airport.name;
-            suggestions.style.display = "none";
-            onSelect(airport);
-          });
-          suggestions.appendChild(li);
-        });
-
-        suggestions.style.display = matches.length ? "block" : "none";
-      });
-
-      document.addEventListener("click", (e) => {
-        if (!input.contains(e.target) && !suggestions.contains(e.target)) {
-          suggestions.style.display = "none";
+        if (selecting === "origin") {
+          selectedOrigin = code;
+          selecting = "destination";
+          if (originInput) originInput.value = code;
+        } else {
+          selectedDestination = code;
+          selecting = "origin";
+          if (destinationInput) destinationInput.value = code;
         }
       });
-    }
-
-    setupAutocomplete("origin", "originSuggestions", (airport) => {
-      selectedOrigin = airport;
-    });
-
-    setupAutocomplete("destination", "destinationSuggestions", (airport) => {
-      selectedDestination = airport;
     });
 
     if (continueBtn) {
@@ -68,11 +34,13 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        // Store route (pick ONE naming scheme and keep it consistent everywhere)
-        localStorage.setItem("origin", JSON.stringify(selectedOrigin));
-        localStorage.setItem("destination", JSON.stringify(selectedDestination));
+        console.log("Origin:", selectedOrigin);
+        console.log("Destination:", selectedDestination);
 
-        window.location.href = "calendar.html";
+        localStorage.setItem("origin", selectedOrigin);
+        localStorage.setItem("destination", selectedDestination);
+
+        window.location.href = "../html/booking.html";
       });
     }
   }

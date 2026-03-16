@@ -5,11 +5,15 @@ require("dotenv").config();
 const express = require("express");        
 const cors = require("cors");                 // Allows to talk to backend
 const path = require("path");              
+const fsSync = require("fs");
+const fs = require("fs/promises");
+const readline = require("readline");
 const { neon } = require("@neondatabase/serverless"); // Neon database connection
 const bcrypt = require("bcryptjs");           // For hashing passwords for privacy
 
 // Create Express app
 const app = express();
+app.use(express.static(path.join(__dirname, "frontend")));
 
 // Connect to Neon database using DATABASE_URL from .env file 
 const sql = neon(process.env.DATABASE_URL);
@@ -163,8 +167,74 @@ const PORT = process.env.PORT || 3000;
 //ZARYA'S FEATURES
 
 //Emissions
-app.get("/emissions", (req, res) => {
-  res.json({ airline: "Delta", co2: 180 });
+app.get("/emissions", async (req, res) => {
+  const origin = (req.query.origin || "").toString().trim().toUpperCase();
+  const destination = (req.query.destination || "").toString().trim().toUpperCase();
+
+  const fallbackCo2 = Math.floor(Math.random() * (320 - 180 + 1)) + 180;
+  let co2 = fallbackCo2;
+  let airline = "Unknown";
+
+  try {
+    const csvPath = path.join(__dirname, "backend", "data", "flights_sample.csv");
+    const stream = fsSync.createReadStream(csvPath, { encoding: "utf-8" });
+    const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
+
+    let headers = null;
+    let originIdx = -1;
+    let destinationIdx = -1;
+    let airlineIdx = -1;
+    let totalDistanceIdx = -1;
+    let segmentDistanceIdx = -1;
+
+    for await (const line of rl) {
+      if (!line || !line.trim()) {
+        continue;
+      }
+
+      if (!headers) {
+        headers = splitCsvLine(line).map((header) => header.trim());
+        originIdx = headers.indexOf("startingAirport");
+        destinationIdx = headers.indexOf("destinationAirport");
+        airlineIdx = headers.indexOf("segmentsAirlineName");
+        totalDistanceIdx = headers.indexOf("totalTravelDistance");
+        segmentDistanceIdx = headers.indexOf("segmentsDistance");
+        continue;
+      }
+
+      if (!origin || !destination) {
+        continue;
+      }
+
+      const columns = splitCsvLine(line);
+      const rowOrigin = (columns[originIdx] || "").trim().toUpperCase();
+      const rowDestination = (columns[destinationIdx] || "").trim().toUpperCase();
+
+      if (rowOrigin !== origin || rowDestination !== destination) {
+        continue;
+      }
+
+      const totalDistance = Number(columns[totalDistanceIdx]);
+      const segmentsDistance = Number(columns[segmentDistanceIdx]);
+      const distanceKm = Number.isFinite(totalDistance) && totalDistance > 0
+        ? totalDistance
+        : segmentsDistance;
+
+      if (Number.isFinite(distanceKm) && distanceKm > 0) {
+        co2 = Math.round(distanceKm * 0.09);
+      }
+
+      airline = (columns[airlineIdx] || "Unknown").trim() || "Unknown";
+      break;
+    }
+
+    console.log("Emissions calculated for", origin || "N/A", "->", destination || "N/A", ":", co2, "kg");
+    return res.json({ co2, airline });
+  } catch (err) {
+    console.error("GET /emissions error:", err);
+    console.log("Emissions calculated for", origin || "N/A", "->", destination || "N/A", ":", co2, "kg");
+    return res.json({ co2, airline });
+  }
 });
 
 //Seat + Weather
@@ -307,39 +377,112 @@ app.get("/heatmap", (req, res) => {
     { city: "NYC", demand: 75 },
     { city: "Chicago", demand: 60 }
   ]);
-// Start server
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
 });
 
+function splitCsvLine(line) {
+  const values = [];
+  let current = "";
+  let inQuotes = false;
+
+  for (let i = 0; i < line.length; i += 1) {
+    const char = line[i];
+
+    if (char === '"') {
+      if (inQuotes && line[i + 1] === '"') {
+        current += '"';
+        i += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (char === "," && !inQuotes) {
+      values.push(current.trim());
+      current = "";
+      continue;
+    }
+
+    current += char;
+  }
+
+  values.push(current.trim());
+  return values;
+}
+
+function getRandomDemandScore() {
+  return Math.floor(Math.random() * 41) + 60;
+}
+
 // Demand Heatmap - Airport Frequency Analysis
-app.get("/api/demand-heatmap", (req, res) => {
+app.get("/api/demand-heatmap", async (req, res) => {
   try {
-    // Mock data for major airports with realistic demand scores
-    const demandData = [
-      { airport: "LAX", lat: 33.9416, lng: -118.4085, demandScore: 82 },
-      { airport: "JFK", lat: 40.6413, lng: -73.7781, demandScore: 95 },
-      { airport: "ORD", lat: 41.9742, lng: -87.9073, demandScore: 88 },
-      { airport: "ATL", lat: 33.6407, lng: -84.4277, demandScore: 100 },
-      { airport: "LHR", lat: 51.4700, lng: -0.4543, demandScore: 92 },
-      { airport: "CDG", lat: 49.0097, lng: 2.5479, demandScore: 85 },
-      { airport: "DXB", lat: 25.2532, lng: 55.3657, demandScore: 90 },
-      { airport: "NRT", lat: 35.7720, lng: 140.3929, demandScore: 78 },
-      { airport: "SFO", lat: 37.6213, lng: -122.3790, demandScore: 75 },
-      { airport: "DFW", lat: 32.8998, lng: -97.0403, demandScore: 80 },
-      { airport: "DEN", lat: 39.8561, lng: -104.6737, demandScore: 72 },
-      { airport: "SEA", lat: 47.4502, lng: -122.3088, demandScore: 68 },
-      { airport: "MIA", lat: 25.7959, lng: -80.2870, demandScore: 70 },
-      { airport: "BOS", lat: 42.3656, lng: -71.0096, demandScore: 65 },
-      { airport: "LAS", lat: 36.0840, lng: -115.1537, demandScore: 73 },
-      { airport: "MCO", lat: 28.4312, lng: -81.3081, demandScore: 67 },
-      { airport: "SYD", lat: -33.9399, lng: 151.1753, demandScore: 76 },
-      { airport: "HKG", lat: 22.3080, lng: 113.9185, demandScore: 87 },
-      { airport: "SIN", lat: 1.3644, lng: 103.9915, demandScore: 89 },
-      { airport: "FRA", lat: 50.0379, lng: 8.5622, demandScore: 83 }
-    ];
-    
-    res.json(demandData);
+    const airportsCsvPath = path.join(__dirname, "backend", "data", "airports_list.csv");
+    const csvText = await fs.readFile(airportsCsvPath, "utf-8");
+    const lines = csvText
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0);
+
+    if (lines.length < 2) {
+      return res.json([]);
+    }
+
+    const headers = splitCsvLine(lines[0]).map((header) => header.toLowerCase());
+    const airportIdx = headers.findIndex((header) => ["airport", "iata", "airport_code", "code"].includes(header));
+    const latIdx = headers.findIndex((header) => ["lat", "latitude", "airport_lat"].includes(header));
+    const lngIdx = headers.findIndex((header) => ["lng", "lon", "longitude", "airport_lng"].includes(header));
+
+    const fallbackCoordinatesByCode = {
+      LGA: { lat: 40.7769, lng: -73.8740 },
+      MIA: { lat: 25.7959, lng: -80.2870 },
+      ATL: { lat: 33.6407, lng: -84.4277 },
+      CLT: { lat: 35.2140, lng: -80.9431 },
+      IAD: { lat: 38.9531, lng: -77.4565 },
+      DEN: { lat: 39.8561, lng: -104.6737 },
+      PHL: { lat: 39.8744, lng: -75.2424 },
+      SFO: { lat: 37.6213, lng: -122.3790 },
+      SEA: { lat: 47.4502, lng: -122.3088 },
+      ORD: { lat: 41.9742, lng: -87.9073 },
+      LAX: { lat: 33.9416, lng: -118.4085 },
+      DTW: { lat: 42.2162, lng: -83.3554 },
+      BOS: { lat: 42.3656, lng: -71.0096 },
+      DFW: { lat: 32.8998, lng: -97.0403 },
+      OAK: { lat: 37.7126, lng: -122.2197 },
+      EWR: { lat: 40.6895, lng: -74.1745 },
+      JFK: { lat: 40.6413, lng: -73.7781 }
+    };
+
+    const heatmapData = lines
+      .slice(1)
+      .map((line) => splitCsvLine(line))
+      .map((columns) => {
+        const airportCode = (airportIdx >= 0 ? columns[airportIdx] : "").toUpperCase();
+
+        let lat = Number(latIdx >= 0 ? columns[latIdx] : NaN);
+        let lng = Number(lngIdx >= 0 ? columns[lngIdx] : NaN);
+
+        if ((!Number.isFinite(lat) || !Number.isFinite(lng)) && fallbackCoordinatesByCode[airportCode]) {
+          lat = fallbackCoordinatesByCode[airportCode].lat;
+          lng = fallbackCoordinatesByCode[airportCode].lng;
+        }
+
+        if (!airportCode || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+          return null;
+        }
+
+        return {
+          airport: airportCode,
+          lat,
+          lng,
+          demandScore: getRandomDemandScore()
+        };
+      })
+      .filter(Boolean);
+
+    console.log(`Loaded ${heatmapData.length} airports from airports_list.csv`);
+
+    res.json(heatmapData);
   } catch (err) {
     console.error("GET /api/demand-heatmap error:", err);
     res.status(500).json({ error: "Internal server error." });
@@ -347,7 +490,6 @@ app.get("/api/demand-heatmap", (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () =>
-  console.log(`Server running on http://localhost:${PORT}`)
-);
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});

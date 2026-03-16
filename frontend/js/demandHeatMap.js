@@ -2,8 +2,8 @@ let map;
 let heatmap;
 let heatmapData = [];
 let isHeatmapVisible = true;
-const DEFAULT_CENTER = { lat: 20, lng: 0 };
-const DEFAULT_ZOOM = 2;
+const DEFAULT_CENTER = { lat: 39.5, lng: -98.35 };
+const DEFAULT_ZOOM = 4;
 
 window.gm_authFailure = function gmAuthFailure() {
   console.error('Google Maps authentication failed. Check API key validity, Maps JavaScript API enablement, billing, and HTTP referrer restrictions.');

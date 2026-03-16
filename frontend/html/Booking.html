@@ -1,210 +1,442 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>FlightSight – Complete Your Booking</title>
-  <link rel="stylesheet" href="../css/booking.css">
-  <link rel="stylesheet" href="../css/aiAssist.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Booking - Flight Sight</title>
+    <link rel="stylesheet" href="../css/booking.css">
 </head>
 <body>
-  <div class="fs-shell">
-
-  <body>
-    <!-- NAVBAR -->
-    <header class="navbar">
-      <div class="container navbar-inner">
-        <div class="logo">✈️ Flight Sight</div>
-        <nav>
-          <a href="homePage.html">Home</a>
-          <a href="#">My Trips</a>
-          <a href="#">Saved Flights</a>
-          <button class="signout" onclick="location.href = 'login.html'">
-            Sign Out
-          </button>
-        </nav>
-      </div>
-    </header>
-
-    <div class="container booking-shell">
-      <h1 class="page-title">Recommended Flight</h1>
-      <p class="page-subtitle">
-        Here’s our top recommendation based on price, safety, and efficiency.
-      </p>
-
-      <div class="booking-layout">
-        <!-- LEFT SIDE -->
-        <div>
-          <!-- Recommended Airline -->
-          <div class="booking-card">
-            <h2>✈ Recommended Airline</h2>
-            <p class="airline-name">Delta Airlines</p>
-
-            <div class="flight-grid">
-              <div class="flight-box">
-                <h3>Departure</h3>
-                <p><strong id="departureCode">LAX</strong></p>
-                <p>8:30 AM</p>
-              </div>
-
-              <div class="flight-box">
-                <h3>Duration</h3>
-                <p><strong>5h 20m</strong></p>
-                <p>Non-stop</p>
-              </div>
-
-              <div class="flight-box">
-                <h3>Arrival</h3>
-                <p><strong id="arrivalCode">JFK</strong></p>
-                <p>4:50 PM</p>
-              </div>
-
-              <div class="flight-box">
-                <h3>Date</h3>
-                <p><strong>July 15, 2026</strong></p>
-                <p>Tuesday</p>
-              </div>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-container">
+            <div class="header-content">
+                <div class="header-left">
+                    <button class="back-button" aria-label="Go back">
+                        <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <div>
+                        <h1>Complete Your Booking</h1>
+                        <p class="flight-info">United Airlines • Flight UA 1234</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="brand-button">
+                        <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                        Flight Sight
+                    </button>
+                </div>
             </div>
-          </div>
-
-          <!-- Seat Availability -->
-          <div class="booking-card">
-            <h2>📊 Seat Availability Prediction</h2>
-            <p>
-              <strong><span id="seatFillText">78</span>% Full</strong>
-            </p>
-
-            <div class="progress">
-              <div class="progress-bar" id="seatFillBar" data-target="78"></div>
-            </div>
-
-            <p class="muted">
-              Seats are filling quickly. Consider booking soon.
-            </p>
-          </div>
-
-          <!-- Weather -->
-          <div class="booking-card">
-            <h2>🌤 Weather Forecast</h2>
-
-            <div class="weather-grid">
-              <div class="weather-box">
-                <h3>Departure (<span id="depWeatherCode">LAX</span>)</h3>
-                <p><strong>75°F</strong></p>
-                <p>Sunny</p>
-              </div>
-
-              <div class="weather-box">
-                <h3>Arrival (<span id="arrWeatherCode">JFK</span>)</h3>
-                <p><strong>68°F</strong></p>
-                <p>Partly Cloudy</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Seat Selection -->
-          <div class="booking-card">
-            <h2>💺 Select Your Seat</h2>
-
-            <button
-              type="button"
-              class="seat-option selected"
-              data-seat="Economy"
-              data-price="320"
-            >
-              <span>Economy</span>
-              <span>$320</span>
-            </button>
-
-            <button
-              type="button"
-              class="seat-option"
-              data-seat="Premium Economy"
-              data-price="480"
-            >
-              <span>Premium Economy</span>
-              <span>$480</span>
-            </button>
-
-            <button
-              type="button"
-              class="seat-option"
-              data-seat="Business"
-              data-price="820"
-            >
-              <span>Business</span>
-              <span>$820</span>
-            </button>
-          </div>
-
-          <button
-            class="main-menu-btn"
-            onclick="location.href = 'homePage.html'"
-          >
-            ← Back to Main Menu
-          </button>
         </div>
+    </div>
 
-        <!-- RIGHT SIDE -->
-        <div>
-          <!-- Price Breakdown -->
-          <div class="booking-card">
-            <h2>💰 Price Breakdown</h2>
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="booking-grid">
+            <!-- Left Column - Main Content -->
+            <div class="main-content">
+                <!-- Flight Summary Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
+                            Flight Summary
+                        </h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="flight-summary-grid">
+                            <div class="flight-detail">
+                                <p class="detail-label">Departure</p>
+                                <p class="detail-value">08:30 AM</p>
+                                <p class="detail-sub">New York (JFK)</p>
+                            </div>
+                            <div class="flight-detail center">
+                                <p class="detail-label">Duration</p>
+                                <p class="detail-value">5h 45m</p>
+                                <p class="detail-sub">Nonstop</p>
+                            </div>
+                            <div class="flight-detail right">
+                                <p class="detail-label">Arrival</p>
+                                <p class="detail-value">02:15 PM</p>
+                                <p class="detail-sub">Los Angeles (LAX)</p>
+                            </div>
+                        </div>
+                        <div class="flight-info-details">
+                            <div class="info-row">
+                                <p class="info-label">Aircraft</p>
+                                <p class="info-value">Boeing 737-800</p>
+                            </div>
+                            <div class="info-row">
+                                <p class="info-label">Travel Date</p>
+                                <p class="info-value">Mar 15, 2026</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="summary-line">
-              <span>Seat Class</span>
-              <span id="seatClassLabel">Economy</span>
+                <!-- Seat Availability Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Seat Availability Prediction
+                        </h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="availability-card">
+                            <div class="availability-header">
+                                <span class="availability-label">Current Availability</span>
+                                <span class="availability-percent">68%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 68%;"></div>
+                            </div>
+                        </div>
+                        <div class="seat-classes">
+                            <div class="seat-class economy">
+                                <p class="seat-class-label">Economy</p>
+                                <p class="seat-class-value">58%</p>
+                            </div>
+                            <div class="seat-class premium">
+                                <p class="seat-class-label">Premium</p>
+                                <p class="seat-class-value">44%</p>
+                            </div>
+                            <div class="seat-class business">
+                                <p class="seat-class-label">Business</p>
+                                <p class="seat-class-value">31%</p>
+                            </div>
+                        </div>
+                        <div class="ml-prediction">
+                            <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            ML Prediction: Good availability expected - Book soon!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Weather Forecast Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                            </svg>
+                            Weather Forecast
+                        </h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="weather-grid">
+                            <div class="weather-location">
+                                <p class="weather-location-title">Departure (New York)</p>
+                                <div class="weather-details">
+                                    <div class="weather-item">
+                                        <span class="weather-item-label">
+                                            <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                            </svg>
+                                            Temperature
+                                        </span>
+                                        <span class="weather-item-value">72°F</span>
+                                    </div>
+                                    <div class="weather-item">
+                                        <span class="weather-item-label">
+                                            <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                                            </svg>
+                                            Precipitation
+                                        </span>
+                                        <span class="weather-item-value">15%</span>
+                                    </div>
+                                    <div class="weather-item">
+                                        <span class="weather-item-label">
+                                            <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                            </svg>
+                                            Wind Speed
+                                        </span>
+                                        <span class="weather-item-value">12 mph</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="weather-location">
+                                <p class="weather-location-title">Arrival (Los Angeles)</p>
+                                <div class="weather-details">
+                                    <div class="weather-item">
+                                        <span class="weather-item-label">
+                                            <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                            </svg>
+                                            Temperature
+                                        </span>
+                                        <span class="weather-item-value">78°F</span>
+                                    </div>
+                                    <div class="weather-item">
+                                        <span class="weather-item-label">
+                                            <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                                            </svg>
+                                            Precipitation
+                                        </span>
+                                        <span class="weather-item-value">8%</span>
+                                    </div>
+                                    <div class="weather-item">
+                                        <span class="weather-item-label">
+                                            <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                            </svg>
+                                            Wind Speed
+                                        </span>
+                                        <span class="weather-item-value">9 mph</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="weather-score">
+                            <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Overall Weather Score: 88% - Excellent conditions
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seat Selection Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                            </svg>
+                            Select Your Seat Class
+                        </h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="seat-option selected">
+                            <div class="seat-option-content">
+                                <div class="seat-option-info">
+                                    <p class="seat-option-title">Economy Class</p>
+                                    <p class="seat-option-desc">Standard seating with basic amenities</p>
+                                </div>
+                                <div class="seat-option-price">
+                                    <p class="price-value">Included</p>
+                                    <p class="price-label">Base fare</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="seat-option">
+                            <div class="seat-option-content">
+                                <div class="seat-option-info">
+                                    <p class="seat-option-title">Premium Economy</p>
+                                    <p class="seat-option-desc">Extra legroom and enhanced services</p>
+                                </div>
+                                <div class="seat-option-price">
+                                    <p class="price-value upgrade">+$135</p>
+                                    <p class="price-label">Per person</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="seat-option">
+                            <div class="seat-option-content">
+                                <div class="seat-option-info">
+                                    <p class="seat-option-title">Business Class</p>
+                                    <p class="seat-option-desc">Lie-flat seats, premium meals, priority boarding</p>
+                                </div>
+                                <div class="seat-option-price">
+                                    <p class="price-value upgrade">+$360</p>
+                                    <p class="price-label">Per person</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Baggage Options Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                            Baggage Options
+                        </h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="baggage-option">
+                            <div class="baggage-header">
+                                <label class="baggage-label">Carry-on Bags</label>
+                                <span class="baggage-note">1 included free</span>
+                            </div>
+                            <div class="baggage-controls">
+                                <button class="counter-button">-</button>
+                                <span class="counter-value">1</span>
+                                <button class="counter-button">+</button>
+                                <span class="baggage-price">Free</span>
+                            </div>
+                        </div>
+                        <div class="baggage-option">
+                            <div class="baggage-header">
+                                <label class="baggage-label">Checked Bags</label>
+                                <span class="baggage-note">$50 per bag</span>
+                            </div>
+                            <div class="baggage-controls">
+                                <button class="counter-button" disabled>-</button>
+                                <span class="counter-value">0</span>
+                                <button class="counter-button">+</button>
+                                <span class="baggage-price">None</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Services Card -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">
+                            <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                            Additional Services
+                        </h2>
+                    </div>
+                    <div class="card-content">
+                        <div class="service-option">
+                            <div class="service-content">
+                                <div class="service-info">
+                                    <svg class="icon service-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
+                                    </svg>
+                                    <div>
+                                        <p class="service-title">In-Flight WiFi</p>
+                                        <p class="service-desc">Full flight connectivity</p>
+                                    </div>
+                                </div>
+                                <div class="service-price-box">
+                                    <p class="service-price">+$15</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="service-option">
+                            <div class="service-content">
+                                <div class="service-info">
+                                    <svg class="icon service-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                    <div>
+                                        <p class="service-title">Premium Meal</p>
+                                        <p class="service-desc">Chef-curated dining experience</p>
+                                    </div>
+                                </div>
+                                <div class="service-price-box">
+                                    <p class="service-price">+$25</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="service-option">
+                            <div class="service-content">
+                                <div class="service-info">
+                                    <svg class="icon service-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                    <div>
+                                        <p class="service-title">Travel Insurance</p>
+                                        <p class="service-desc">Comprehensive coverage for your trip</p>
+                                    </div>
+                                </div>
+                                <div class="service-price-box">
+                                    <p class="service-price">+$45</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <div class="summary-line">
-              <span>Base Fare</span>
-              <span id="baseFare">$300</span>
+            <!-- Right Column - Price Summary -->
+            <div class="sidebar">
+                <div class="sidebar-sticky">
+                    <!-- Price Breakdown Card -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Price Breakdown</h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="price-row base">
+                                <span class="price-label">Base Fare</span>
+                                <span class="price-amount">$450</span>
+                            </div>
+                            <div class="price-row">
+                                <span class="price-label-sm">Taxes & Fees</span>
+                                <span class="price-amount-sm">$54</span>
+                            </div>
+                            <div class="price-row total">
+                                <span class="price-total-label">Total</span>
+                                <span class="price-total-amount">$504</span>
+                            </div>
+                            <p class="price-note">Per person</p>
+                        </div>
+                    </div>
+
+                    <!-- Safety Rating Card -->
+                    <div class="card info-card safety-card">
+                        <div class="card-header">
+                            <h2 class="card-title info-title">
+                                <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                </svg>
+                                Safety Rating
+                            </h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-value">92%</div>
+                            <p class="info-desc">Excellent safety record</p>
+                        </div>
+                    </div>
+
+                    <!-- CO2 Emissions Card -->
+                    <div class="card info-card eco-card">
+                        <div class="card-header">
+                            <h2 class="card-title info-title">
+                                <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                </svg>
+                                CO2 Emissions
+                            </h2>
+                        </div>
+                        <div class="card-content">
+                            <div class="info-value" id="co2Big">245 kg</div>
+                            <p class="info-desc" id="co2Note">Low environmental impact</p>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn-primary">
+                            <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                            </svg>
+                            Save
+                        </button>
+                        <button class="btn-secondary">
+                            Continue to Website
+                            <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             </div>
-
-            <div class="summary-line">
-              <span>Taxes & Fees</span>
-              <span id="taxesFees">$20</span>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="summary-line total">
-              <strong>Total</strong>
-              <strong id="totalPrice">$320</strong>
-            </div>
-          </div>
-
-          <!-- Safety -->
-          <div class="booking-card">
-            <h2>🛡 Safety Rating</h2>
-            <p class="large-number"><span id="safetyText">87</span>%</p>
-
-            <div class="progress">
-              <div class="progress-bar" id="safetyBar" data-target="87"></div>
-            </div>
-          </div>
-
-          <!-- CO2 -->
-          <div class="booking-card">
-            <h2>🌱 CO₂ Emissions</h2>
-            <p class="large-number">1,240 kg</p>
-            <p class="muted">Moderate environmental impact</p>
-          </div>
         </div>
-      </div>
     </div>
-
-    <div class="ai-messages">
-      <p class="ai-placeholder">Ask me anything about flights!</p>
-    </div>
-
-    <div class="ai-input-row">
-      <input type="text" id="ai-input" placeholder="Type your question..." />
-      <button id="ai-send">Send</button>
-    </div>
-  </div>
-
-  <script src="../js/AIAssist.js"></script>
-  <script src="../js/booking.js"></script>
+    <script src="../js/AIAssist.js"></script>
+    <script src="../js/booking.js"></script>
 </body>
 </html>
