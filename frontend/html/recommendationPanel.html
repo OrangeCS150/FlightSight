@@ -1,0 +1,73 @@
+<div id="recommendationPanel" class="rec-panel">
+  <div class="rec-panel-header">
+    <h2>Recommendation Analysis</h2>
+    <button id="recPanelClose" class="rec-panel-close">✕</button>
+  </div>
+
+  <div class="rec-panel-content">
+    <!-- Recommended Airline Section -->
+    <div class="rec-section">
+      <h3>Top Recommendation</h3>
+      <div class="rec-airline-card">
+        <div class="rec-airline-name" id="recAirlineName">—</div>
+        <div class="rec-airline-score">
+          Score: <span id="recAirlineScore">—</span> / 1.0
+        </div>
+        <div class="rec-airline-grid">
+          <div class="rec-metric">
+            <span class="rec-label">Price</span>
+            <span class="rec-value" id="recPrice">—</span>
+          </div>
+          <div class="rec-metric">
+            <span class="rec-label">Safety</span>
+            <span class="rec-value" id="recSafety">—</span>
+          </div>
+          <div class="rec-metric">
+            <span class="rec-label">Emissions</span>
+            <span class="rec-value" id="recEmissions">—</span>
+          </div>
+          <div class="rec-metric">
+            <span class="rec-label">Duration</span>
+            <span class="rec-value" id="recDuration">—</span>
+          </div>
+          <div class="rec-metric">
+            <span class="rec-label">Stops</span>
+            <span class="rec-value" id="recStops">—</span>
+          </div>
+          <div class="rec-metric">
+            <span class="rec-label">Seats</span>
+            <span class="rec-value" id="recSeats">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Score Breakdown Table -->
+    <div class="rec-section">
+      <h3>Score Breakdown</h3>
+      <table class="rec-breakdown-table">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Normalized</th>
+            <th>Weight</th>
+            <th>Contribution</th>
+          </tr>
+        </thead>
+        <tbody id="recBreakdownBody">
+          <tr>
+            <td colspan="4" class="rec-loading">Loading...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Ranked Airlines List -->
+    <div class="rec-section">
+      <h3>All Airlines Ranked</h3>
+      <div id="recRankedList" class="rec-ranked-list">
+        <div class="rec-loading">Loading...</div>
+      </div>
+    </div>
+  </div>
+</div>
