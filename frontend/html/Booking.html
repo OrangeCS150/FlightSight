@@ -26,260 +26,144 @@
     </header>
 
     <div class="container booking-shell">
-      <h1 class="page-title">Recommended Flight</h1>
-      <p class="page-subtitle">
-        Here’s our top recommendation based on price, safety, and efficiency.
-      </p>
+        <div class="header-top">
+          <a href="homePage.html" class="back-link">←</a>
+          <div class="page-title">
+            <h1>Environmental Impact Ratings</h1>
+            <p>
+              Carbon emissions and sustainability metrics across 20 major airlines
+            </p>
+          </div>
+        </div>
 
       <div class="booking-layout">
         <!-- LEFT SIDE -->
         <div>
           <!-- Recommended Airline -->
           <div class="booking-card">
-            <h2>✈ Recommended Airline</h2>
-            <p class="airline-name">Delta Airlines</p>
+          <h2>✈ Selected Airline</h2>
+          <p class="airline-name" id="airlineName"></p>
 
-            <div class="flight-grid">
-              <div class="flight-box">
-                <h3>Departure</h3>
-                <p><strong id="departureCode">LAX</strong></p>
-                <p>8:30 AM</p>
-              </div>
-
-              <div class="flight-box">
-                <h3>Duration</h3>
-                <p><strong>5h 20m</strong></p>
-                <p>Non-stop</p>
-              </div>
-
-              <div class="flight-box">
-                <h3>Arrival</h3>
-                <p><strong id="arrivalCode">JFK</strong></p>
-                <p>4:50 PM</p>
-              </div>
-
-              <div class="flight-box">
-                <h3>Date</h3>
-                <p><strong>July 15, 2026</strong></p>
-                <p>Tuesday</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Seat Availability -->
-          <div class="booking-card">
-            <h2>📊 Seat Availability Prediction</h2>
-            <p>
-              <strong><span id="seatFillText">78</span>% Full</strong>
-            </p>
-
-            <div class="progress">
-              <div class="progress-bar" id="seatFillBar" data-target="78"></div>
+          <div class="flight-grid">
+            <div class="flight-box">
+              <h3>Departure</h3>
+              <p><strong id="departureCode"></strong></p>
+              <p id="departureTime"></p>
             </div>
 
-            <p class="muted">
-              Seats are filling quickly. Consider booking soon.
-            </p>
-          </div>
+            <div class="flight-box">
+              <h3>Duration</h3>
+              <p><strong id="duration"></strong></p>
+              <p id="stops"></p>
+            </div>
 
-          <!-- Weather -->
-          <div class="booking-card">
-            <h2>🌤 Weather Forecast</h2>
+            <div class="flight-box">
+              <h3>Arrival</h3>
+              <p><strong id="arrivalCode"></strong></p>
+              <p id="arrivalTime"></p>
+            </div>
 
-            <div class="weather-grid">
-              <div class="weather-box">
-                <h3>Departure (<span id="depWeatherCode">LAX</span>)</h3>
-                <p><strong>75°F</strong></p>
-                <p>Sunny</p>
-              </div>
-
-              <div class="weather-box">
-                <h3>Arrival (<span id="arrWeatherCode">JFK</span>)</h3>
-                <p><strong>68°F</strong></p>
-                <p>Partly Cloudy</p>
-              </div>
+            <div class="flight-box">
+              <h3>Date</h3>
+              <p><strong id="date"></strong></p>
+              <p id="day"></p>
             </div>
           </div>
+        </div>
 
-          <!-- Seat Selection -->
-          <div class="booking-card">
-            <h2>💺 Select Your Seat</h2>
+        <!-- Seat -->
+        <div class="booking-card">
+          <h2>📊 Seat Availability</h2>
+          <p><strong><span id="seatFillText"></span>% Full</strong></p>
 
-            <button
-              type="button"
-              class="seat-option selected"
-              data-seat="Economy"
-              data-price="320"
-            >
-              <span>Economy</span>
-              <span>$320</span>
-            </button>
-
-            <button
-              type="button"
-              class="seat-option"
-              data-seat="Premium Economy"
-              data-price="480"
-            >
-              <span>Premium Economy</span>
-              <span>$480</span>
-            </button>
-
-            <button
-              type="button"
-              class="seat-option"
-              data-seat="Business"
-              data-price="820"
-            >
-              <span>Business</span>
-              <span>$820</span>
-            </button>
+          <div class="progress">
+            <div class="progress-bar" id="seatFillBar"></div>
           </div>
+        </div>
 
-          <button
-            class="main-menu-btn"
-            onclick="location.href = 'homePage.html'"
-          >
-            ← Back to Main Menu
+        <!-- Weather -->
+        <div class="booking-card">
+          <h2>🌤 Weather</h2>
+
+          <div class="weather-grid">
+            <div class="weather-box">
+              <h3>Departure (<span id="depWeatherCode"></span>)</h3>
+              <p><strong id="depTemp"></strong></p>
+              <p id="depCondition"></p>
+            </div>
+
+            <div class="weather-box">
+              <h3>Arrival (<span id="arrWeatherCode"></span>)</h3>
+              <p><strong id="arrTemp"></strong></p>
+              <p id="arrCondition"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Seats -->
+        <div class="booking-card">
+          <h2>💺 Select Seat</h2>
+
+          <button class="seat-option selected" data-seat="Economy" data-price="320">
+            Economy <span>$320</span>
           </button>
         </div>
+      </div>
 
-        <!-- RIGHT SIDE -->
-        <div>
-          <!-- Price Breakdown -->
-          <div class="booking-card">
-            <h2>💰 Price Breakdown</h2>
+      <!-- RIGHT -->
+      <div>
 
-            <div class="summary-line">
-              <span>Seat Class</span>
-              <span id="seatClassLabel">Economy</span>
-            </div>
+        <!-- Price -->
+        <div class="booking-card">
+          <h2>💰 Price</h2>
 
-            <div class="summary-line">
-              <span>Base Fare</span>
-              <span id="baseFare">$300</span>
-            </div>
-
-            <div class="summary-line">
-              <span>Taxes & Fees</span>
-              <span id="taxesFees">$20</span>
-            </div>
-
-            <div class="divider"></div>
-
-            <div class="summary-line total">
-              <strong>Total</strong>
-              <strong id="totalPrice">$320</strong>
-            </div>
+          <div class="summary-line">
+            <span>Seat</span>
+            <span id="seatClassLabel"></span>
           </div>
 
-          <!-- Safety -->
-          <div class="booking-card">
-            <h2>🛡 Safety Rating</h2>
-            <p class="large-number"><span id="safetyText">87</span>%</p>
-
-            <div class="progress">
-              <div class="progress-bar" id="safetyBar" data-target="87"></div>
-            </div>
+          <div class="summary-line">
+            <span>Base</span>
+            <span id="baseFare"></span>
           </div>
 
-          <!-- CO2 -->
-          <div class="booking-card">
-            <h2>🌱 CO₂ Emissions</h2>
-            <p class="large-number">1,240 kg</p>
-            <p class="muted">Moderate environmental impact</p>
+          <div class="summary-line">
+            <span>Taxes</span>
+            <span id="taxesFees"></span>
+          </div>
+
+          <div class="summary-line total">
+            <strong>Total</strong>
+            <strong id="totalPrice"></strong>
           </div>
         </div>
+
+        <!-- Safety -->
+        <div class="booking-card">
+          <h2>🛡 Safety</h2>
+          <p class="large-number"><span id="safetyText"></span>%</p>
+
+          <div class="progress">
+            <div class="progress-bar" id="safetyBar"></div>
+          </div>
+        </div>
+
+        <!-- CO2 -->
+        <div class="booking-card">
+          <h2>🌱 CO₂</h2>
+          <p class="large-number" id="co2Text"></p>
+        </div>
+
+        <button class="btn-save">
+          Save
+        </button>
+
+        <button class="btn-continue">
+          Continue to Website
+          <span class="icon">↗</span>
+        </button>
       </div>
     </div>
-
-    <script>
-      // ================= ROUTE SYNC (NEW) =================
-      // flightRoute.js stores:
-      // localStorage.setItem("origin", JSON.stringify({code, name}))
-      // localStorage.setItem("destination", JSON.stringify({code, name}))
-      document.addEventListener("DOMContentLoaded", () => {
-        let origin = null;
-        let destination = null;
-
-        try {
-          origin = JSON.parse(localStorage.getItem("origin") || "null");
-          destination = JSON.parse(
-            localStorage.getItem("destination") || "null",
-          );
-        } catch (e) {
-          origin = null;
-          destination = null;
-        }
-
-        if (!origin || !destination || !origin.code || !destination.code) {
-          // If user skipped route selection, send them back
-          alert("Please choose your departure and destination airports first.");
-          window.location.href = "flightRoute.html";
-          return;
-        }
-
-        // Update the booking page airport codes
-        const departureCodeEl = document.getElementById("departureCode");
-        const arrivalCodeEl = document.getElementById("arrivalCode");
-        const depWeatherCodeEl = document.getElementById("depWeatherCode");
-        const arrWeatherCodeEl = document.getElementById("arrWeatherCode");
-
-        if (departureCodeEl) departureCodeEl.textContent = origin.code;
-        if (arrivalCodeEl) arrivalCodeEl.textContent = destination.code;
-        if (depWeatherCodeEl) depWeatherCodeEl.textContent = origin.code;
-        if (arrWeatherCodeEl) arrWeatherCodeEl.textContent = destination.code;
-      });
-
-      // ================= EXISTING SCRIPT (UNCHANGED) =================
-      function formatUSD(n) {
-        return "$" + n.toFixed(0);
-      }
-
-      function animateBar(bar) {
-        const target = bar.dataset.target;
-        bar.style.width = "0%";
-        requestAnimationFrame(() => {
-          bar.style.width = target + "%";
-        });
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const seatButtons = document.querySelectorAll(".seat-option");
-        const seatClassLabel = document.getElementById("seatClassLabel");
-        const baseFareEl = document.getElementById("baseFare");
-        const taxesFeesEl = document.getElementById("taxesFees");
-        const totalPriceEl = document.getElementById("totalPrice");
-
-        const TAX_RATE = 0.06;
-        const MIN_TAX = 20;
-
-        function updatePrice(total, seatName) {
-          const taxes = Math.max(MIN_TAX, Math.round(total * TAX_RATE));
-          const base = total - taxes;
-
-          seatClassLabel.textContent = seatName;
-          baseFareEl.textContent = formatUSD(base);
-          taxesFeesEl.textContent = formatUSD(taxes);
-          totalPriceEl.textContent = formatUSD(total);
-        }
-
-        seatButtons.forEach((btn) => {
-          btn.addEventListener("click", () => {
-            seatButtons.forEach((b) => b.classList.remove("selected"));
-            btn.classList.add("selected");
-
-            const price = Number(btn.dataset.price);
-            const seat = btn.dataset.seat;
-            updatePrice(price, seat);
-          });
-        });
-
-        updatePrice(320, "Economy");
-
-        animateBar(document.getElementById("seatFillBar"));
-        animateBar(document.getElementById("safetyBar"));
-      });
-    </script>
+    <script src="../js/booking.js"></script>
   </body>
 </html>
