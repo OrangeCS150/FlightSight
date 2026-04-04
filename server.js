@@ -216,10 +216,12 @@ app.get("/emissions", async (req, res) => {
 
       const totalDistance = Number(columns[totalDistanceIdx]);
       const segmentsDistance = Number(columns[segmentDistanceIdx]);
-      const distanceKm = Number.isFinite(totalDistance) && totalDistance > 0
+      let distance = Number.isFinite(totalDistance) && totalDistance > 0
         ? totalDistance
         : segmentsDistance;
 
+//Convert miles → km =
+      const distanceKm = distance * 1.609;
       if (Number.isFinite(distanceKm) && distanceKm > 0) {
         co2 = Math.round(distanceKm * 0.09);
       }
