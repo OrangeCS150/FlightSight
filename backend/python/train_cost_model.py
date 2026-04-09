@@ -15,6 +15,7 @@ MODEL_FILE = "backend/data/price_model2.pkl"
 # ================= LOAD =================
 print("Loading dataset...")
 df = pd.read_csv(INPUT_FILE, low_memory=False)
+df = df.sample(n=100000, random_state=42)
 
 # ================= FEATURE ENGINEERING =================
 print("Creating route feature...")
@@ -82,8 +83,8 @@ preprocessor = ColumnTransformer([
 print("Building model...")
 
 model = RandomForestRegressor(
-    n_estimators=200,
-    max_depth=20,
+    n_estimators=30,
+    max_depth=8,
     random_state=42,
     n_jobs=-1
 )
