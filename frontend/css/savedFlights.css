@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* =========================================================
    FlightSight — SAVED FLIGHTS / COMPARISON
    ========================================================= */
@@ -118,3 +119,194 @@ tbody tr:hover{
   font-size:13px;
   color: var(--muted);
 }
+=======
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #f3f4f6;
+  color: #111;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* NAVBAR */
+.navbar {
+  background: white;
+  border-bottom: 1px solid #ddd;
+}
+
+.navbar .logo {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.navbar-inner {
+  height: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar nav a {
+  margin-right: 20px;
+  text-decoration: none;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.signout {
+  padding: 6px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  background: white;
+}
+
+.signout {
+  padding: 6px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  cursor: pointer;
+  background: white;
+}
+
+/* PAGE HEADER */
+.page-header {
+  padding: 40px 0 20px;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.back-link {
+  font-size: 32px;
+  font-weight: bold;
+  text-decoration: none;
+  color: #2563eb;
+}
+
+/* FLIGHT CARD */
+.flight-card {
+  background: white;
+  padding: 25px;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
+}
+
+.flight-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.airline-name {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.saved-date {
+  font-size: 12px;
+  background: #f3f4f6;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* ROUTE */
+.route {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.city {
+  font-weight: 600;
+}
+
+.time {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.duration {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* INFO GRID */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.info-box {
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.safety {
+  background: #dbeafe;
+}
+
+.environmental {
+  background: #d1fae5;
+}
+
+.weather {
+  background: #ede9fe;
+}
+
+.seat {
+  background: #fef3c7;
+}
+
+.price {
+  text-align: right;
+  font-size: 18px;
+  font-weight: bold;
+  color: #2563eb;
+}
+
+/* ACTIONS */
+.actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: white;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #f3f4f6;
+}
+
+.delete {
+  color: red;
+  border-color: #fecaca;
+}
+>>>>>>> main

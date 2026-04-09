@@ -1,14 +1,14 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flight Route</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/aiAssist.css" />
   </head>
 
   <body>
-
     <!-- Page Header -->
     <header class="page-header">
       <a href="homePage.html" class="back-link">←</a>
@@ -19,39 +19,57 @@
     </header>
 
     <div class="flight-container">
-
       <!-- LEFT CARD -->
       <div class="map-section card">
         <h3>Available Routes</h3>
-        <p class="muted">Click on any airport to select as departure or destination</p>
+        <p class="muted">
+          Click on any airport to select as departure or destination
+        </p>
 
-        <img src="../pictures/world_map.png" class="world-map">
-
+        <div id="map"></div>
+        
         <div class="legend">
           <span class="dot green"></span> Departure
           <span class="dot blue"></span> Destination
           <span class="dot red"></span> Available
         </div>
 
-        <small class="muted">Scroll to zoom · Click markers to select airports</small>
+        <small class="muted"
+          >Scroll to zoom · Click markers to select airports</small
+        >
       </div>
 
       <!-- RIGHT COLUMN -->
       <div class="right-section">
+        <!-- INSTRUCTIONS -->
+        <div class="card info-box">
+          <strong>Select your routes:</strong>
+          <p>
+            Click on your departure airport first, then click on your destination airport
+            to complete your selection. 
+            You can click on the map, search manually, or choose from the list of available airports.
+          </p>
+        </div>
 
         <!-- SEARCH CARD -->
         <div class="user-input card">
-          <h3>Or Search Manually</h3>
+          <h3>Search Manually</h3>
 
           <label>Departure Airport</label>
           <div class="autocomplete">
-            <input id="origin" placeholder="Search city, airport code, or country">
+            <input
+              id="origin"
+              placeholder="Search city, airport code, or country"
+            />
             <ul class="suggestions" id="originSuggestions"></ul>
           </div>
 
           <label>Destination Airport</label>
           <div class="autocomplete">
-            <input id="destination" placeholder="Search city, airport code, or country">
+            <input
+              id="destination"
+              placeholder="Search city, airport code, or country"
+            />
             <ul class="suggestions" id="destinationSuggestions"></ul>
           </div>
         </div>
@@ -61,31 +79,18 @@
           <h3>Available Airports</h3>
           <p class="muted">All airports we currently serve</p>
 
-          <ul id="airportList">
-            <li data-code="JFK">JFK - New York</li>
-            <li data-code="LAX">LAX - Los Angeles</li>
-            <li data-code="ORD">ORD - Chicago</li>
-            <li data-code="LHR">LHR - London</li>
-            <li data-code="CDG">CDG - Paris</li>
-            <li data-code="FRA">FRA - Frankfurt</li>
-            <li data-code="DXB">DXB - Dubai</li>
-            <li data-code="SIN">SIN - Singapore</li>
-            <li data-code="PEK">PEK - Beijing</li>
-            <li data-code="MEX">MEX - Mexico City</li>
-            <li data-code="GRU">GRU - São Paulo</li>
-            <li data-code="NRT">NRT - Tokyo</li>
-            <li data-code="SYD">SYD - Sydney</li>
-          </ul>
+          <ul id="airportList"></ul>
         </div>
 
         <!-- CONTINUE -->
         <div class="continue-btn-container">
           <button class="continue-btn">Continue to Select Dates →</button>
         </div>
-
       </div>
     </div>
 
-    <script src="../js/script.js"></script>
+    <script src="../js/assistantLoader.js"></script>
+    <script src="../js/AIAssist.js"></script>
+    <script src="../js/flightRoute.js"></script>
   </body>
 </html>

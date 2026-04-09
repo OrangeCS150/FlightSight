@@ -1,0 +1,17 @@
+airport,airport_name,city,state
+LGA,LaGuardia Airport,New York,NY
+MIA,Miami International Airport,Miami,FL
+ATL,Hartsfield-Jackson Atlanta International Airport,Atlanta,GA
+CLT,Charlotte Douglas International Airport,Charlotte,NC
+IAD,Washington Dulles International Airport,Dulles,VA
+DEN,Denver International Airport,Denver,CO
+PHL,Philadelphia International Airport,Philadelphia,PA
+SFO,San Francisco International Airport,San Francisco,CA
+ORD,O'Hare International Airport,Chicago,IL
+LAX,Los Angeles International Airport,Los Angeles,CA
+DTW,Detroit Metropolitan Wayne County Airport,Detroit,MI
+BOS,Boston Logan International Airport,Boston,MA
+DFW,Dallas/Fort Worth International Airport,Dallas-Fort Worth,TX
+OAK,Oakland San Francisco Bay Airport,Oakland,CA
+EWR,Newark Liberty International Airport,Newark,NJ
+JFK,John F Kennedy International Airport,New York,NY

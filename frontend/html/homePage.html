@@ -1,22 +1,27 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Flight Sight</title>
     <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/aiAssist.css" />
+    <link rel="stylesheet" href="../css/footer.css" />
   </head>
 
   <body>
+    <!-- NAVBAR -->
     <header class="navbar">
-      <div class="logo"> Flight Sight</div>
-      <nav>
-        <a href="Booking.html">My Trips</a>
-        <a href="Booking.html#saved">Saved Flights</a>
-        <button class="signout" onclick="location.href='login.html'">
-        Sign Out
-        </button>
-      </nav>
+      <div class="container navbar-inner">
+        <div class="logo">✈️ Flight Sight</div>
+        <nav>
+          <a href="Booking.html">My Trips</a>
+          <a href="Booking.html#saved">Saved Flights</a>
+          <button class="signout" onclick="location.href = 'login.html'">
+            Sign Out
+          </button>
+        </nav>
+      </div>
     </header>
 
     <section class="hero">
@@ -36,7 +41,7 @@
       </p>
 
       <div class="cards">
-        <div class="card">
+        <div class="card" id="safety-btn">
           <div class="icon blue">🛡️</div>
           <h3>Safety Ratings</h3>
           <p>
@@ -45,7 +50,7 @@
           </p>
         </div>
 
-        <div class="card">
+        <div class="card" id="impact-btn">
           <div class="icon green">🍃</div>
           <h3>Environmental Impact</h3>
           <p>
@@ -54,7 +59,7 @@
           </p>
         </div>
 
-        <div class="card">
+        <div class="card" id="demand-btn">
           <div class="icon orange">📈</div>
           <h3>Demand Heat Map</h3>
           <p>
@@ -63,7 +68,7 @@
           </p>
         </div>
 
-        <div class="card">
+        <div class="card" id="saved-btn">
           <div class="icon purple">📈</div>
           <h3>Saved Flights</h3>
           <p>
@@ -72,36 +77,31 @@
             predictions.
           </p>
         </div>
-
-        <div class="card">
-          <div class="icon red">📈</div>
-          <h3>Smart Comparisons</h3>
-          <p>
-            Compare similar flights side-by-side to find the best option based
-            on safety, environmental impact, price, and seat availability.
-          </p>
-        </div>
       </div>
     </section>
-    <button id="ai-button" class="ai-button">?</button>
 
-    <!-- AI Assistant Popup -->
-    <div id="ai-box" class="ai-box hidden">
-      <div class="ai-header">
-        <span>Flight Sight Assistant</span>
-        <button id="ai-close" class="ai-close">✕</button>
+    <script src="../js/homePage.js"></script>
+    <script src="../js/assistantLoader.js"></script>
+    <script src="../js/AIAssist.js"></script>
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <div class="logo">✈️ Flight Sight</div>
+          <p class="footer-note">
+            Compare prices, safety, environmental impact, and more — all in one
+            place.
+          </p>
+        </div>
+
+        <nav class="footer-links" aria-label="Footer">
+          <a href="about.html">About Us</a>
+          <a href="contact.html">Contact</a>
+          <a href="faq.html">FAQ</a>
+          <a href="privacy.html">Privacy</a>
+          <a href="terms.html">Terms</a>
+        </nav>
       </div>
-
-      <div class="ai-messages">
-        <p class="ai-placeholder">Ask me anything about flights!</p>
-      </div>
-
-      <div class="ai-input-row">
-        <input type="text" id="ai-input" placeholder="Type your question..." />
-        <button id="ai-send">Send</button>
-      </div>
-    </div>
-
-    <script src="../js/script.js"></script>
+    </footer>
   </body>
 </html>

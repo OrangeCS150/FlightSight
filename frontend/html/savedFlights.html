@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Saved Flights</title>
+    <link rel="stylesheet" href="../css/savedFlights.css" />
+    <link rel="stylesheet" href="../css/aiAssist.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <header class="navbar">
+      <div class="container navbar-inner">
+        <div class="logo">✈️ Flight Sight</div>
+        <nav>
+          <a href="Booking.html">My Trips</a>
+          <a href="Booking.html#saved">Saved Flights</a>
+          <button class="signout" onclick="location.href = 'login.html'">
+            Sign Out
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- PAGE HEADER -->
+    <section class="page-header">
+      <div class="container header-inner">
+        <a href="homePage.html" class="back-link">←</a>
+        <div>
+          <h1>Saved Flights</h1>
+          <p>Your saved bookings with comprehensive flight data</p>
+        </div>
+      </div>
+    </section>
+
+    <main class="container">
+      <!-- Flight Card -->
+      <div class="flight-card">
+        <div class="flight-top">
+          <div>
+            <div class="airline-name">British Airways</div>
+            <div>Flight BA117</div>
+          </div>
+          <div class="saved-date">Saved Oct 28, 2025</div>
+        </div>
+
+        <div class="route">
+          <div>
+            <div class="city">New York (JFK)</div>
+            <div class="time">8:00 PM</div>
+          </div>
+
+          <div class="duration">7h 0m</div>
+
+          <div>
+            <div class="city">London (LHR)</div>
+            <div class="time">8:00 AM +1</div>
+          </div>
+        </div>
+
+        <div class="info-grid">
+          <div class="info-box safety">
+            <strong>Safety Rating</strong><br />
+            9.2/10
+          </div>
+
+          <div class="info-box environmental">
+            <strong>Environmental</strong><br />
+            7.8/10
+          </div>
+
+          <div class="info-box weather">
+            <strong>Weather</strong><br />
+            D: Clear, 42°F<br />
+            A: Cloudy, 48°F
+          </div>
+
+          <div class="info-box seat">
+            <strong>Seat Availability</strong><br />
+            87% - High
+          </div>
+        </div>
+
+        <div class="actions">
+          <div class="price">
+            $450 <span style="font-size: 12px; color: #6b7280">per person</span>
+          </div>
+          <button class="btn view-btn">View</button>
+          <button class="btn delete delete-btn">Delete</button>
+        </div>
+      </div>
+    </main>
+
+    <script src="../js/assistantLoader.js"></script>
+    <script src="../js/AIAssist.js"></script>
+    <script src="../js/savedFlights.js"></script>
+  </body>
+</html>

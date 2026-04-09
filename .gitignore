@@ -1,2 +1,6 @@
 node_modules/
 .env
+backend/data/flights_sample.csv
+backend/data/flights_engineered.csv
+backend/data/route_airline_stats.csv
+backend/data/price_model.pkl

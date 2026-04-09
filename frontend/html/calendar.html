@@ -1,106 +1,111 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Select Travel Dates</title>
-  <link rel="stylesheet" href="../css/styles.css"/>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-</head>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Select Travel Dates</title>
+    <link rel="stylesheet" href="../css/styles.css" />
+    <link rel="stylesheet" href="../css/aiAssist.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"
+    />
+  </head>
 
-<body>
+  <body>
+    <!-- PAGE HEADER -->
+    <header class="page-header">
+      <a href="flightRoute.html" class="back-link">←</a>
+      <div>
+        <h1>Select Travel Dates</h1>
+        <p id="routeText"></p>
+      </div>
+    </header>
 
-  <!-- PAGE HEADER -->
-  <header class="page-header">
-    <a href="flightRoute.html" class="back-link">←</a>
-    <div>
-      <h1>Select Travel Dates</h1>
-      <p id="routeText"></p>
-    </div>
-  </header>
+    <!-- MAIN LAYOUT -->
+    <div class="flight-container">
+      <!-- LEFT COLUMN -->
+      <div class="left-section">
+        <!-- TRIP DETAILS -->
+        <div class="card">
+          <h3>Trip Details</h3>
+          <p class="muted">Your selected route</p>
 
-  <!-- MAIN LAYOUT -->
-  <div class="flight-container">
+          <div class="route-box">
+            <div class="airport departure" id="departureInfo"></div>
+            <hr />
+            <div class="airport destination" id="destinationInfo"></div>
+          </div>
 
-    <!-- LEFT COLUMN -->
-    <div class="left-section">
-
-      <!-- TRIP DETAILS -->
-      <div class="card">
-        <h3>Trip Details</h3>
-        <p class="muted">Your selected route</p>
-
-        <div class="route-box">
-          <div class="airport departure" id="departureInfo"></div>
-          <hr />
-          <div class="airport destination" id="destinationInfo"></div>
+          <p class="route-code" id="routeCode"></p>
         </div>
 
-        <p class="route-code" id="routeCode"></p>
-      </div>
+        <!-- TRIP TYPE -->
+        <div class="card">
+          <h3>Trip Type</h3>
 
-      <!-- TRIP TYPE -->
-      <!-- TRIP TYPE -->
-      <div class="card">
-        <h3>Trip Type</h3>
+          <div class="trip-type">
+            <button id="roundTrip" class="active">Round Trip</button>
+            <button id="oneWay">One Way</button>
+          </div>
 
-        <div class="trip-type">
-          <button id="roundTrip" class="active">Round Trip</button>
-          <button id="oneWay">One Way</button>
+          <input type="text" id="selectedRoute" style="display: none" />
         </div>
 
-        <input type="text" id="selectedRoute" style="display:none;" />
-    </div>
-
-
-      <!-- INSTRUCTIONS -->
-      <div class="card info-box">
-        <strong>Select your dates:</strong>
-        <p>
-          Click on your departure date first, then click on your return
-          date to complete your selection.
-        </p>
+        <!-- INSTRUCTIONS -->
+        <div class="card info-box">
+          <strong>Select your dates:</strong>
+          <p>
+            Click on your departure date first, then click on your return date
+            to complete your selection. If one way, just select departure date.
+          </p>
+        </div>
       </div>
 
-    </div>
+      <div class="calendar-right-section">
+        <div class="card calendar-card">
+          <h3>Departure & Return Dates</h3>
+          <p class="muted">Select your travel dates</p>
 
-    <!-- RIGHT COLUMN -->
-    <div class="card right-section">
+          <div class="date-card">
+            <div id="calendarContainer"></div>
+          </div>
+        </div>
 
-      <h3>Departure & Return Dates</h3>
-      <p class="muted">Select your travel dates</p>
+        <div class="continue-btn-container">
+          <button class="continue-btn" id="searchFlights">
+            Search Flights
+          </button>
+        </div>
 
-      <div class="date-card">
-        <div id="calendarContainer"></div>
+        <div id="flightResults"></div>
       </div>
-
-      <button class="continue-btn" id="searchFlights">Search Flights →</button>
     </div>
 
-  </div>
+    <script src="../js/assistantLoader.js"></script>
+    <script src="../js/AIAssist.js"></script>
 
-  <script src="../js/script.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="../js/calendar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-  <!-- LOAD ROUTE DATA -->
-  <script>
-    const origin = JSON.parse(localStorage.getItem("origin"));
-    const destination = JSON.parse(localStorage.getItem("destination"));
+    <!-- LOAD ROUTE DATA -->
+    <script>
+      const origin = JSON.parse(localStorage.getItem("origin"));
+      const destination = JSON.parse(localStorage.getItem("destination"));
 
-    if (origin && destination) {
-      document.getElementById("routeText").textContent =
-        `${origin.name} → ${destination.name}`;
+      if (origin && destination) {
+        document.getElementById("routeText").textContent =
+          `${origin.name} → ${destination.name}`;
 
-      document.getElementById("departureInfo").innerHTML =
-        `<strong>${origin.code}</strong><br>${origin.name}`;
+        document.getElementById("departureInfo").innerHTML =
+          `<strong>${origin.code}</strong><br>${origin.name}`;
 
-      document.getElementById("destinationInfo").innerHTML =
-        `<strong>${destination.code}</strong><br>${destination.name}`;
+        document.getElementById("destinationInfo").innerHTML =
+          `<strong>${destination.code}</strong><br>${destination.name}`;
 
-      document.getElementById("routeCode").textContent =
-        `${origin.code} → ${destination.code}`;
-    }
-  </script>
-
-</body>
+        document.getElementById("routeCode").textContent =
+          `${origin.code} → ${destination.code}`;
+      }
+    </script>
+  </body>
 </html>
