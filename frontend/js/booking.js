@@ -1,9 +1,57 @@
 // booking.js
 
+const API_BASE = "http://localhost:3000";
+
 async function getJSON(path) {
-  const r = await fetch(path);
-  if (!r.ok) throw new Error(`${path} failed: ${r.status}`);
-  return r.json();
+  const url = path.startsWith("http") ? path : `${API_BASE}${path}`;
+  console.log("[FlightSight] Request URL:", url);
+
+  try {
+    const r = await fetch(url);
+    if (!r.ok) {
+      console.error("[FlightSight] API response error:", {
+        url,
+        status: r.status,
+        statusText: r.statusText,
+      });
+      throw new Error(`${url} failed: ${r.status} ${r.statusText}`);
+    }
+    return r.json();
+  } catch (err) {
+    console.error("[FlightSight] API fetch failed:", { url, error: err });
+    throw err;
+  }
+}
+
+function getSelectedFlight() {
+  const raw = localStorage.getItem("selectedFlight");
+  if (!raw) return null;
+
+  try {
+    const flight = JSON.parse(raw);
+    const requiredKeys = [
+      "legId",
+      "origin",
+      "destination",
+      "departureDate",
+      "airline",
+      "totalFare",
+      "travelDuration",
+      "flightTime",
+      "layoverTime",
+      "stops",
+      "seatAvailability",
+      "confidence",
+      "departureTime",
+      "arrivalTime",
+      "isPredicted",
+    ];
+
+    const hasAllKeys = requiredKeys.every((key) => key in flight);
+    return hasAllKeys ? flight : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -114,14 +162,51 @@ function applyRouteToBookingUI(route) {
   window.flightSightRoute = route;
 }
 
+function applySelectedFlightToBookingUI(flight) {
+  const flightInfoLabel = document.querySelector(".flight-info");
+  if (flightInfoLabel) {
+    flightInfoLabel.textContent = `${flight.airline} - ${flight.legId}`;
+  }
+
+  const detailValues = document.querySelectorAll(".flight-summary-grid .detail-value");
+  const detailSubs = document.querySelectorAll(".flight-summary-grid .detail-sub");
+
+  if (detailValues[0]) detailValues[0].textContent = flight.departureTime || "N/A";
+  if (detailValues[1]) detailValues[1].textContent = flight.travelDuration || "N/A";
+  if (detailValues[2]) detailValues[2].textContent = flight.arrivalTime || "N/A";
+
+  if (detailSubs[0]) detailSubs[0].textContent = `${flight.origin}`;
+  if (detailSubs[1]) detailSubs[1].textContent = Number(flight.stops) === 0 ? "Nonstop" : `${flight.stops} stop(s)`;
+  if (detailSubs[2]) detailSubs[2].textContent = `${flight.destination}`;
+
+  const travelDateRows = document.querySelectorAll(".flight-info-details .info-row");
+  if (travelDateRows[1]) {
+    const valueNode = travelDateRows[1].querySelector(".info-value");
+    if (valueNode) valueNode.textContent = flight.departureDate;
+  }
+
+  const baseFareNode = document.querySelector(".price-row.base .price-amount");
+  if (baseFareNode && typeof flight.totalFare === "number") {
+    baseFareNode.textContent = `$${flight.totalFare.toFixed(2)}`;
+  }
+}
+
 /* ================= ROUTE ENFORCEMENT (NEW) ================= */
 document.addEventListener("DOMContentLoaded", () => {
+  const selectedFlight = getSelectedFlight();
+
+  if (selectedFlight) {
+    applySelectedFlightToBookingUI(selectedFlight);
+    window.flightSightSelectedFlight = selectedFlight;
+    return;
+  }
+
   const route = getStoredRoute();
 
   // If someone enters Booking without selecting a route first:
   if (!route) {
-    alert("Please choose your departure and destination airports first.");
-    window.location.href = "flightRoute.html";
+    alert("Please select a flight first.");
+    window.location.href = "calendar.html";
     return;
   }
 
@@ -131,33 +216,65 @@ document.addEventListener("DOMContentLoaded", () => {
 /* ================= EXISTING BOOKING PAGE LOGIC (UNCHANGED) ================= */
 async function refreshEmissions() {
   // expects: { co2: 180, airline: "Delta" }  (your server returns similar)
+  const selectedFlight = getSelectedFlight();
   const route = getStoredRoute();
-  const origin = route?.origin?.code || "";
-  const destination = route?.destination?.code || "";
+
+  const origin = selectedFlight?.origin || route?.origin?.code || "";
+  const destination = selectedFlight?.destination || route?.destination?.code || "";
+  const airline = selectedFlight?.airline || "";
 
   console.log("Selected route:", origin || "N/A", "->", destination || "N/A");
 
-  let emissionsPath = "/emissions";
+  let emissionsPath = `${API_BASE}/emissions`;
   if (origin && destination) {
-    emissionsPath = `/emissions?origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}`;
+    const params = new URLSearchParams({
+      origin,
+      destination,
+    });
+
+    if (airline) {
+      params.set("airline", airline);
+    }
+
+    emissionsPath = `${API_BASE}/emissions?${params.toString()}`;
   }
 
-  console.log("Calling emissions API:", emissionsPath);
+  console.log("[FlightSight] Request URL:", emissionsPath);
 
-  const response = await fetch(emissionsPath);
-  if (!response.ok) throw new Error(`${emissionsPath} failed: ${response.status}`);
-  const d = await response.json();
+  let d;
+  try {
+    const response = await fetch(emissionsPath);
+    if (!response.ok) {
+      console.error("[FlightSight] Emissions API response error:", {
+        url: emissionsPath,
+        status: response.status,
+        statusText: response.statusText,
+      });
+      throw new Error(`${emissionsPath} failed: ${response.status} ${response.statusText}`);
+    }
+    d = await response.json();
+  } catch (err) {
+    console.error("[FlightSight] Emissions fetch failed:", {
+      url: emissionsPath,
+      error: err,
+    });
+    throw err;
+  }
+
   console.log("Emissions API response:", d);
 
   const co2Big = document.getElementById("co2Big");
   const co2Note = document.getElementById("co2Note");
   if (co2Big) co2Big.textContent = `${d.co2} kg`;
-  if (co2Note) co2Note.textContent = `Airline: ${d.airline}`;
+  if (co2Note) {
+    const airline = selectedFlight?.airline || d.airline;
+    co2Note.textContent = `Airline: ${airline}`;
+  }
 }
 
 async function refreshSeatWeather() {
   // expects: { seat_status: "Available", weather: "Clear" }
-  const d = await getJSON("/seatweather");
+  const d = await getJSON(`${API_BASE}/seatweather`);
 
   const seatPill = document.getElementById("seatPill");
   const weatherPill = document.getElementById("weatherPill");
@@ -179,7 +296,7 @@ async function refreshSeatWeather() {
 async function runAnalysis() {
   // expects something like:
   // { avg_price: 320, cheapest_city: "Dallas", busiest_month: "July" }
-  const d = await getJSON("/analysis");
+  const d = await getJSON(`${API_BASE}/analysis`);
 
   const analysisJson = document.getElementById("analysisJson");
   if (analysisJson) analysisJson.textContent = JSON.stringify(d, null, 2);
@@ -193,14 +310,77 @@ async function runAnalysis() {
   if (kpiBusiestMonth) kpiBusiestMonth.textContent = d.busiest_month ?? "—";
 }
 
+async function saveSelectedFlight() {
+  const selectedFlight = getSelectedFlight();
+  if (!selectedFlight) {
+    alert("Please select a flight first.");
+    return;
+  }
+
+  const co2Text = document.getElementById("co2Big")?.textContent?.trim() || null;
+  const weatherText = document.getElementById("weatherPill")?.textContent?.trim() || null;
+
+  const payload = {
+    selectedFlight: {
+      ...selectedFlight,
+      emissions: co2Text,
+      weather: weatherText,
+    },
+  };
+
+  const saveUrl = "http://localhost:3000/api/saved-flights";
+  console.log("[FlightSight] Save request URL:", saveUrl);
+  console.log("[FlightSight] Save request payload:", payload);
+
+  try {
+    const response = await fetch(saveUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const rawBody = await response.text();
+    let parsedBody;
+    try {
+      parsedBody = rawBody ? JSON.parse(rawBody) : {};
+    } catch {
+      parsedBody = rawBody;
+    }
+
+    console.log("[FlightSight] Save response status:", response.status, response.statusText);
+    console.log("[FlightSight] Save response body:", parsedBody);
+
+    if (!response.ok) {
+      console.error("[FlightSight] Save flight response error:", {
+        url: saveUrl,
+        status: response.status,
+        statusText: response.statusText,
+        body: parsedBody,
+      });
+      alert("Failed to save flight.");
+      return;
+    }
+
+    alert("Flight saved successfully.");
+  } catch (err) {
+    console.error("[FlightSight] Save flight request failed:", {
+      url: saveUrl,
+      error: err,
+    });
+    alert("Error saving flight.");
+  }
+}
+
 // Button wiring (guarded so it won't crash if an element is missing)
 const btnEmissions = document.getElementById("btnEmissions");
 const btnSeatWeather = document.getElementById("btnSeatWeather");
 const btnAnalysis = document.getElementById("btnAnalysis");
+const btnSaveFlight = document.querySelector(".btn-primary");
 
 if (btnEmissions) btnEmissions.addEventListener("click", refreshEmissions);
 if (btnSeatWeather) btnSeatWeather.addEventListener("click", refreshSeatWeather);
 if (btnAnalysis) btnAnalysis.addEventListener("click", runAnalysis);
+if (btnSaveFlight) btnSaveFlight.addEventListener("click", saveSelectedFlight);
 
 // Auto-load a nice first view (optional)
 Promise.allSettled([refreshEmissions(), refreshSeatWeather(), runAnalysis()]);

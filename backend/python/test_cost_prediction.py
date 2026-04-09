@@ -1,16 +1,36 @@
 import pandas as pd
 import numpy as np
 import joblib
+from pathlib import Path
 
 # ================= CONFIG =================
-STATS_FILE = "backend/data/route_airline_stats.csv"
-MODEL_FILE = "backend/data/price_model.pkl"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+STATS_FILE = PROJECT_ROOT / "backend" / "data" / "route_airline_stats.csv"
+MODEL_CANDIDATES = [
+    PROJECT_ROOT / "backend" / "data" / "price_model2.pkl",
+    PROJECT_ROOT / "backend" / "data" / "price_model.pkl",
+]
 
-# ================= LOAD =================
-stats = pd.read_csv(STATS_FILE)
-model = joblib.load(MODEL_FILE)
+stats = None
+model = None
 
 DEBUG_ALL_STOPS = False
+
+
+def load_prediction_assets():
+    global stats, model
+
+    if stats is None:
+        stats = pd.read_csv(STATS_FILE)
+
+    if model is None:
+        model_path = next((p for p in MODEL_CANDIDATES if p.exists()), None)
+        if model_path is None:
+            raise FileNotFoundError(
+                "No model file found. Expected one of: "
+                + ", ".join(str(p) for p in MODEL_CANDIDATES)
+            )
+        model = joblib.load(model_path)
 
 # ================= FALLBACK + CONFIDENCE =================
 def get_stats(origin, dest, airline, stops):
@@ -58,6 +78,8 @@ def get_stats(origin, dest, airline, stops):
 
 # ================= MAIN =================
 def predict_prices(origin, dest, date_str):
+
+    load_prediction_assets()
 
     route = f"{origin}_{dest}"
     date = pd.to_datetime(date_str)
@@ -138,17 +160,23 @@ def predict_prices(origin, dest, date_str):
         }
 
         for _, row in airline_rows.iterrows():
+            travel_duration_min = int(round(row["travel_duration_min"]))
+            flight_duration_min = int(round(row["total_duration_min"]))
+
             result["options"].append({
                 "stops": int(row["num_stops"]),
                 "price": float(row["predicted_price"]),
                 "confidence": row["confidence"],
 
-                "travel_time": format_duration(row["travel_duration_min"]),
-                "flight_time": format_duration(row["total_duration_min"]),
+                "travel_time": format_duration(travel_duration_min),
+                "flight_time": format_duration(flight_duration_min),
                 "layover_time": format_duration(
-                    row["travel_duration_min"] - row["total_duration_min"]
+                    travel_duration_min - flight_duration_min
                 ) if row["num_stops"] > 0 else "Non-stop",
-                
+
+                "travel_duration_min": travel_duration_min,
+                "flight_duration_min": flight_duration_min,
+                "departure_hour": int(row["departure_hour"]),
                 "seat_availability": seat_label(row["avg_seats"])
             })
 

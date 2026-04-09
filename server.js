@@ -8,20 +8,28 @@ const path = require("path");
 const fsSync = require("fs");
 const fs = require("fs/promises");
 const readline = require("readline");
+const { execFile } = require("child_process");
+const { promisify } = require("util");
+const crypto = require("crypto");
 const { neon } = require("@neondatabase/serverless"); // Neon database connection
 const bcrypt = require("bcryptjs");           // For hashing passwords for privacy
 
+const execFileAsync = promisify(execFile);
+
 // Create Express app
 const app = express();
-app.use(express.static(path.join(__dirname, "frontend")));
-
-// Connect to Neon database using DATABASE_URL from .env file 
-const sql = neon(process.env.DATABASE_URL);
 app.use(cors());
-
-// Allow server to read JSON files for when frontend sends login email/password
 app.use(express.json());
+
+// Serve frontend/ so /html/calendar.html works
 app.use(express.static(path.join(__dirname, "frontend")));
+// Also serve frontend/html/ so /calendar.html works (no /html/ prefix needed)
+app.use(express.static(path.join(__dirname, "frontend", "html")));
+// Expose backend data files at /data/ so frontend fetch("/data/...") works
+app.use("/data", express.static(path.join(__dirname, "backend", "data")));
+
+// Connect to Neon database using DATABASE_URL from .env file
+const sql = neon(process.env.DATABASE_URL);
 
 // Default route. Sends login.html page
 app.get("/", (req, res) => {
@@ -163,6 +171,264 @@ app.post("/auth/login", async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
+function normalizeSavedFlight(input) {
+  if (!input || typeof input !== "object") return null;
+
+  const airline = String(input.airline || "").trim();
+  const origin = String(input.origin || "").trim().toUpperCase();
+  const destination = String(input.destination || "").trim().toUpperCase();
+  const departureDate = String(input.departureDate || "").trim();
+
+  if (!airline || !origin || !destination || !departureDate) {
+    return null;
+  }
+
+  const totalFare = Number(input.totalFare);
+  const stops = Number(input.stops);
+
+  return {
+    legId: input.legId || null,
+    airline,
+    origin,
+    destination,
+    departureDate,
+    departureTime: input.departureTime || null,
+    arrivalTime: input.arrivalTime || null,
+    totalFare: Number.isFinite(totalFare) ? totalFare : null,
+    travelDuration: input.travelDuration || null,
+    flightTime: input.flightTime || null,
+    layoverTime: input.layoverTime || null,
+    stops: Number.isFinite(stops) ? stops : null,
+    seatAvailability: input.seatAvailability || null,
+    confidence: input.confidence || null,
+    emissions: input.emissions || null,
+    weather: input.weather || null,
+    isPredicted: Boolean(input.isPredicted),
+  };
+}
+
+function buildSavedFlightHash(flight) {
+  return crypto
+    .createHash("sha256")
+    .update(
+      JSON.stringify([
+        flight.legId,
+        flight.airline,
+        flight.origin,
+        flight.destination,
+        flight.departureDate,
+        flight.departureTime,
+        flight.arrivalTime,
+        flight.totalFare,
+        flight.travelDuration,
+        flight.flightTime,
+        flight.layoverTime,
+        flight.stops,
+        flight.seatAvailability,
+        flight.confidence,
+        flight.emissions,
+        flight.weather,
+        flight.isPredicted,
+      ])
+    )
+    .digest("hex");
+}
+
+function mapSavedFlightRow(row) {
+  return {
+    id: Number(row.id),
+    createdAt: row.created_at instanceof Date ? row.created_at.toISOString() : new Date(row.created_at).toISOString(),
+    legId: row.leg_id,
+    airline: row.airline,
+    origin: row.origin,
+    destination: row.destination,
+    departureDate: String(row.departure_date).slice(0, 10),
+    departureTime: row.departure_time,
+    arrivalTime: row.arrival_time,
+    totalFare: row.total_fare == null ? null : Number(row.total_fare),
+    travelDuration: row.travel_duration,
+    flightTime: row.flight_time,
+    layoverTime: row.layover_time,
+    stops: row.stops == null ? null : Number(row.stops),
+    seatAvailability: row.seat_availability,
+    confidence: row.confidence,
+    emissions: row.emissions,
+    weather: row.weather,
+    isPredicted: Boolean(row.is_predicted),
+  };
+}
+
+async function insertSavedFlight(flight) {
+  const flightHash = buildSavedFlightHash(flight);
+  const inserted = await sql`
+    INSERT INTO saved_flights (
+      flight_hash,
+      leg_id,
+      airline,
+      origin,
+      destination,
+      departure_date,
+      departure_time,
+      arrival_time,
+      total_fare,
+      travel_duration,
+      flight_time,
+      layover_time,
+      stops,
+      seat_availability,
+      confidence,
+      emissions,
+      weather,
+      is_predicted
+    )
+    VALUES (
+      ${flightHash},
+      ${flight.legId},
+      ${flight.airline},
+      ${flight.origin},
+      ${flight.destination},
+      ${flight.departureDate},
+      ${flight.departureTime},
+      ${flight.arrivalTime},
+      ${flight.totalFare},
+      ${flight.travelDuration},
+      ${flight.flightTime},
+      ${flight.layoverTime},
+      ${flight.stops},
+      ${flight.seatAvailability},
+      ${flight.confidence},
+      ${flight.emissions},
+      ${flight.weather},
+      ${flight.isPredicted}
+    )
+    ON CONFLICT (flight_hash) DO NOTHING
+    RETURNING
+      id,
+      created_at,
+      leg_id,
+      airline,
+      origin,
+      destination,
+      departure_date,
+      departure_time,
+      arrival_time,
+      total_fare,
+      travel_duration,
+      flight_time,
+      layover_time,
+      stops,
+      seat_availability,
+      confidence,
+      emissions,
+      weather,
+      is_predicted;
+  `;
+
+  if (inserted.length > 0) {
+    return { savedFlight: mapSavedFlightRow(inserted[0]), duplicate: false };
+  }
+
+  const existing = await sql`
+    SELECT
+      id,
+      created_at,
+      leg_id,
+      airline,
+      origin,
+      destination,
+      departure_date,
+      departure_time,
+      arrival_time,
+      total_fare,
+      travel_duration,
+      flight_time,
+      layover_time,
+      stops,
+      seat_availability,
+      confidence,
+      emissions,
+      weather,
+      is_predicted
+    FROM saved_flights
+    WHERE flight_hash = ${flightHash}
+    LIMIT 1;
+  `;
+
+  return {
+    savedFlight: existing.length > 0 ? mapSavedFlightRow(existing[0]) : null,
+    duplicate: true,
+  };
+}
+
+async function listSavedFlights() {
+  const rows = await sql`
+    SELECT
+      id,
+      created_at,
+      leg_id,
+      airline,
+      origin,
+      destination,
+      departure_date,
+      departure_time,
+      arrival_time,
+      total_fare,
+      travel_duration,
+      flight_time,
+      layover_time,
+      stops,
+      seat_availability,
+      confidence,
+      emissions,
+      weather,
+      is_predicted
+    FROM saved_flights
+    ORDER BY created_at DESC, id DESC;
+  `;
+
+  return rows.map(mapSavedFlightRow);
+}
+
+async function getSavedFlightById(id) {
+  const rows = await sql`
+    SELECT
+      id,
+      created_at,
+      leg_id,
+      airline,
+      origin,
+      destination,
+      departure_date,
+      departure_time,
+      arrival_time,
+      total_fare,
+      travel_duration,
+      flight_time,
+      layover_time,
+      stops,
+      seat_availability,
+      confidence,
+      emissions,
+      weather,
+      is_predicted
+    FROM saved_flights
+    WHERE id = ${id}
+    LIMIT 1;
+  `;
+
+  return rows.length > 0 ? mapSavedFlightRow(rows[0]) : null;
+}
+
+async function deleteSavedFlightById(id) {
+  const deleted = await sql`
+    DELETE FROM saved_flights
+    WHERE id = ${id}
+    RETURNING id;
+  `;
+
+  return deleted.length > 0;
+}
+
 
 //ZARYA'S FEATURES
 
@@ -170,6 +436,7 @@ const PORT = process.env.PORT || 3000;
 app.get("/emissions", async (req, res) => {
   const origin = (req.query.origin || "").toString().trim().toUpperCase();
   const destination = (req.query.destination || "").toString().trim().toUpperCase();
+  const requestedAirline = (req.query.airline || "").toString().trim().toLowerCase();
 
   const fallbackCo2 = Math.floor(Math.random() * (320 - 180 + 1)) + 180;
   let co2 = fallbackCo2;
@@ -186,6 +453,9 @@ app.get("/emissions", async (req, res) => {
     let airlineIdx = -1;
     let totalDistanceIdx = -1;
     let segmentDistanceIdx = -1;
+
+    let firstRouteMatch = null;
+    let preferredMatch = null;
 
     for await (const line of rl) {
       if (!line || !line.trim()) {
@@ -214,20 +484,38 @@ app.get("/emissions", async (req, res) => {
         continue;
       }
 
-      const totalDistance = Number(columns[totalDistanceIdx]);
-      const segmentsDistance = Number(columns[segmentDistanceIdx]);
-      let distance = Number.isFinite(totalDistance) && totalDistance > 0
+      if (!firstRouteMatch) {
+        firstRouteMatch = columns;
+      }
+
+      const rowAirline = (columns[airlineIdx] || "").toString().trim().toLowerCase();
+      if (requestedAirline && rowAirline && rowAirline.includes(requestedAirline)) {
+        preferredMatch = columns;
+        break;
+      }
+    }
+
+    const selectedColumns = preferredMatch || firstRouteMatch;
+    if (selectedColumns) {
+      const totalDistance = Number(selectedColumns[totalDistanceIdx]);
+      const segmentsDistanceRaw = (selectedColumns[segmentDistanceIdx] || "").toString();
+      const segmentsDistance = segmentsDistanceRaw
+        .split("||")
+        .map((value) => Number(value))
+        .filter((value) => Number.isFinite(value) && value > 0)
+        .reduce((sum, value) => sum + value, 0);
+
+      const distance = Number.isFinite(totalDistance) && totalDistance > 0
         ? totalDistance
         : segmentsDistance;
 
-//Convert miles → km =
+      // Convert miles to km before applying kg CO2 per km factor.
       const distanceKm = distance * 1.609;
       if (Number.isFinite(distanceKm) && distanceKm > 0) {
         co2 = Math.round(distanceKm * 0.09);
       }
 
-      airline = (columns[airlineIdx] || "Unknown").trim() || "Unknown";
-      break;
+      airline = (selectedColumns[airlineIdx] || "Unknown").trim() || "Unknown";
     }
 
     console.log("Emissions calculated for", origin || "N/A", "->", destination || "N/A", ":", co2, "kg");
@@ -236,6 +524,257 @@ app.get("/emissions", async (req, res) => {
     console.error("GET /emissions error:", err);
     console.log("Emissions calculated for", origin || "N/A", "->", destination || "N/A", ":", co2, "kg");
     return res.json({ co2, airline });
+  }
+});
+
+// Flight search from CSV for route/date selection
+app.get("/api/flights/search", async (req, res) => {
+  const origin = (req.query.origin || "").toString().trim().toUpperCase();
+  const destination = (req.query.destination || "").toString().trim().toUpperCase();
+  const departureDate = (req.query.departureDate || "").toString().trim();
+  const limit = Math.min(Number(req.query.limit) || 25, 100);
+
+  if (!origin || !destination || !departureDate) {
+    return res.status(400).json({
+      error: "origin, destination, and departureDate are required (YYYY-MM-DD)."
+    });
+  }
+
+  const csvPath = path.join(__dirname, "backend", "data", "flights_sample.csv");
+
+  function firstSegment(value) {
+    return String(value || "").split("||")[0].trim();
+  }
+
+  function lastSegment(value) {
+    const segments = String(value || "")
+      .split("||")
+      .map((v) => v.trim())
+      .filter(Boolean);
+    return segments.length ? segments[segments.length - 1] : "";
+  }
+
+  try {
+    const stream = fsSync.createReadStream(csvPath, { encoding: "utf-8" });
+    const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
+
+    let headers = null;
+    let startingAirportIdx = -1;
+    let destinationAirportIdx = -1;
+    let flightDateIdx = -1;
+    let legIdIdx = -1;
+    let airlineIdx = -1;
+    let totalFareIdx = -1;
+    let travelDurationIdx = -1;
+    let isNonStopIdx = -1;
+    let seatsRemainingIdx = -1;
+    let departureRawIdx = -1;
+    let arrivalRawIdx = -1;
+
+    const matches = [];
+
+    for await (const line of rl) {
+      if (!line || !line.trim()) {
+        continue;
+      }
+
+      if (!headers) {
+        headers = splitCsvLine(line).map((h) => h.trim());
+        startingAirportIdx = headers.indexOf("startingAirport");
+        destinationAirportIdx = headers.indexOf("destinationAirport");
+        flightDateIdx = headers.indexOf("flightDate");
+        legIdIdx = headers.indexOf("legId");
+        airlineIdx = headers.indexOf("segmentsAirlineName");
+        totalFareIdx = headers.indexOf("totalFare");
+        travelDurationIdx = headers.indexOf("travelDuration");
+        isNonStopIdx = headers.indexOf("isNonStop");
+        seatsRemainingIdx = headers.indexOf("seatsRemaining");
+        departureRawIdx = headers.indexOf("segmentsDepartureTimeRaw");
+        arrivalRawIdx = headers.indexOf("segmentsArrivalTimeRaw");
+        continue;
+      }
+
+      const columns = splitCsvLine(line);
+
+      const rowOrigin = (columns[startingAirportIdx] || "").trim().toUpperCase();
+      const rowDestination = (columns[destinationAirportIdx] || "").trim().toUpperCase();
+      const rowDate = (columns[flightDateIdx] || "").trim().slice(0, 10);
+
+      if (rowOrigin !== origin || rowDestination !== destination || rowDate !== departureDate) {
+        continue;
+      }
+
+      const totalFare = Number(columns[totalFareIdx]);
+      const seatsRemaining = Number(columns[seatsRemainingIdx]);
+      const isNonStopRaw = String(columns[isNonStopIdx] || "").trim().toLowerCase();
+
+      matches.push({
+        legId: (columns[legIdIdx] || "").trim() || `${rowOrigin}-${rowDestination}-${matches.length + 1}`,
+        origin: rowOrigin,
+        destination: rowDestination,
+        departureDate: rowDate,
+        airline: firstSegment(columns[airlineIdx]) || "Unknown",
+        totalFare: Number.isFinite(totalFare) ? totalFare : null,
+        travelDuration: (columns[travelDurationIdx] || "").trim() || null,
+        isNonStop: isNonStopRaw === "true",
+        seatsRemaining: Number.isFinite(seatsRemaining) ? seatsRemaining : null,
+        departureTime: firstSegment(columns[departureRawIdx]) || null,
+        arrivalTime: lastSegment(columns[arrivalRawIdx]) || null
+      });
+
+      if (matches.length >= limit) {
+        break;
+      }
+    }
+
+    res.json({
+      origin,
+      destination,
+      departureDate,
+      count: matches.length,
+      flights: matches
+    });
+  } catch (err) {
+    console.error("GET /api/flights/search error:", err);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+// Flight search using Python prediction pipeline for current/future dates
+app.get("/api/flights/predict", async (req, res) => {
+  const origin = (req.query.origin || "").toString().trim().toUpperCase();
+  const destination = (req.query.destination || "").toString().trim().toUpperCase();
+  const departureDate = (req.query.departureDate || "").toString().trim();
+
+  if (!origin || !destination || !departureDate) {
+    return res.status(400).json({
+      error: "origin, destination, and departureDate are required (YYYY-MM-DD)."
+    });
+  }
+
+  const pythonScript = path.join(__dirname, "backend", "python", "predict_flights_cli.py");
+  const pythonCommand = process.env.PYTHON_BIN || "python";
+
+  try {
+    const { stdout, stderr } = await execFileAsync(
+      pythonCommand,
+      [
+        pythonScript,
+        "--origin",
+        origin,
+        "--destination",
+        destination,
+        "--departureDate",
+        departureDate
+      ],
+      {
+        cwd: __dirname,
+        maxBuffer: 1024 * 1024 * 10
+      }
+    );
+
+    if (stderr && stderr.trim()) {
+      console.warn("/api/flights/predict python stderr:", stderr.trim());
+    }
+
+    const payload = JSON.parse(stdout || "{}");
+
+    if (payload.error) {
+      return res.status(500).json({ error: payload.error });
+    }
+
+    res.json(payload);
+  } catch (err) {
+    console.error("GET /api/flights/predict error:", err);
+
+    const stderr = err?.stderr ? String(err.stderr) : "";
+    if (stderr) {
+      try {
+        const parsed = JSON.parse(stderr);
+        if (parsed?.error) {
+          return res.status(500).json({ error: parsed.error });
+        }
+      } catch {
+        // fall through
+      }
+    }
+
+    res.status(500).json({
+      error: "Prediction pipeline failed. Ensure model/stats files exist and Python dependencies are installed."
+    });
+  }
+});
+
+// Saved Flights API
+app.post("/api/saved-flights", async (req, res) => {
+  try {
+    const payload = req.body?.selectedFlight || req.body;
+    const normalized = normalizeSavedFlight(payload);
+
+    if (!normalized) {
+      return res.status(400).json({
+        error: "Invalid saved flight payload. Required fields: airline, origin, destination, departureDate."
+      });
+    }
+
+    const { savedFlight, duplicate } = await insertSavedFlight(normalized);
+
+    if (!savedFlight) {
+      return res.status(500).json({ error: "Failed to save flight." });
+    }
+
+    res.status(duplicate ? 200 : 201).json({ success: true, savedFlight });
+  } catch (err) {
+    console.error("POST /api/saved-flights error:", err);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+app.get("/api/saved-flights", async (req, res) => {
+  try {
+    const flights = await listSavedFlights();
+    res.json({ flights });
+  } catch (err) {
+    console.error("GET /api/saved-flights error:", err);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+app.get("/api/saved-flights/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) {
+    return res.status(400).json({ error: "Invalid saved flight id." });
+  }
+
+  try {
+    const savedFlight = await getSavedFlightById(id);
+    if (!savedFlight) {
+      return res.status(404).json({ error: "Saved flight not found." });
+    }
+
+    res.json({ savedFlight });
+  } catch (err) {
+    console.error("GET /api/saved-flights/:id error:", err);
+    res.status(500).json({ error: "Internal server error." });
+  }
+});
+
+app.delete("/api/saved-flights/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) {
+    return res.status(400).json({ error: "Invalid saved flight id." });
+  }
+
+  try {
+    const deleted = await deleteSavedFlightById(id);
+    if (!deleted) {
+      return res.status(404).json({ error: "Saved flight not found." });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("DELETE /api/saved-flights/:id error:", err);
+    res.status(500).json({ error: "Internal server error." });
   }
 });
 

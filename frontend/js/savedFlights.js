@@ -1,132 +1,161 @@
 document.addEventListener("DOMContentLoaded", async () => {
-
+  const API_BASE = "http://localhost:3000";
   const container = document.querySelector("main.container");
 
-  // Clear static content
+  if (!container) return;
   container.innerHTML = "";
 
-  try {
-    // ================= FETCH BOOKINGS =================
-    const res = await fetch("http://localhost:3000/bookings");
-    const flights = await res.json();
+  function renderEmptyState() {
+    container.innerHTML = `
+      <div class="flight-card" style="text-align:center; padding: 24px;">
+        <h3>No saved flights yet</h3>
+        <p>Save a flight from the Booking page to see it here.</p>
+      </div>
+    `;
+  }
 
-    // ================= EMPTY STATE =================
-    if (!flights || flights.length === 0) {
-      container.innerHTML = "<p>No saved flights yet.</p>";
+  function renderErrorState() {
+    container.innerHTML = `
+      <div class="flight-card" style="text-align:center; padding: 24px;">
+        <h3>Could not load saved flights</h3>
+        <p>Please try again.</p>
+      </div>
+    `;
+  }
+
+  function stopsLabel(stops) {
+    if (typeof stops !== "number") return "N/A";
+    return stops === 0 ? "Nonstop" : `${stops} stop(s)`;
+  }
+
+  function renderFlights(flights) {
+    if (!Array.isArray(flights) || flights.length === 0) {
+      renderEmptyState();
       return;
     }
 
-    // ================= RENDER CARDS =================
-    flights.forEach(flight => {
+    container.innerHTML = "";
 
+    flights.forEach((flight) => {
       const card = document.createElement("div");
       card.className = "flight-card";
 
       card.innerHTML = `
         <div class="flight-top">
           <div>
-            <div class="airline-name">${flight.airline}</div>
-            <div>${flight.departure_code} → ${flight.arrival_code}</div>
+            <div class="airline-name">${flight.airline || "Unknown Airline"}</div>
+            <div>${flight.origin || "?"} → ${flight.destination || "?"}</div>
           </div>
-          <div class="saved-date">
-            Saved ${new Date(flight.created_at).toLocaleDateString()}
-          </div>
+          <div class="saved-date">Saved ${new Date(flight.createdAt).toLocaleDateString()}</div>
         </div>
 
         <div class="route">
           <div>
-            <div class="city">${flight.departure_code}</div>
-            <div class="time">${flight.departure_time}</div>
+            <div class="city">${flight.origin || "?"}</div>
+            <div class="time">${flight.departureTime || "N/A"}</div>
           </div>
 
-          <div class="duration">${flight.duration}</div>
+          <div class="duration">${flight.travelDuration || "N/A"}</div>
 
           <div>
-            <div class="city">${flight.arrival_code}</div>
-            <div class="time">${flight.arrival_time}</div>
+            <div class="city">${flight.destination || "?"}</div>
+            <div class="time">${flight.arrivalTime || "N/A"}</div>
           </div>
         </div>
 
         <div class="info-grid">
-
-          <div class="info-box safety">
-            <strong>Safety Rating</strong><br />
-            ${flight.safety}%
+          <div class="info-box seat">
+            <strong>Stops</strong><br />
+            ${stopsLabel(flight.stops)}
           </div>
 
           <div class="info-box environmental">
-            <strong>CO₂</strong><br />
-            ${flight.co2}
+            <strong>Seat Availability</strong><br />
+            ${flight.seatAvailability || "Unknown"}
           </div>
 
           <div class="info-box weather">
-            <strong>Weather</strong><br />
-            D: ${flight.dep_condition}, ${flight.dep_temp}<br />
-            A: ${flight.arr_condition}, ${flight.arr_temp}
+            <strong>Confidence</strong><br />
+            ${flight.confidence || "Unknown"}
           </div>
 
-          <div class="info-box seat">
-            <strong>Seat Availability</strong><br />
-            ${flight.seat_fill}% - ${
-              flight.seat_fill > 80 ? "High" :
-              flight.seat_fill > 50 ? "Medium" : "Low"
-            }
+          <div class="info-box safety">
+            <strong>CO₂ / Weather</strong><br />
+            ${flight.emissions || "N/A"}<br />
+            ${flight.weather || "N/A"}
           </div>
-
         </div>
 
         <div class="actions">
           <div class="price">
-            ${flight.total_price || "$---"}
+            ${typeof flight.totalFare === "number" ? `$${flight.totalFare.toFixed(2)}` : "$---"}
             <span style="font-size: 12px; color: #6b7280">per person</span>
           </div>
 
-          <button class="btn view-btn">View</button>
-          <button class="btn delete delete-btn" data-id="${flight.id}">
-            Delete
-          </button>
+          <button class="btn view-btn" data-id="${flight.id}">View</button>
+          <button class="btn delete delete-btn" data-id="${flight.id}">Delete</button>
         </div>
       `;
 
       container.appendChild(card);
     });
 
-    // ================= DELETE HANDLER =================
-    document.querySelectorAll(".delete-btn").forEach(btn => {
+    container.querySelectorAll(".view-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = Number(btn.dataset.id);
+        const flight = flights.find((f) => f.id === id);
+        if (!flight) return;
 
-      btn.addEventListener("click", async () => {
-
-        const id = btn.dataset.id;
-
-        const confirmDelete = confirm("Are you sure you want to delete this booking?");
-        if (!confirmDelete) return;
-
-        try {
-          const res = await fetch(`http://localhost:3000/bookings/${id}`, {
-            method: "DELETE"
-          });
-
-          const data = await res.json();
-
-          if (data.success) {
-            // Remove from UI
-            btn.closest(".flight-card").remove();
-          } else {
-            alert("Failed to delete booking.");
-          }
-
-        } catch (err) {
-          console.error(err);
-          alert("Error deleting booking.");
-        }
-
+        localStorage.setItem("selectedFlight", JSON.stringify(flight));
+        window.location.href = "booking.html";
       });
-
     });
 
-  } catch (err) {
-    console.error(err);
-    container.innerHTML = "<p>Error loading saved flights.</p>";
+    container.querySelectorAll(".delete-btn").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = Number(btn.dataset.id);
+        if (!Number.isFinite(id)) return;
+
+        const ok = confirm("Remove this saved flight?");
+        if (!ok) return;
+
+        try {
+          const url = `${API_BASE}/api/saved-flights/${id}`;
+          const response = await fetch(url, { method: "DELETE" });
+
+          if (!response.ok) {
+            const text = await response.text();
+            console.error("Delete failed:", response.status, text);
+            alert("Failed to delete saved flight.");
+            return;
+          }
+
+          btn.closest(".flight-card")?.remove();
+          if (!container.querySelector(".flight-card")) {
+            renderEmptyState();
+          }
+        } catch (err) {
+          console.error("Delete request failed:", err);
+          alert("Error deleting saved flight.");
+        }
+      });
+    });
   }
 
+  try {
+    const url = `${API_BASE}/api/saved-flights`;
+    const response = await fetch(url);
+    if (!response.ok) {
+      const text = await response.text();
+      console.error("Load saved flights failed:", response.status, text);
+      renderErrorState();
+      return;
+    }
+
+    const payload = await response.json();
+    renderFlights(payload.flights || []);
+  } catch (err) {
+    console.error("Load saved flights request failed:", err);
+    renderErrorState();
+  }
 });
