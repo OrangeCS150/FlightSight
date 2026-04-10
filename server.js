@@ -1,14 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
 // Load environment variables from .env file (like DATABASE_URL)
 require("dotenv").config();
 
@@ -36,17 +25,13 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "frontend")));
 // Also serve frontend/html/ so /calendar.html works (no /html/ prefix needed)
 app.use(express.static(path.join(__dirname, "frontend", "html")));
+// Serve frontend/html/ at /html/ so /html/flightRoute.html and /html/smartComparisons.html work
+app.use("/html", express.static(path.join(__dirname, "frontend", "html")));
 // Expose backend data files at /data/ so frontend fetch("/data/...") works
 app.use("/data", express.static(path.join(__dirname, "backend", "data")));
 
 // Connect to Neon database using DATABASE_URL from .env file
-const sql = process.env.DATABASE_URL
-  ? neon(process.env.DATABASE_URL)
-  : null;
-
-if (!sql) {
-  console.warn('DATABASE_URL is missing. Starting without Neon DB connection.');
-}
+const sql = neon(process.env.DATABASE_URL);
 
 // Default route. Sends login.html page
 app.get("/", (req, res) => {
@@ -1051,5 +1036,3 @@ app.get("/api/demand-heatmap", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
-
-

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Comparisons - Flight Sight</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+  <header class="bg-primary text-white py-3">
+    <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between">
+      <div>
+        <h1 class="h3 mb-2 mb-md-0">Smart Comparisons</h1>
+        <p class="mb-0 text-light">Compare saved flights and find the best airline choice.</p>
+      </div>
+      <div>
+        <a href="/" class="btn btn-light btn-sm me-2 mb-2 mb-md-0">Home</a>
+        <a href="/html/flightRoute.html" class="btn btn-light btn-sm me-2 mb-2 mb-md-0">Flight Route</a>
+        <a href="/html/savedFlights.html" class="btn btn-light btn-sm mb-2 mb-md-0">Saved Flights</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container my-4">
+    <section id="summary" class="mb-4">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="h5">Smart Comparisons</h2>
+          <p class="mb-0">
+            Compare flights saved from the same trip and surface the best overall airline using price,
+            duration, stops, emissions, and seat availability.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div id="status" class="mb-4"></div>
+
+    <section id="groups" class="row"></section>
+
+    <section id="comparison" class="mt-4"></section>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const statusEl = document.getElementById("status");
+      const groupsEl = document.getElementById("groups");
+      const comparisonEl = document.getElementById("comparison");
+
+      const demoGroups = [
+        {
+          tripKey: "ATL-BOS-2023-10-01",
+          origin: "ATL",
+          destination: "BOS",
+          departureDate: "2023-10-01",
+          airlines: ["Delta", "American"],
+          flights: [
+            { id: 1, airline: "Delta", price: 300, duration: 180, stops: 0, emissions: 140, seatAvailability: 80 },
+            { id: 2, airline: "American", price: 350, duration: 190, stops: 0, emissions: 170, seatAvailability: 60 }
+          ]
+        }
+      ];
+
+      function setStatus(message, variant = "info") {
+        statusEl.innerHTML = '<div class="alert alert-' + variant + '">' + message + "</div>";
+      }
+
+      function clearStatus() {
+        statusEl.innerHTML = "";
+      }
+
+      function normalizeValue(value, min, max, lowerBetter) {
+        if (value == null || Number.isNaN(value)) return lowerBetter ? 0 : 1;
+        if (min === max) return 1;
+        const normalized = (value - min) / (max - min);
+        return lowerBetter ? 1 - normalized : normalized;
+      }
+
+      function scoreFlights(flights) {
+        const weights = {
+          price: { weight: 0.25, lowerBetter: true },
+          duration: { weight: 0.25, lowerBetter: true },
+          stops: { weight: 0.20, lowerBetter: true },
+          emissions: { weight: 0.20, lowerBetter: true },
+          seatAvailability: { weight: 0.10, lowerBetter: false }
+        };
+
+        const metrics = {};
+        Object.keys(weights).forEach((key) => {
+          const values = flights.map((f) => Number(f[key] ?? (key === "seatAvailability" ? 50 : 100)));
+          metrics[key] = {
+            min: Math.min(...values),
+            max: Math.max(...values)
+          };
+        });
+
+        const scored = flights.map((flight) => {
+          let totalScore = 0;
+          const contributions = [];
+
+          Object.entries(weights).forEach(([key, meta]) => {
+            const value = Number(flight[key] ?? (key === "seatAvailability" ? 50 : 100));
+            const normalized = normalizeValue(value, metrics[key].min, metrics[key].max, meta.lowerBetter);
+            const contribution = normalized * meta.weight;
+            totalScore += contribution;
+            contributions.push({ factor: key, normalized, contribution });
+          });
+
+          return {
+            ...flight,
+            totalScore,
+            contributions
+          };
+        });
+
+        scored.sort((a, b) => b.totalScore - a.totalScore);
+        return scored;
+      }
+
+      function renderGroups(groups, usingDemo = false) {
+        groupsEl.innerHTML = "";
+        comparisonEl.innerHTML = "";
+        clearStatus();
+
+        if (!groups.length) {
+          setStatus("No comparable saved flights found. Showing demo data for verification.", "warning");
+          return renderDemo();
+        }
+
+        if (usingDemo) {
+          setStatus("Using demo comparison data so Smart Comparisons is testable.", "info");
+        }
+
+        groups.forEach((group) => {
+          const card = document.createElement("div");
+          card.className = "col-md-6 mb-4";
+          card.innerHTML = `
+            <div class="card h-100">
+              <div class="card-body">
+                <h3 class="h5">${group.origin} → ${group.destination}</h3>
+                <p class="mb-2">Date: ${group.departureDate}</p>
+                <p class="mb-2">Airlines: ${group.airlines.join(", ")}</p>
+                <button class="btn btn-primary btn-sm">Compare</button>
+              </div>
+            </div>
+          `;
+          card.querySelector("button").addEventListener("click", () => {
+            renderComparison(group.flights, usingDemo);
+          });
+          groupsEl.appendChild(card);
+        });
+      }
+
+      function renderComparison(flights, usingDemo = false) {
+        const scored = scoreFlights(flights);
+        const best = scored[0];
+
+        const explanation = best.contributions
+          .sort((a, b) => b.contribution - a.contribution)
+          .slice(0, 2)
+          .map((item) => item.factor === "seatAvailability" ? "seat availability" : item.factor)
+          .join(" and ");
+
+        comparisonEl.innerHTML = `
+          <div class="mb-4">
+            <button id="backButton" class="btn btn-light btn-sm mb-3">← Back to trips</button>
+            <div class="card border-success">
+              <div class="card-body">
+                <h3 class="h5 mb-2">Best overall airline: ${best.airline}</h3>
+                <p class="mb-1">Score: ${best.totalScore.toFixed(3)}</p>
+                <p class="mb-0">Best because ${explanation}.</p>
+                ${usingDemo ? '<p class="mt-2 mb-0"><strong>Demo mode:</strong> real saved flights were not available.</p>' : ""}
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            ${scored
+              .map(
+                (flight) => `
+              <div class="col-md-6 mb-4">
+                <div class="card ${flight.airline === best.airline ? "border-success" : ""}">
+                  <div class="card-body">
+                    <h4 class="h5">${flight.airline}</h4>
+                    <p class="mb-1">Price: $${flight.price}</p>
+                    <p class="mb-1">Duration: ${flight.duration} min</p>
+                    <p class="mb-1">Stops: ${flight.stops}</p>
+                    <p class="mb-1">Emissions: ${flight.emissions}</p>
+                    <p class="mb-1">Seats: ${flight.seatAvailability}</p>
+                    <p class="mb-0"><strong>Score:</strong> ${flight.totalScore.toFixed(3)}</p>
+                  </div>
+                </div>
+              </div>`
+              )
+              .join("")}
+          </div>
+        `;
+        document.getElementById("backButton").addEventListener("click", () => {
+          comparisonEl.innerHTML = "";
+          groupsEl.innerHTML = "";
+          loadFlights();
+        });
+      }
+
+      function renderDemo() {
+        renderGroups(demoGroups, true);
+      }
+
+      function buildGroups(flights) {
+        const map = new Map();
+        flights.forEach((flight) => {
+          const key = [flight.origin, flight.destination, flight.departureDate].join("|");
+          const entry = map.get(key) || { origin: flight.origin, destination: flight.destination, departureDate: flight.departureDate, airlines: new Set(), flights: [] };
+          entry.airlines.add(flight.airline);
+          entry.flights.push({
+            id: flight.id,
+            airline: flight.airline,
+            price: Number(flight.totalFare ?? 0),
+            duration: Number(flight.travelDuration ?? 0),
+            stops: Number(flight.stops ?? 0),
+            emissions: Number(flight.emissions ?? (Number(flight.totalFare) * 0.5 || 150)),
+            seatAvailability: Number(flight.seatAvailability ?? 50),
+          });
+          map.set(key, entry);
+        });
+
+        return Array.from(map.values())
+          .filter((entry) => entry.flights.length >= 2 && entry.airlines.size >= 2)
+          .map((entry) => ({
+            ...entry,
+            airlines: Array.from(entry.airlines),
+          }));
+      }
+
+      async function loadFlights() {
+        setStatus("Loading saved flights...");
+        groupsEl.innerHTML = "";
+        comparisonEl.innerHTML = "";
+
+        try {
+          const response = await fetch("/api/saved-flights");
+          const payload = await response.json();
+
+          if (!payload?.flights) {
+            setStatus("Saved flights unavailable. Showing demo data.", "warning");
+            return renderDemo();
+          }
+
+          const groups = buildGroups(payload.flights);
+          if (groups.length === 0) {
+            setStatus("No comparable saved flights found. Showing demo data.", "warning");
+            return renderDemo();
+          }
+
+          clearStatus();
+          renderGroups(groups, false);
+        } catch (err) {
+          setStatus("Could not load saved flights. Showing demo data.", "warning");
+          renderDemo();
+        }
+      }
+
+      loadFlights();
+    });
+  </script>
+</body>
+</html>
