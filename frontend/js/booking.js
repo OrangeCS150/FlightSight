@@ -55,52 +55,72 @@ function getSelectedFlight() {
 }
 
 /**
- * Read route from localStorage (set in flightRoute.js):
- * localStorage.setItem("origin", JSON.stringify({code, name}))
- * localStorage.setItem("destination", JSON.stringify({code, name}))
+ * Read selected flight from localStorage (set in flightResults.js):
  */
-function getStoredRoute() {
-  const originRaw = localStorage.getItem("origin");
-  const destinationRaw = localStorage.getItem("destination");
-
-  if (!originRaw || !destinationRaw) return null;
+function getStoredFlight() {
+  const flightRaw = localStorage.getItem("selectedFlight");
+  if (!flightRaw) return null;
 
   try {
-    const parsedOrigin = JSON.parse(originRaw);
-    const parsedDestination = JSON.parse(destinationRaw);
-
-    const origin =
-      typeof parsedOrigin === "string"
-        ? { code: parsedOrigin, name: parsedOrigin }
-        : parsedOrigin;
-    const destination =
-      typeof parsedDestination === "string"
-        ? { code: parsedDestination, name: parsedDestination }
-        : parsedDestination;
-
-    // Basic validation
-    if (!origin || !destination) return null;
-    if (!origin.code || !origin.name) return null;
-    if (!destination.code || !destination.name) return null;
-
-    return { origin, destination };
+    return JSON.parse(flightRaw);
   } catch {
-    if (originRaw && destinationRaw) {
-      return {
-        origin: { code: originRaw, name: originRaw },
-        destination: { code: destinationRaw, name: destinationRaw },
-      };
-    }
     return null;
   }
 }
 
 /**
- * Try to inject route into the Booking page UI.
+ * Read dates from localStorage (set in calendar.js):
+ */
+function getStoredDates() {
+  const depart = localStorage.getItem("departureDate");
+  const ret = localStorage.getItem("returnDate");
+  return { departure: depart, return: ret };
+}
+
+/**
+ * Try to inject route, flight, and dates into the Booking page UI.
  * This is defensive: it only updates elements if they exist.
  */
-function applyRouteToBookingUI(route) {
+function applyBookingDataToUI(route, flight, dates) {
   const { origin, destination } = route;
+
+  // Update header flight info
+  const flightInfo = document.querySelector(".flight-info");
+  if (flightInfo && flight) {
+    flightInfo.textContent = `${flight.airline} • ${flight.flightNumber}`;
+  }
+
+  // Update flight summary
+  if (flight) {
+    // Departure
+    const departureValue = document.querySelector(".flight-detail .detail-value");
+    const departureSub = document.querySelector(".flight-detail .detail-sub");
+    if (departureValue) departureValue.textContent = flight.departure.time;
+    if (departureSub) departureSub.textContent = flight.departure.city;
+
+    // Duration
+    const durationValue = document.querySelector(".flight-detail.center .detail-value");
+    const durationSub = document.querySelector(".flight-detail.center .detail-sub");
+    if (durationValue) durationValue.textContent = flight.duration;
+    if (durationSub) durationSub.textContent = flight.stops === 0 ? 'Nonstop' : `${flight.stops} stop${flight.stops > 1 ? 's' : ''}`;
+
+    // Arrival
+    const arrivalValue = document.querySelector(".flight-detail.right .detail-value");
+    const arrivalSub = document.querySelector(".flight-detail.right .detail-sub");
+    if (arrivalValue) arrivalValue.textContent = flight.arrival.time;
+    if (arrivalSub) arrivalSub.textContent = flight.arrival.city;
+
+    // Aircraft
+    const aircraftValue = document.querySelector('.info-row .info-value');
+    if (aircraftValue) aircraftValue.textContent = flight.aircraft;
+
+    // Travel Date
+    const dateValue = document.querySelector('.info-row:last-child .info-value');
+    if (dateValue && dates.departure) {
+      const date = new Date(dates.departure);
+      dateValue.textContent = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+  }
 
   // If you have a route label somewhere (recommended)
   const routeLabel =
@@ -160,6 +180,8 @@ function applyRouteToBookingUI(route) {
 
   // You can also attach to window for debugging/other scripts
   window.flightSightRoute = route;
+  window.flightSightFlight = flight;
+  window.flightSightDates = dates;
 }
 
 function applySelectedFlightToBookingUI(flight) {
@@ -202,6 +224,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const route = getStoredRoute();
+  const flight = getStoredFlight();
+  const dates = getStoredDates();
 
   // If someone enters Booking without selecting a route first:
   if (!route) {
@@ -210,7 +234,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  applyRouteToBookingUI(route);
+  // If someone enters Booking without selecting a flight:
+  if (!flight) {
+    alert("Please select a flight first.");
+    window.location.href = "flightResults.html";
+    return;
+  }
+
+  applyBookingDataToUI(route, flight, dates);
 });
 
 /* ================= EXISTING BOOKING PAGE LOGIC (UNCHANGED) ================= */

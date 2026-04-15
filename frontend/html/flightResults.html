@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Results - Flight Sight</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/flightResults.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-container">
+            <div class="header-content">
+                <div class="header-left">
+                    <button class="back-button" aria-label="Go back" onclick="window.location.href='calendar.html'">
+                        <svg class="icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    <div>
+                        <h1>Flight Results</h1>
+                        <p id="routeLabel">Loading route...</p>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="brand-button">
+                        <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                        Flight Sight
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <div class="results-layout">
+            <!-- Filters Sidebar -->
+            <div class="filters-sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Filters</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="filter-group">
+                            <label class="filter-label">Price Range</label>
+                            <div class="price-inputs">
+                                <input type="number" id="minPrice" placeholder="Min" min="0">
+                                <span>-</span>
+                                <input type="number" id="maxPrice" placeholder="Max" min="0">
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Stops</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" value="0" checked> Nonstop</label>
+                                <label><input type="checkbox" value="1" checked> 1 Stop</label>
+                                <label><input type="checkbox" value="2" checked> 2+ Stops</label>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Airlines</label>
+                            <div class="checkbox-group" id="airlineFilters">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                        <button class="btn-primary" id="applyFilters">Apply Filters</button>
+                        <button class="btn-secondary" id="clearFilters">Clear All</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Content -->
+            <div class="results-content">
+                <!-- Sort Options -->
+                <div class="sort-bar">
+                    <div class="sort-options">
+                        <label>Sort by:</label>
+                        <select id="sortSelect">
+                            <option value="price">Price (Low to High)</option>
+                            <option value="duration">Duration</option>
+                            <option value="departure">Departure Time</option>
+                        </select>
+                    </div>
+                    <div class="results-count">
+                        <span id="resultsCount">0 flights found</span>
+                    </div>
+                </div>
+
+                <!-- Flights List -->
+                <div class="flights-list" id="flightsList">
+                    <!-- Flights populated by JS -->
+                </div>
+
+                <!-- Recommendation Panel -->
+                <div id="recommendationPanel">
+                    <!-- Loaded by recommendation.js -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assistant -->
+    <script src="../js/assistantLoader.js"></script>
+    <script src="../js/recommendation.js"></script>
+    <script src="../js/flightResults.js"></script>
+</body>
+</html>
