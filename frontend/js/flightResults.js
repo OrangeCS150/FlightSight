@@ -99,6 +99,7 @@ const MOCK_FLIGHTS = [
 
 let currentFlights = [...MOCK_FLIGHTS];
 let filteredFlights = [...MOCK_FLIGHTS];
+let selectedForComparison = [];
 
 // Get route from localStorage
 function getStoredRoute() {
@@ -132,12 +133,14 @@ function updateRouteLabel() {
   }
 }
 
-// Render flight card
+// Render flight card (updated with checkbox)
 function renderFlightCard(flight) {
+  const isSelected = selectedForComparison.includes(flight.id);
   return `
     <div class="flight-card" data-flight-id="${flight.id}">
       <div class="flight-header">
         <div class="flight-airline">
+          <input type="checkbox" class="compare-checkbox" data-flight-id="${flight.id}" ${isSelected ? 'checked' : ''} onchange="toggleComparison(${flight.id})">
           <div class="airline-logo">${flight.airlineCode}</div>
           <div>
             <div class="airline-name">${flight.airline}</div>
@@ -477,6 +480,92 @@ function renderDetailedTable(data) {
   });
 }
 
+// Toggle comparison selection
+function toggleComparison(flightId) {
+  const index = selectedForComparison.indexOf(flightId);
+  if (index > -1) {
+    selectedForComparison.splice(index, 1);
+  } else if (selectedForComparison.length < 2) {
+    selectedForComparison.push(flightId);
+  } else {
+    alert('You can only compare up to 2 airlines.');
+    document.querySelector(`[data-flight-id="${flightId}"] .compare-checkbox`).checked = false;
+    return;
+  }
+  renderFlights(currentFlights);
+  updateCompareButton();
+}
+
+// Update compare button visibility
+function updateCompareButton() {
+  let btn = document.getElementById('compareBtn');
+  if (!btn) {
+    btn = document.createElement('button');
+    btn.id = 'compareBtn';
+    btn.className = 'btn-primary';
+    btn.textContent = 'Compare Selected';
+    btn.onclick = loadComparison;
+    document.querySelector('.sort-bar').appendChild(btn);
+  }
+  btn.style.display = selectedForComparison.length === 2 ? 'inline-block' : 'none';
+}
+
+// Load Comparison
+function loadComparison() {
+  const section = document.getElementById('comparisonSection');
+  const loading = document.getElementById('comparisonLoading');
+  const error = document.getElementById('comparisonError');
+  const empty = document.getElementById('comparisonEmpty');
+  const layout = document.getElementById('comparisonLayout');
+
+  section.style.display = 'block';
+  loading.style.display = 'block';
+  error.style.display = 'none';
+  empty.style.display = 'none';
+  layout.style.display = 'none';
+
+  try {
+    setTimeout(() => {
+      const flights = selectedForComparison.map(id => MOCK_FLIGHTS.find(f => f.id === id)).filter(Boolean);
+      if (flights.length !== 2) {
+        empty.style.display = 'block';
+        loading.style.display = 'none';
+        return;
+      }
+      renderComparison(flights);
+      loading.style.display = 'none';
+      layout.style.display = 'grid';
+    }, 500);
+  } catch (err) {
+    console.error('Error loading comparison:', err);
+    error.style.display = 'block';
+    loading.style.display = 'none';
+  }
+}
+
+// Render Comparison
+function renderComparison(flights) {
+  const left = document.getElementById('comparisonLeft');
+  const right = document.getElementById('comparisonRight');
+  [left, right].forEach((col, i) => {
+    const flight = flights[i];
+    col.innerHTML = `
+      <h4>${flight.airline}</h4>
+      <p><strong>Total Price:</strong> $${flight.price}</p>
+      <p><strong>Duration:</strong> ${flight.duration}</p>
+      <p><strong>Stops:</strong> ${flight.stops}</p>
+      <p><strong>Extra Baggage:</strong> $${flight.ancillaries.extraBaggage?.cost || 0}</p>
+      <p><strong>Seat Selection:</strong> $${flight.ancillaries.seatSelection?.cost || 0}</p>
+      <p><strong>Priority Boarding:</strong> $${flight.ancillaries.priorityBoarding?.cost || 0}</p>
+    `;
+  });
+}
+
+// Hide Comparison
+function hideComparison() {
+  document.getElementById('comparisonSection').style.display = 'none';
+}
+
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
   const route = getStoredRoute();
@@ -513,5 +602,5 @@ document.addEventListener("DOMContentLoaded", () => {
     window.RecommendationModule.initRecommendationUI();
   }
 
-  loadAdditionalOptions();
+  updateCompareButton();
 });

@@ -125,6 +125,35 @@
                     </div>
                 </div>
 
+                <!-- Airline Comparison Section -->
+                <div class="card" id="comparisonSection" style="display: none;">
+                    <div class="card-header">
+                        <h3 class="card-title">Compare Airlines</h3>
+                        <p class="card-description">Side-by-side comparison of selected airlines.</p>
+                        <button class="btn-secondary" onclick="hideComparison()">Close</button>
+                    </div>
+                    <div class="card-content">
+                        <!-- Loading State -->
+                        <div id="comparisonLoading" class="loading-state" style="display: none;">
+                            <p>Loading comparison...</p>
+                        </div>
+                        <!-- Error State -->
+                        <div id="comparisonError" class="error-state" style="display: none;">
+                            <p>Failed to load comparison. Please try again.</p>
+                            <button class="btn-secondary" onclick="loadComparison()">Retry</button>
+                        </div>
+                        <!-- Empty State -->
+                        <div id="comparisonEmpty" class="empty-state" style="display: none;">
+                            <p>No airlines selected for comparison.</p>
+                        </div>
+                        <!-- Comparison Layout -->
+                        <div id="comparisonLayout" class="comparison-grid" style="display: none;">
+                            <div class="comparison-column" id="comparisonLeft"></div>
+                            <div class="comparison-column" id="comparisonRight"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Date vs Cost Section -->
                 <div class="card" id="dateVsCostSection">
                     <div class="card-header">
