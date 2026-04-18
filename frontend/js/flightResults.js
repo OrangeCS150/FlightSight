@@ -15,7 +15,12 @@ const MOCK_FLIGHTS = [
     aircraft: "Boeing 737-800",
     safetyRating: 79,
     emissionScore: 85,
-    seatAvailability: 68
+    seatAvailability: 68,
+    ancillaries: {
+      extraBaggage: { name: "Extra Baggage (20kg)", cost: 50 },
+      seatSelection: { name: "Preferred Seat", cost: 30 },
+      priorityBoarding: { name: "Priority Boarding", cost: 25 }
+    }
   },
   {
     id: 2,
@@ -30,7 +35,11 @@ const MOCK_FLIGHTS = [
     aircraft: "Airbus A320",
     safetyRating: 82,
     emissionScore: 78,
-    seatAvailability: 72
+    seatAvailability: 72,
+    ancillaries: {
+      extraBaggage: { name: "Extra Baggage (20kg)", cost: 55 },
+      seatSelection: { name: "Extra Legroom Seat", cost: 40 }
+    }
   },
   {
     id: 3,
@@ -45,7 +54,10 @@ const MOCK_FLIGHTS = [
     aircraft: "Boeing 777",
     safetyRating: 76,
     emissionScore: 82,
-    seatAvailability: 55
+    seatAvailability: 55,
+    ancillaries: {
+      priorityBoarding: { name: "Priority Boarding", cost: 20 }
+    }
   },
   {
     id: 4,
@@ -60,7 +72,8 @@ const MOCK_FLIGHTS = [
     aircraft: "Airbus A321",
     safetyRating: 88,
     emissionScore: 75,
-    seatAvailability: 80
+    seatAvailability: 80,
+    ancillaries: {}
   },
   {
     id: 5,
@@ -75,7 +88,12 @@ const MOCK_FLIGHTS = [
     aircraft: "Boeing 737 MAX",
     safetyRating: 91,
     emissionScore: 70,
-    seatAvailability: 65
+    seatAvailability: 65,
+    ancillaries: {
+      extraBaggage: { name: "Extra Baggage (20kg)", cost: 45 },
+      seatSelection: { name: "Preferred Seat", cost: 35 },
+      priorityBoarding: { name: "Priority Boarding", cost: 30 }
+    }
   }
 ];
 
@@ -240,12 +258,97 @@ function selectFlight(flightId) {
   }
 }
 
-// Show flight details (placeholder)
+// Show flight details (expanded with ancillaries)
 function showFlightDetails(flightId) {
   const flight = MOCK_FLIGHTS.find(f => f.id === flightId);
   if (flight) {
-    alert(`Flight Details:\n${flight.airline} ${flight.flightNumber}\n${flight.departure.time} - ${flight.arrival.time}\nDuration: ${flight.duration}\nPrice: $${flight.price}`);
+    let details = `Flight Details:\n${flight.airline} ${flight.flightNumber}\n${flight.departure.time} - ${flight.arrival.time}\nDuration: ${flight.duration}\nPrice: $${flight.price}`;
+    if (Object.keys(flight.ancillaries).length > 0) {
+      details += '\n\nAdditional Options:';
+      Object.values(flight.ancillaries).forEach(option => {
+        details += `\n- ${option.name}: $${option.cost}`;
+      });
+    }
+    alert(details);
   }
+}
+
+// Load Additional Options
+function loadAdditionalOptions() {
+  const section = document.getElementById('additionalOptionsSection');
+  const loading = document.getElementById('optionsLoading');
+  const error = document.getElementById('optionsError');
+  const empty = document.getElementById('optionsEmpty');
+  const list = document.getElementById('optionsList');
+
+  // Show loading
+  loading.style.display = 'block';
+  error.style.display = 'none';
+  empty.style.display = 'none';
+  list.style.display = 'none';
+
+  try {
+    // Simulate async load
+    setTimeout(() => {
+      const options = prepareAdditionalOptions(currentFlights);
+      if (options.length === 0) {
+        empty.style.display = 'block';
+        loading.style.display = 'none';
+        return;
+      }
+      renderAdditionalOptions(options);
+      loading.style.display = 'none';
+      list.style.display = 'block';
+    }, 500);
+  } catch (err) {
+    console.error('Error loading additional options:', err);
+    error.style.display = 'block';
+    loading.style.display = 'none';
+  }
+}
+
+// Prepare options: aggregate ancillaries from flights
+function prepareAdditionalOptions(flights) {
+  const allOptions = {};
+  flights.forEach(flight => {
+    Object.entries(flight.ancillaries).forEach(([key, option]) => {
+      if (!allOptions[key]) allOptions[key] = { name: option.name, costs: [] };
+      allOptions[key].costs.push(option.cost);
+    });
+  });
+  return Object.entries(allOptions).map(([key, data]) => ({
+    key,
+    name: data.name,
+    avgCost: data.costs.reduce((a, b) => a + b, 0) / data.costs.length
+  }));
+}
+
+// Render Additional Options
+function renderAdditionalOptions(options) {
+  const breakdown = document.getElementById('optionsBreakdown');
+  breakdown.innerHTML = '';
+  let total = 0;
+  options.forEach(option => {
+    const item = document.createElement('div');
+    item.className = 'option-item';
+    item.innerHTML = `<label><input type="checkbox" onchange="updateTotal()"> ${option.name} - $${option.avgCost.toFixed(2)}</label>`;
+    breakdown.appendChild(item);
+    total += option.avgCost; // Default to checked for demo; adjust as needed
+  });
+  updateTotal();
+}
+
+// Update Total Cost
+function updateTotal() {
+  const checkboxes = document.querySelectorAll('#optionsBreakdown input[type="checkbox"]');
+  let total = 0;
+  checkboxes.forEach(cb => {
+    if (cb.checked) {
+      const cost = parseFloat(cb.parentElement.textContent.match(/\$(\d+\.\d+)/)[1]);
+      total += cost;
+    }
+  });
+  document.getElementById('totalCost').textContent = `$${total.toFixed(2)}`;
 }
 
 // Load Date vs Cost Analysis
@@ -410,5 +513,5 @@ document.addEventListener("DOMContentLoaded", () => {
     window.RecommendationModule.initRecommendationUI();
   }
 
-  loadDateVsCost();
+  loadAdditionalOptions();
 });

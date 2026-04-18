@@ -95,6 +95,36 @@
                     <!-- Flights populated by JS -->
                 </div>
 
+                <!-- Additional Flight Options Section -->
+                <div class="card" id="additionalOptionsSection">
+                    <div class="card-header">
+                        <h3 class="card-title">Additional Flight Options</h3>
+                        <p class="card-description">Optional add-ons like baggage, seats, and boarding.</p>
+                    </div>
+                    <div class="card-content">
+                        <!-- Loading State -->
+                        <div id="optionsLoading" class="loading-state" style="display: none;">
+                            <p>Loading options...</p>
+                        </div>
+                        <!-- Error State -->
+                        <div id="optionsError" class="error-state" style="display: none;">
+                            <p>Failed to load options. Please try again.</p>
+                            <button class="btn-secondary" onclick="loadAdditionalOptions()">Retry</button>
+                        </div>
+                        <!-- Empty State -->
+                        <div id="optionsEmpty" class="empty-state" style="display: none;">
+                            <p>No additional options available.</p>
+                        </div>
+                        <!-- Options List -->
+                        <div id="optionsList" style="display: none;">
+                            <div class="options-breakdown" id="optionsBreakdown"></div>
+                            <div class="options-total">
+                                <strong>Total Additional Cost: <span id="totalCost">$0.00</span></strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Date vs Cost Section -->
                 <div class="card" id="dateVsCostSection">
                     <div class="card-header">
