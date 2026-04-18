@@ -95,6 +95,54 @@
                     <!-- Flights populated by JS -->
                 </div>
 
+                <!-- Date vs Cost Section -->
+                <div class="card" id="dateVsCostSection">
+                    <div class="card-header">
+                        <h3 class="card-title">Date vs Cost Analysis</h3>
+                        <p class="card-description">Visualize flight costs over time and by period.</p>
+                    </div>
+                    <div class="card-content">
+                        <!-- Loading State -->
+                        <div id="dateVsCostLoading" class="loading-state" style="display: none;">
+                            <p>Loading analysis...</p>
+                        </div>
+                        <!-- Error State -->
+                        <div id="dateVsCostError" class="error-state" style="display: none;">
+                            <p>Failed to load analysis. Please try again.</p>
+                            <button class="btn-secondary" onclick="loadDateVsCost()">Retry</button>
+                        </div>
+                        <!-- Empty State -->
+                        <div id="dateVsCostEmpty" class="empty-state" style="display: none;">
+                            <p>No data available for analysis.</p>
+                        </div>
+                        <!-- Trend Visualization -->
+                        <div id="trendVisualization">
+                            <h4>Cost Trend Over Time</h4>
+                            <div id="trendChart" class="chart-container"></div>
+                        </div>
+                        <!-- Comparison Visualization -->
+                        <div id="comparisonVisualization">
+                            <h4>Cost Comparison by Period</h4>
+                            <div id="comparisonChart" class="chart-container"></div>
+                        </div>
+                        <!-- Detailed Table -->
+                        <div id="detailedTable">
+                            <h4>Detailed Results</h4>
+                            <table class="results-table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Cost</th>
+                                        <th>Airline</th>
+                                        <th>Stops</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Recommendation Panel -->
                 <div id="recommendationPanel">
                     <!-- Loaded by recommendation.js -->

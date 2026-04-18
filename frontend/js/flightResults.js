@@ -7,7 +7,7 @@ const MOCK_FLIGHTS = [
     airline: "United Airlines",
     airlineCode: "UA",
     flightNumber: "UA 1234",
-    departure: { time: "08:30", city: "New York (JFK)", code: "JFK" },
+    departure: { time: "08:30", city: "New York (JFK)", code: "JFK", date: "2023-10-01" },
     arrival: { time: "14:15", city: "Los Angeles (LAX)", code: "LAX" },
     duration: "5h 45m",
     stops: 0,
@@ -22,7 +22,7 @@ const MOCK_FLIGHTS = [
     airline: "Delta Air Lines",
     airlineCode: "DL",
     flightNumber: "DL 5678",
-    departure: { time: "10:15", city: "New York (JFK)", code: "JFK" },
+    departure: { time: "10:15", city: "New York (JFK)", code: "JFK", date: "2023-10-02" },
     arrival: { time: "16:45", city: "Los Angeles (LAX)", code: "LAX" },
     duration: "6h 30m",
     stops: 0,
@@ -37,7 +37,7 @@ const MOCK_FLIGHTS = [
     airline: "American Airlines",
     airlineCode: "AA",
     flightNumber: "AA 9012",
-    departure: { time: "12:00", city: "New York (JFK)", code: "JFK" },
+    departure: { time: "12:00", city: "New York (JFK)", code: "JFK", date: "2023-10-03" },
     arrival: { time: "15:30", city: "Los Angeles (LAX)", code: "LAX" },
     duration: "3h 30m",
     stops: 1,
@@ -52,7 +52,7 @@ const MOCK_FLIGHTS = [
     airline: "JetBlue Airways",
     airlineCode: "B6",
     flightNumber: "B6 3456",
-    departure: { time: "14:20", city: "New York (JFK)", code: "JFK" },
+    departure: { time: "14:20", city: "New York (JFK)", code: "JFK", date: "2023-10-04" },
     arrival: { time: "18:10", city: "Los Angeles (LAX)", code: "LAX" },
     duration: "3h 50m",
     stops: 1,
@@ -67,7 +67,7 @@ const MOCK_FLIGHTS = [
     airline: "Alaska Airlines",
     airlineCode: "AS",
     flightNumber: "AS 7890",
-    departure: { time: "16:45", city: "New York (JFK)", code: "JFK" },
+    departure: { time: "16:45", city: "New York (JFK)", code: "JFK", date: "2023-10-05" },
     arrival: { time: "20:15", city: "Los Angeles (LAX)", code: "LAX" },
     duration: "3h 30m",
     stops: 2,
@@ -248,6 +248,132 @@ function showFlightDetails(flightId) {
   }
 }
 
+// Load Date vs Cost Analysis
+function loadDateVsCost() {
+  const section = document.getElementById('dateVsCostSection');
+  const loading = document.getElementById('dateVsCostLoading');
+  const error = document.getElementById('dateVsCostError');
+  const empty = document.getElementById('dateVsCostEmpty');
+  const trend = document.getElementById('trendVisualization');
+  const comparison = document.getElementById('comparisonVisualization');
+  const table = document.getElementById('detailedTable');
+
+  // Show loading
+  loading.style.display = 'block';
+  error.style.display = 'none';
+  empty.style.display = 'none';
+  trend.style.display = 'none';
+  comparison.style.display = 'none';
+  table.style.display = 'none';
+
+  try {
+    // Simulate async load (replace with real API if needed)
+    setTimeout(() => {
+      const data = prepareDateVsCostData(currentFlights);
+      if (data.length === 0) {
+        empty.style.display = 'block';
+        loading.style.display = 'none';
+        return;
+      }
+      renderTrendChart(data);
+      renderComparisonChart(data);
+      renderDetailedTable(data);
+      loading.style.display = 'none';
+      trend.style.display = 'block';
+      comparison.style.display = 'block';
+      table.style.display = 'block';
+    }, 500);
+  } catch (err) {
+    console.error('Error loading Date vs Cost:', err);
+    error.style.display = 'block';
+    loading.style.display = 'none';
+  }
+}
+
+// Prepare data: group by date, calculate averages
+function prepareDateVsCostData(flights) {
+  const grouped = {};
+  flights.forEach(flight => {
+    const date = flight.departure.date;
+    if (!grouped[date]) grouped[date] = { costs: [], airlines: [], stops: [] };
+    grouped[date].costs.push(flight.price);
+    grouped[date].airlines.push(flight.airline);
+    grouped[date].stops.push(flight.stops);
+  });
+  return Object.entries(grouped).map(([date, data]) => ({
+    date,
+    avgCost: data.costs.reduce((a, b) => a + b, 0) / data.costs.length,
+    minCost: Math.min(...data.costs),
+    maxCost: Math.max(...data.costs),
+    flights: data.costs.length,
+    airlines: data.airlines,
+    stops: data.stops
+  })).sort((a, b) => new Date(a.date) - new Date(b.date));
+}
+
+// Render Trend Chart (simple bar chart using divs)
+function renderTrendChart(data) {
+  const chart = document.getElementById('trendChart');
+  chart.innerHTML = '';
+  const maxCost = Math.max(...data.map(d => d.avgCost));
+  data.forEach(d => {
+    const bar = document.createElement('div');
+    bar.className = 'chart-bar';
+    bar.style.height = `${(d.avgCost / maxCost) * 100}%`;
+    bar.title = `${new Date(d.date).toLocaleDateString()}: $${d.avgCost.toFixed(2)}`;
+    const label = document.createElement('div');
+    label.className = 'chart-label';
+    label.textContent = new Date(d.date).toLocaleDateString();
+    bar.appendChild(label);
+    chart.appendChild(bar);
+  });
+}
+
+// Render Comparison Chart (by period, e.g., weekday vs weekend)
+function renderComparisonChart(data) {
+  const chart = document.getElementById('comparisonChart');
+  chart.innerHTML = '';
+  const periods = { weekday: [], weekend: [] };
+  data.forEach(d => {
+    const day = new Date(d.date).getDay();
+    if (day === 0 || day === 6) periods.weekend.push(d.avgCost);
+    else periods.weekday.push(d.avgCost);
+  });
+  const avgWeekday = periods.weekday.reduce((a, b) => a + b, 0) / periods.weekday.length || 0;
+  const avgWeekend = periods.weekend.reduce((a, b) => a + b, 0) / periods.weekend.length || 0;
+  const maxAvg = Math.max(avgWeekday, avgWeekend);
+  ['Weekday', 'Weekend'].forEach((period, i) => {
+    const avg = i === 0 ? avgWeekday : avgWeekend;
+    const bar = document.createElement('div');
+    bar.className = 'chart-bar';
+    bar.style.height = `${(avg / maxAvg) * 100}%`;
+    bar.title = `${period}: $${avg.toFixed(2)}`;
+    const label = document.createElement('div');
+    label.className = 'chart-label';
+    label.textContent = period;
+    bar.appendChild(label);
+    chart.appendChild(bar);
+  });
+}
+
+// Render Detailed Table
+function renderDetailedTable(data) {
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  data.forEach(d => {
+    d.airlines.forEach((airline, i) => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${new Date(d.date).toLocaleDateString()}</td>
+        <td>$${d.costs[i].toFixed(2)}</td>
+        <td>${airline}</td>
+        <td>${d.stops[i]}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  });
+}
+
 // Initialize
 document.addEventListener("DOMContentLoaded", () => {
   const route = getStoredRoute();
@@ -283,4 +409,6 @@ document.addEventListener("DOMContentLoaded", () => {
   if (window.RecommendationModule) {
     window.RecommendationModule.initRecommendationUI();
   }
+
+  loadDateVsCost();
 });
