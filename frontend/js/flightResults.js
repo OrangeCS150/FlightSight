@@ -315,28 +315,53 @@ function prepareAdditionalOptions(flights) {
   const allOptions = {};
   flights.forEach(flight => {
     Object.entries(flight.ancillaries).forEach(([key, option]) => {
-      if (!allOptions[key]) allOptions[key] = { name: option.name, costs: [] };
+      if (!allOptions[key]) {
+        allOptions[key] = { 
+          name: option.name, 
+          costs: [],
+          minCost: option.cost,
+          maxCost: option.cost
+        };
+      }
       allOptions[key].costs.push(option.cost);
+      allOptions[key].minCost = Math.min(allOptions[key].minCost, option.cost);
+      allOptions[key].maxCost = Math.max(allOptions[key].maxCost, option.cost);
     });
   });
   return Object.entries(allOptions).map(([key, data]) => ({
     key,
     name: data.name,
-    avgCost: data.costs.reduce((a, b) => a + b, 0) / data.costs.length
-  }));
+    avgCost: data.costs.reduce((a, b) => a + b, 0) / data.costs.length,
+    minCost: data.minCost,
+    maxCost: data.maxCost,
+    count: data.costs.length
+  })).sort((a, b) => a.avgCost - b.avgCost);
 }
 
 // Render Additional Options
 function renderAdditionalOptions(options) {
   const breakdown = document.getElementById('optionsBreakdown');
   breakdown.innerHTML = '';
-  let total = 0;
+  
   options.forEach(option => {
     const item = document.createElement('div');
     item.className = 'option-item';
-    item.innerHTML = `<label><input type="checkbox" onchange="updateTotal()"> ${option.name} - $${option.avgCost.toFixed(2)}</label>`;
+    const priceRange = option.minCost === option.maxCost 
+      ? `$${option.avgCost.toFixed(2)}` 
+      : `$${option.minCost.toFixed(2)} - $${option.maxCost.toFixed(2)}`;
+    item.innerHTML = `
+      <div class="option-checkbox-row">
+        <label>
+          <input type="checkbox" data-cost="${option.avgCost}" onchange="updateTotal()"> 
+          <span class="option-name">${option.name}</span>
+        </label>
+      </div>
+      <div class="option-price-detail">
+        <span class="price-range">${priceRange}</span>
+        <span class="price-note">${option.count} flight${option.count !== 1 ? 's' : ''}</span>
+      </div>
+    `;
     breakdown.appendChild(item);
-    total += option.avgCost; // Default to checked for demo; adjust as needed
   });
   updateTotal();
 }
@@ -347,11 +372,14 @@ function updateTotal() {
   let total = 0;
   checkboxes.forEach(cb => {
     if (cb.checked) {
-      const cost = parseFloat(cb.parentElement.textContent.match(/\$(\d+\.\d+)/)[1]);
+      const cost = parseFloat(cb.getAttribute('data-cost'));
       total += cost;
     }
   });
-  document.getElementById('totalCost').textContent = `$${total.toFixed(2)}`;
+  const totalEl = document.getElementById('totalCost');
+  if (totalEl) {
+    totalEl.textContent = `$${total.toFixed(2)}`;
+  }
 }
 
 // Load Date vs Cost Analysis
@@ -564,6 +592,105 @@ function renderComparison(flights) {
 // Hide Comparison
 function hideComparison() {
   document.getElementById('comparisonSection').style.display = 'none';
+  resetComparison();
+}
+
+// Reset Comparisons
+function resetComparison() {
+  selectedForComparison = [];
+  document.querySelectorAll('.compare-checkbox').forEach(cb => cb.checked = false);
+  renderFlights(currentFlights);
+  updateCompareButton();
+}
+
+// =================== Recommendation System ===================
+
+// Calculate recommendation score using rule-based approach
+function calculateRecommendationScore(flight) {
+  let score = 0;
+  let weights = {
+    price: 0.25,
+    safety: 0.30,
+    emissions: 0.20,
+    stops: 0.15,
+    availability: 0.10
+  };
+
+  // Price score (lower is better, inverse relationship)
+  const maxPrice = Math.max(...MOCK_FLIGHTS.map(f => f.price));
+  const priceScore = 100 * (1 - (flight.price / maxPrice));
+  score += priceScore * weights.price;
+
+  // Safety score (higher is better)
+  score += flight.safetyRating * weights.safety;
+
+  // Emissions score (higher is better - lower emissions)
+  score += flight.emissionScore * weights.emissions;
+
+  // Stops score (fewer is better)
+  const stopScore = Math.max(0, 100 - (flight.stops * 25));
+  score += stopScore * weights.stops;
+
+  // Seat availability score (higher is better)
+  score += flight.seatAvailability * weights.availability;
+
+  return Math.round(score * 10) / 10;
+}
+
+// Get best airline recommendation
+function getRecommendedAirline() {
+  if (!MOCK_FLIGHTS || MOCK_FLIGHTS.length === 0) return null;
+  
+  const scored = MOCK_FLIGHTS.map(flight => ({
+    ...flight,
+    score: calculateRecommendationScore(flight)
+  })).sort((a, b) => b.score - a.score);
+
+  return scored[0];
+}
+
+// Display recommendation
+function displayRecommendation() {
+  const recommended = getRecommendedAirline();
+  if (!recommended) return;
+
+  const recPanel = document.getElementById('recommendationPanel');
+  if (!recPanel || !recPanel.innerHTML) return;
+
+  const recSection = recPanel.querySelector('.rec-section');
+  if (recSection) {
+    recSection.innerHTML = `
+      <div class="recommendation-card">
+        <div class="rec-header">
+          <h4>Recommended Airline</h4>
+          <span class="rec-score">${recommended.score.toFixed(1)}/100</span>
+        </div>
+        <div class="rec-airline">
+          <div class="rec-airline-name">${recommended.airline}</div>
+          <div class="rec-airline-code">${recommended.airlineCode}</div>
+        </div>
+        <div class="rec-stats">
+          <div class="rec-stat">
+            <span class="stat-label">Price</span>
+            <span class="stat-value">$${recommended.price}</span>
+          </div>
+          <div class="rec-stat">
+            <span class="stat-label">Safety</span>
+            <span class="stat-value">${recommended.safetyRating}%</span>
+          </div>
+          <div class="rec-stat">
+            <span class="stat-label">Emissions</span>
+            <span class="stat-value">${recommended.emissionScore}</span>
+          </div>
+          <div class="rec-stat">
+            <span class="stat-label">Stops</span>
+            <span class="stat-value">${recommended.stops}</span>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="selectFlight(${recommended.id})">Book This Flight</button>
+      </div>
+    `;
+  }
 }
 
 // Initialize
@@ -601,6 +728,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (window.RecommendationModule) {
     window.RecommendationModule.initRecommendationUI();
   }
+  
+  // Display recommendation
+  displayRecommendation();
 
   updateCompareButton();
 });

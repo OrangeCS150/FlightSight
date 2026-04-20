@@ -130,7 +130,10 @@
                     <div class="card-header">
                         <h3 class="card-title">Compare Airlines</h3>
                         <p class="card-description">Side-by-side comparison of selected airlines.</p>
-                        <button class="btn-secondary" onclick="hideComparison()">Close</button>
+                        <div class="card-header-actions">
+                            <button class="btn-secondary" onclick="resetComparison()">Reset</button>
+                            <button class="btn-secondary" onclick="hideComparison()">Close</button>
+                        </div>
                     </div>
                     <div class="card-content">
                         <!-- Loading State -->
@@ -212,6 +215,7 @@
 
     <!-- AI Assistant -->
     <script src="../js/assistantLoader.js"></script>
+    <script src="../js/datasetReader.js"></script>
     <script src="../js/recommendation.js"></script>
     <script src="../js/flightResults.js"></script>
 </body>
