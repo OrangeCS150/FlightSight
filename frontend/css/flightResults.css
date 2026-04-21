@@ -556,3 +556,26 @@
     gap: 0.25rem;
   }
 }
+/* ===== Risk Badge (Delay & Cancellation Risk Score) — additive ===== */
+.risk-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  vertical-align: middle;
+  border: 1px solid transparent;
+  cursor: help;
+}
+.risk-badge.risk-low      { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+.risk-badge.risk-moderate { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+.risk-badge.risk-high     { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+.risk-badge.risk-severe   { background: #fee2e2; color: #991b1b; border-color: #fca5a5; }
+.risk-badge .risk-line {
+  display: block;
+  font-size: 0.75rem;
+  line-height: 1.25;
+}
+.risk-badge .risk-line + .risk-line { margin-top: 2px; opacity: 0.9; }

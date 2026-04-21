@@ -863,3 +863,18 @@ h1 {
         text-align: left;
     }
 }
+
+/* Price alert status (additive, non-intrusive) */
+.price-alert-status {
+    flex-basis: 100%;
+    margin: 0 0 0.75rem 0;
+    padding: 0.6rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    line-height: 1.3;
+    border: 1px solid transparent;
+}
+.price-alert-status--info    { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+.price-alert-status--success { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+.price-alert-status--warn    { background: #fffbeb; color: #b45309; border-color: #fde68a; }
+#btnPriceAlert { margin-left: 0.5rem; }

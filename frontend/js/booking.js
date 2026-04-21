@@ -402,6 +402,134 @@ async function saveSelectedFlight() {
   }
 }
 
+async function createPriceAlert(threshold = 100) {
+  const selectedFlight = getSelectedFlight();
+  if (!selectedFlight) {
+    alert("Please select a flight first.");
+    return;
+  }
+
+  const payload = {
+    userEmail: localStorage.getItem("userEmail") || "anonymous",
+    origin: selectedFlight.origin,
+    destination: selectedFlight.destination,
+    departureDate: selectedFlight.departureDate,
+    airline: selectedFlight.airline,
+    stops: selectedFlight.stops,
+    currentFare: selectedFlight.totalFare,
+    threshold
+  };
+
+  try {
+    const response = await fetch(`${API_BASE}/api/price-alerts`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    const bodyText = await response.text();
+    let body = {};
+    try { body = bodyText ? JSON.parse(bodyText) : {}; } catch { body = {}; }
+
+    if (response.status === 409) {
+      setPriceAlertStatus("A price alert already exists for this route/date/airline.", "warn");
+      return;
+    }
+
+    if (!response.ok) {
+      setPriceAlertStatus(body.error || "Failed to create price alert.", "warn");
+      return;
+    }
+
+    setPriceAlertStatus("Price alert created (threshold = $100). We'll watch for price drops.", "success");
+  } catch (err) {
+    console.error("[FlightSight] Create price alert failed:", err);
+    setPriceAlertStatus("Error creating price alert.", "warn");
+  }
+}
+
+function setPriceAlertStatus(message, tone) {
+  const status = document.getElementById("priceAlertStatus");
+  if (!status) return;
+  status.textContent = message;
+  status.classList.remove("price-alert-status--success", "price-alert-status--warn", "price-alert-status--info");
+  if (tone === "success") status.classList.add("price-alert-status--success");
+  else if (tone === "warn") status.classList.add("price-alert-status--warn");
+  else status.classList.add("price-alert-status--info");
+}
+
+async function refreshPriceAlertBaseline() {
+  const selectedFlight = getSelectedFlight();
+  if (!selectedFlight) {
+    setPriceAlertStatus("Track this trip with a $100 alert.", "info");
+    return;
+  }
+  try {
+    const userEmail = localStorage.getItem("userEmail") || "anonymous";
+    const params = new URLSearchParams({
+      userEmail,
+      currentFare: String(selectedFlight.totalFare ?? "")
+    });
+    const r = await fetch(`${API_BASE}/api/price-alerts/evaluate?${params.toString()}`);
+    if (!r.ok) throw new Error(`evaluate failed: ${r.status}`);
+    const data = await r.json();
+    const match = (data.alerts || []).find(a =>
+      a.origin === selectedFlight.origin &&
+      a.destination === selectedFlight.destination &&
+      a.departureDate === selectedFlight.departureDate &&
+      a.airline === selectedFlight.airline
+    );
+    if (match && typeof match.baselineFare === "number" && typeof selectedFlight.totalFare === "number") {
+      const diff = selectedFlight.totalFare - match.baselineFare;
+      if (diff > 0) {
+        setPriceAlertStatus(`Price is above usual by $${diff.toFixed(2)} (baseline $${match.baselineFare.toFixed(2)}).`, "warn");
+      } else if (diff < 0) {
+        setPriceAlertStatus(`Price is below usual by $${Math.abs(diff).toFixed(2)} (baseline $${match.baselineFare.toFixed(2)}).`, "success");
+      } else {
+        setPriceAlertStatus(`Price matches baseline ($${match.baselineFare.toFixed(2)}).`, "info");
+      }
+    } else {
+      setPriceAlertStatus("Track this trip with a $100 alert.", "info");
+    }
+  } catch {
+    setPriceAlertStatus("Track this trip with a $100 alert.", "info");
+  }
+}
+
+function ensurePriceAlertButton() {
+  const actionButtons = document.querySelector(".action-buttons");
+  if (!actionButtons) return;
+  if (document.getElementById("btnPriceAlert")) return;
+
+  // Visible status message (always rendered, with graceful fallback)
+  if (!document.getElementById("priceAlertStatus")) {
+    const status = document.createElement("div");
+    status.id = "priceAlertStatus";
+    status.className = "price-alert-status price-alert-status--info";
+    status.textContent = "Track this trip with a $100 alert.";
+    actionButtons.insertBefore(status, actionButtons.firstChild);
+  }
+
+  const btn = document.createElement("button");
+  btn.id = "btnPriceAlert";
+  btn.className = "btn-secondary";
+  btn.type = "button";
+  btn.textContent = "Set $100 Price Alert";
+  btn.addEventListener("click", async () => {
+    await createPriceAlert(100);
+    refreshPriceAlertBaseline();
+  });
+
+  const btnSaveFlight = document.querySelector(".btn-primary");
+  if (btnSaveFlight && btnSaveFlight.parentNode === actionButtons) {
+    actionButtons.insertBefore(btn, btnSaveFlight.nextSibling);
+  } else {
+    actionButtons.appendChild(btn);
+  }
+
+  refreshPriceAlertBaseline();
+}
+
 // Button wiring (guarded so it won't crash if an element is missing)
 const btnEmissions = document.getElementById("btnEmissions");
 const btnSeatWeather = document.getElementById("btnSeatWeather");
@@ -412,6 +540,8 @@ if (btnEmissions) btnEmissions.addEventListener("click", refreshEmissions);
 if (btnSeatWeather) btnSeatWeather.addEventListener("click", refreshSeatWeather);
 if (btnAnalysis) btnAnalysis.addEventListener("click", runAnalysis);
 if (btnSaveFlight) btnSaveFlight.addEventListener("click", saveSelectedFlight);
+
+ensurePriceAlertButton();
 
 // Auto-load a nice first view (optional)
 Promise.allSettled([refreshEmissions(), refreshSeatWeather(), runAnalysis()]);

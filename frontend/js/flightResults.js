@@ -101,6 +101,163 @@ let currentFlights = [...MOCK_FLIGHTS];
 let filteredFlights = [...MOCK_FLIGHTS];
 let selectedForComparison = [];
 
+// ---- Live data integration (additive, non-destructive) ----
+// Backend endpoint `/api/flights/predict` runs predict_flights_cli.py which
+// already calls risk_score.compute_risk and returns delayCancellationRiskScore,
+// riskBand, riskExplanation per flight. We fetch those here and adapt each
+// flight to the existing MOCK_FLIGHTS shape the renderer expects, while
+// preserving the full predict-shape object for booking.js.
+const API_BASE_FR = "http://localhost:3000";
+
+function _firstSeg(s) {
+  return String(s || "").split("||")[0].trim();
+}
+
+function _hhmmFromIso(iso) {
+  if (!iso) return "";
+  try {
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) {
+      // predict_flights_cli emits "YYYY-MM-DDTHH:MM:SS" without tz; fall back
+      const m = String(iso).match(/T(\d{2}):(\d{2})/);
+      return m ? `${m[1]}:${m[2]}` : String(iso);
+    }
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mm = String(d.getMinutes()).padStart(2, "0");
+    return `${hh}:${mm}`;
+  } catch {
+    return String(iso);
+  }
+}
+
+function _airlineCodeFromName(name) {
+  const n = String(name || "").trim();
+  if (!n) return "XX";
+  const map = {
+    "united airlines": "UA",
+    "delta": "DL",
+    "delta air lines": "DL",
+    "american airlines": "AA",
+    "jetblue airways": "B6",
+    "jetblue": "B6",
+    "alaska airlines": "AS",
+    "southwest airlines": "WN",
+    "spirit airlines": "NK",
+    "frontier airlines": "F9",
+    "hawaiian airlines": "HA",
+  };
+  const key = n.toLowerCase();
+  if (map[key]) return map[key];
+  // initials fallback
+  const parts = n.split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return n.slice(0, 2).toUpperCase();
+}
+
+// Adapt a predict-shape flight (from /api/flights/predict) into the shape
+// this page's renderer / filters / sort / comparison already rely on, while
+// preserving the predict-shape fields so selectFlight() can forward them
+// to booking.js (which validates its own shape).
+function adaptPredictFlight(p, idx) {
+  const code = _airlineCodeFromName(p.airline);
+  const stops = Number(p.stops) || 0;
+  const price = Number(p.totalFare) || 0;
+  return {
+    // --- fields used by current render/filter/sort/comparison code ---
+    id: idx + 1,
+    airline: p.airline || "Unknown",
+    airlineCode: code,
+    flightNumber: `${code} ${String(p.legId || "").slice(0, 4).toUpperCase() || (1000 + idx)}`,
+    departure: {
+      time: _hhmmFromIso(p.departureTime) || "--:--",
+      city: p.origin || "",
+      code: p.origin || "",
+      date: p.departureDate,
+    },
+    arrival: {
+      time: _hhmmFromIso(p.arrivalTime) || "--:--",
+      city: p.destination || "",
+      code: p.destination || "",
+    },
+    duration: p.travelDuration || p.flightTime || "",
+    stops,
+    price,
+    aircraft: "—",
+    safetyRating: 80,
+    emissionScore: 80,
+    seatAvailability: 60,
+    ancillaries: {},
+
+    // --- NEW: risk fields (already computed server-side) ---
+    delayCancellationRiskScore: typeof p.delayCancellationRiskScore === "number"
+      ? p.delayCancellationRiskScore
+      : undefined,
+    riskBand: p.riskBand,
+    riskExplanation: p.riskExplanation,
+
+    // --- preserve full predict-shape for booking.js ---
+    _predictShape: {
+      legId: p.legId,
+      origin: p.origin,
+      destination: p.destination,
+      departureDate: p.departureDate,
+      airline: p.airline,
+      totalFare: typeof p.totalFare === "number" ? p.totalFare : Number(p.totalFare) || 0,
+      travelDuration: p.travelDuration ?? null,
+      flightTime: p.flightTime ?? null,
+      layoverTime: p.layoverTime ?? null,
+      stops,
+      seatAvailability: p.seatAvailability ?? "Unknown",
+      confidence: p.confidence ?? "Unknown",
+      departureTime: p.departureTime ?? null,
+      arrivalTime: p.arrivalTime ?? null,
+      isPredicted: p.isPredicted === true,
+      delayCancellationRiskScore: p.delayCancellationRiskScore,
+      riskBand: p.riskBand,
+      riskExplanation: p.riskExplanation,
+    },
+  };
+}
+
+async function fetchLiveFlights() {
+  try {
+    const route = getStoredRoute();
+    const dates = getStoredDates();
+    if (!route || !dates.departure) return null;
+    const originCode = route.origin?.code;
+    const destCode = route.destination?.code;
+    if (!originCode || !destCode) return null;
+
+    // localStorage stores ISO datetime; backend expects YYYY-MM-DD
+    const depDate = String(dates.departure).slice(0, 10);
+
+    const params = new URLSearchParams({
+      origin: originCode,
+      destination: destCode,
+      departureDate: depDate,
+    });
+
+    const url = `${API_BASE_FR}/api/flights/predict?${params.toString()}`;
+    console.log("[FlightSight] Live flights URL:", url);
+
+    const r = await fetch(url);
+    if (!r.ok) {
+      console.warn("[FlightSight] /api/flights/predict HTTP error:", r.status);
+      return null;
+    }
+    const payload = await r.json();
+    const raw = Array.isArray(payload?.flights) ? payload.flights : [];
+    if (!raw.length) return null;
+
+    const adapted = raw.map((p, i) => adaptPredictFlight(p, i));
+    console.log(`[FlightSight] Live flights loaded: ${adapted.length}`);
+    return adapted;
+  } catch (err) {
+    console.warn("[FlightSight] fetchLiveFlights failed, falling back to mock:", err);
+    return null;
+  }
+}
+
 // Get route from localStorage
 function getStoredRoute() {
   const originRaw = localStorage.getItem("origin");
@@ -171,6 +328,9 @@ function renderFlightCard(flight) {
       <div class="flight-meta">
         <div class="flight-stops">
           <span>Aircraft: ${flight.aircraft}</span>
+          ${typeof flight.delayCancellationRiskScore === 'number'
+            ? `<div class="risk-badge risk-${(flight.riskBand || 'low').toLowerCase()}" title="${(flight.riskExplanation || '').replace(/"/g, '&quot;')}"><span class="risk-line">Cancellation/Delay Risk: ${flight.delayCancellationRiskScore}%</span><span class="risk-line">Risk: ${flight.riskBand || 'Unknown'}</span></div>`
+            : ''}
         </div>
         <div class="flight-actions">
           <button class="btn-details" onclick="showFlightDetails(${flight.id})">Details</button>
@@ -254,11 +414,21 @@ function populateAirlineFilters() {
 
 // Select flight
 function selectFlight(flightId) {
-  const flight = MOCK_FLIGHTS.find(f => f.id === flightId);
-  if (flight) {
-    localStorage.setItem("selectedFlight", JSON.stringify(flight));
-    window.location.href = "Booking.html";
-  }
+  // Prefer the live/current list (so predict-shape objects are found),
+  // fall back to MOCK_FLIGHTS for safety.
+  const flight =
+    (currentFlights && currentFlights.find(f => f.id === flightId)) ||
+    MOCK_FLIGHTS.find(f => f.id === flightId);
+
+  if (!flight) return;
+
+  // If this flight came from the live predict pipeline, store the
+  // predict-shape object so booking.js's getSelectedFlight() shape check
+  // passes and the price-alert / baseline UI lights up. Otherwise keep
+  // legacy behavior.
+  const payload = flight._predictShape ? flight._predictShape : flight;
+  localStorage.setItem("selectedFlight", JSON.stringify(payload));
+  window.location.href = "Booking.html";
 }
 
 // Show flight details (expanded with ancillaries)
@@ -694,7 +864,7 @@ function displayRecommendation() {
 }
 
 // Initialize
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const route = getStoredRoute();
   if (!route) {
     alert("Please select your route first.");
@@ -703,6 +873,20 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   updateRouteLabel();
+
+  // Try to pull real flights (with risk fields) from the live backend.
+  // If anything fails or returns empty, keep existing MOCK behavior so
+  // the page never regresses.
+  const liveFlights = await fetchLiveFlights();
+  if (Array.isArray(liveFlights) && liveFlights.length) {
+    // Replace in-memory sources with live data, but keep MOCK_FLIGHTS name
+    // untouched (it's `const`). We swap contents of currentFlights/filteredFlights
+    // and also update the module-level list the filter uses.
+    MOCK_FLIGHTS.length = 0;
+    for (const f of liveFlights) MOCK_FLIGHTS.push(f);
+    filteredFlights = [...MOCK_FLIGHTS];
+  }
+
   populateAirlineFilters();
 
   // Initial render

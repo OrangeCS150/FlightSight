@@ -4,6 +4,7 @@ import json
 from datetime import datetime, timedelta
 
 from test_cost_prediction import predict_prices
+from risk_score import compute_risk
 
 
 def build_leg_id(origin, destination, departure_date, airline, stops, idx):
@@ -35,6 +36,8 @@ def flatten_predictions(origin, destination, departure_date, grouped):
                 travel_duration_min,
             )
 
+            risk = compute_risk(option, departure_date)
+
             flights.append({
                 "legId": build_leg_id(origin, destination, departure_date, airline, stops, idx),
                 "origin": origin,
@@ -51,6 +54,9 @@ def flatten_predictions(origin, destination, departure_date, grouped):
                 "departureTime": departure_time,
                 "arrivalTime": arrival_time,
                 "isPredicted": True,
+                "delayCancellationRiskScore": risk["delayCancellationRiskScore"],
+                "riskBand": risk["riskBand"],
+                "riskExplanation": risk["riskExplanation"],
             })
 
     flights.sort(key=lambda f: (f["totalFare"], f["stops"]))
