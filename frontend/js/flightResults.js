@@ -891,7 +891,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Initial render
   const sortBy = document.getElementById("sortSelect").value;
-  currentFlights = sortFlights(MOCK_FLIGHTS, sortBy);
+  currentFlights = sortFlights(filteredFlights, sortBy);
   renderFlights(currentFlights);
 
   // Event listeners
