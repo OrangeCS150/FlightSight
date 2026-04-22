@@ -11,7 +11,7 @@ const readline = require("readline");
 const { execFile } = require("child_process");
 const { promisify } = require("util");
 const crypto = require("crypto");
-// const { neon } = require("@neondatabase/serverless"); // Neon database connection
+const { neon } = require("@neondatabase/serverless"); // Neon database connection
 const bcrypt = require("bcryptjs");           // For hashing passwords for privacy
 
 const execFileAsync = promisify(execFile);
@@ -31,7 +31,7 @@ app.use("/html", express.static(path.join(__dirname, "frontend", "html")));
 app.use("/data", express.static(path.join(__dirname, "backend", "data")));
 
 // Connect to Neon database using DATABASE_URL from .env file
-// const sql = neon(process.env.DATABASE_URL);
+const sql = neon(process.env.DATABASE_URL);
 
 // Default route. Sends login.html page
 app.get("/", (req, res) => {
