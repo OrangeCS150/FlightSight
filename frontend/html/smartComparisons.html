@@ -4,33 +4,44 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Smart Comparisons - Flight Sight</title>
-  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="../css/smartComparisons.css" />
 </head>
 <body>
-  <header class="bg-primary text-white py-3">
-    <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between">
-      <div>
-        <h1 class="h3 mb-2 mb-md-0">Smart Comparisons</h1>
-        <p class="mb-0 text-light">Compare saved flights and find the best airline choice.</p>
-      </div>
-      <div>
-        <a href="/" class="btn btn-light btn-sm me-2 mb-2 mb-md-0">Home</a>
-        <a href="/html/flightRoute.html" class="btn btn-light btn-sm me-2 mb-2 mb-md-0">Flight Route</a>
-        <a href="/html/savedFlights.html" class="btn btn-light btn-sm mb-2 mb-md-0">Saved Flights</a>
-      </div>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="container navbar-inner">
+      <div class="logo">✈️ Flight Sight</div>
+      <nav>
+        <a href="Booking.html">My Trips</a>
+        <a href="Booking.html#saved">Saved Flights</a>
+        <a href="savedFlights.html">Price Alerts</a>
+        <a href="smartComparisons.html">Smart Comparisons</a>
+        <button class="signout" onclick="location.href = 'login.html'">
+          Sign Out
+        </button>
+      </nav>
     </div>
   </header>
 
-  <main class="container my-4">
-    <section id="summary" class="mb-4">
-      <div class="card">
-        <div class="card-body">
-          <h2 class="h5">Smart Comparisons</h2>
-          <p class="mb-0">
-            Compare flights saved from the same trip and surface the best overall airline using price,
-            duration, stops, emissions, and seat availability.
-          </p>
-        </div>
+  <!-- PAGE HEADER -->
+  <section class="page-header">
+    <div class="container header-inner">
+      <a href="homePage.html" class="back-link">←</a>
+      <div>
+        <h1>Smart Comparisons</h1>
+        <p>Compare saved flights and find the best airline choice.</p>
+      </div>
+    </div>
+  </section>
+
+  <main class="container comparisons-main">
+    <section id="summary" class="panel mb-4">
+      <div class="panel-body">
+        <h2 class="h5">Smart Comparisons</h2>
+        <p class="mb-0">
+          Compare flights saved from the same trip and surface the best overall airline using price,
+          duration, stops, emissions, and seat availability.
+        </p>
       </div>
     </section>
 

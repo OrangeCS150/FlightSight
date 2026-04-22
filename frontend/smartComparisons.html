@@ -1,15 +1,58 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Smart Comparisons - Flight Sight</title>
-  <link rel="stylesheet" href="css/smartComparisons.css">
-</head>
-<body>
-  <h1>Smart Comparisons</h1>
-  <a href="/">Home</a> | <a href="/saved-flights">Saved Flights</a>
-  <div id="groups"></div>
-  <div id="details" style="display: none;"></div>
-  <script src="js/smartComparissons.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Comparisons - Flight Sight</title>
+    <link rel="stylesheet" href="css/smartComparisons.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <header class="navbar">
+      <div class="container navbar-inner">
+        <div class="logo">✈️ Flight Sight</div>
+        <nav>
+          <a href="html/Booking.html">My Trips</a>
+          <a href="html/Booking.html#saved">Saved Flights</a>
+          <a href="html/savedFlights.html">Price Alerts</a>
+          <a href="html/smartComparisons.html">Smart Comparisons</a>
+          <button class="signout" onclick="location.href = 'html/login.html'">
+            Sign Out
+          </button>
+        </nav>
+      </div>
+    </header>
+
+    <!-- PAGE HEADER -->
+    <section class="page-header">
+      <div class="container header-inner">
+        <a href="html/homePage.html" class="back-link">←</a>
+        <div>
+          <h1>Smart Comparisons</h1>
+          <p>Compare grouped saved flights with clear side-by-side details</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTENT -->
+    <main class="container comparisons-main">
+      <section class="panel groups-panel">
+        <div class="panel-header">
+          <h2>Comparison Groups</h2>
+          <p>Select a group to view deeper comparison details.</p>
+        </div>
+        <div id="groups"></div>
+      </section>
+
+      <section class="panel details-panel">
+        <div class="panel-header">
+          <h2>Comparison Details</h2>
+          <p>Expanded information for your selected group.</p>
+        </div>
+        <div id="details"></div>
+      </section>
+    </main>
+
+    <script src="js/smartComparisons.js"></script>
+  </body>
 </html>
