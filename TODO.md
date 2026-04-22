@@ -1,0 +1,9 @@
+- [x] Update `frontend/html/homePage.html` with subtle Price Alerts nav icon/badge entry.
+- [x] Extend `frontend/js/homePage.js` to compute and render price-alert notification badge count using existing endpoints.
+- [x] Add minimal nav badge styles in `frontend/css/styles.css`.
+- [x] Update `frontend/html/savedFlights.html` with matching Price Alerts nav icon/badge entry.
+- [x] Add minimal badge + alert-chip styles in `frontend/css/savedFlights.css`.
+- [x] Surgically clean merge-conflict markers in `frontend/js/savedFlights.js` and keep active implementation.
+- [x] Extend `frontend/js/savedFlights.js` to annotate saved flight cards with price-alert status and update nav badge count gracefully.
+- [ ] Run focused verification commands/manual checks for approved scope.
+- [ ] Summarize changed files, surgical edits, notification flow, and pass/fail results.

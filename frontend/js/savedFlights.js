@@ -1,151 +1,47 @@
-<<<<<<< HEAD
-const API = "http://localhost:3000";
-
-// Load and display city pair routes in comparison table
-async function loadCompareRoutes() {
-    try {
-        let res = await fetch(`${API}/routes`);
-        let routes = await res.json();
-        
-        let tbody = document.getElementById("compare-routes-body");
-        tbody.innerHTML = "";
-        
-        routes.forEach(route => {
-            tbody.innerHTML += `
-                <tr data-city-pair-id="route-${route.id}">
-                    <td>
-                        <input
-                            type="checkbox"
-                            class="compare-checkbox"
-                            data-city-pair-id="route-${route.id}"
-                        />
-                    </td>
-                    <td class="route-label">
-                        <span class="route-origin">${route.origin}</span> → 
-                        <span class="route-destination">${route.destination}</span>
-                    </td>
-                    <td class="route-airline">${route.airline}</td>
-                    <td class="route-safety-score">${route.safety_score}</td>
-                    <td class="route-co2">${route.co2_per_passenger} kg</td>
-                    <td class="route-price">$${route.avg_price}</td>
-                    <td class="route-ontime">${route.on_time}%</td>
-                    <td>
-                        <button
-                            type="button"
-                            class="remove-city-pair-btn"
-                            onclick="removeRoute(${route.id})"
-                            data-city-pair-id="route-${route.id}"
-                            aria-label="Remove ${route.origin} to ${route.destination}"
-                        >
-                            ✕
-                        </button>
-                    </td>
-                </tr>
-            `;
-        });
-    } catch (error) {
-        console.error("Error loading routes:", error);
-    }
-}
-
-// Remove a route from comparison
-async function removeRoute(id) {
-    try {
-        await fetch(`${API}/routes/${id}`, { method: "DELETE" });
-        loadCompareRoutes();
-    } catch (error) {
-        console.error("Error removing route:", error);
-    }
-}
-
-// Compare selected routes
-function compareSelected() {
-    const checkboxes = document.querySelectorAll(".compare-checkbox:checked");
-    
-    if (checkboxes.length < 2) {
-        alert("Please select at least 2 routes to compare");
-        return;
-    }
-    
-    const selectedRoutes = [];
-    checkboxes.forEach(checkbox => {
-        const row = checkbox.closest("tr");
-        const routeData = {
-            origin: row.querySelector(".route-origin").textContent,
-            destination: row.querySelector(".route-destination").textContent,
-            airline: row.querySelector(".route-airline").textContent,
-            safety_score: parseFloat(row.querySelector(".route-safety-score").textContent),
-            co2: parseFloat(row.querySelector(".route-co2").textContent),
-            price: parseFloat(row.querySelector(".route-price").textContent.replace("$", "")),
-            ontime: parseFloat(row.querySelector(".route-ontime").textContent)
-        };
-        selectedRoutes.push(routeData);
-    });
-    
-    displayComparison(selectedRoutes);
-}
-
-// Display comparison results
-function displayComparison(routes) {
-    const metric = document.getElementById("compare-metric-select").value;
-    const outputDiv = document.getElementById("compare-output");
-    
-    let comparisonHTML = '<div class="comparison-results"><h3>Comparison Results</h3>';
-    
-    routes.forEach(route => {
-        let metricValue;
-        let metricLabel;
-        
-        switch(metric) {
-            case "safety_score":
-                metricValue = route.safety_score;
-                metricLabel = "Safety Score";
-                break;
-            case "co2_per_passenger":
-                metricValue = route.co2 + " kg";
-                metricLabel = "CO₂ per Passenger";
-                break;
-            case "avg_price":
-                metricValue = "$" + route.price;
-                metricLabel = "Average Price";
-                break;
-            case "on_time":
-                metricValue = route.ontime + "%";
-                metricLabel = "On-time Performance";
-                break;
-        }
-        
-        comparisonHTML += `
-            <div class="comparison-card">
-                <h4>${route.origin} → ${route.destination}</h4>
-                <p><strong>Airline:</strong> ${route.airline}</p>
-                <p class="comparison-metric">
-                    <strong>${metricLabel}:</strong> ${metricValue}
-                </p>
-            </div>
-        `;
-    });
-    
-    comparisonHTML += '</div>';
-    outputDiv.innerHTML = comparisonHTML;
-}
-
-// Event listeners
-document.addEventListener("DOMContentLoaded", function() {
-    loadCompareRoutes();
-    
-    const compareBtn = document.getElementById("compare-selected-btn");
-    if (compareBtn) {
-        compareBtn.addEventListener("click", compareSelected);
-    }
-});
-=======
 document.addEventListener("DOMContentLoaded", async () => {
   const API_BASE = "http://localhost:3000";
   const container = document.querySelector("main.container");
+  const userEmail = localStorage.getItem("userEmail") || "anonymous";
 
   if (!container) return;
   container.innerHTML = "";
+
+  function setBadgeCount(count) {
+    const badge = document.getElementById("priceAlertBadgeSaved");
+    if (!badge) return;
+    if (count > 0) {
+      badge.style.display = "inline-flex";
+      badge.textContent = String(count);
+    } else {
+      badge.style.display = "none";
+      badge.textContent = "0";
+    }
+  }
+
+  async function getTriggeredAlertKeysByFare(currentFare) {
+    try {
+      const params = new URLSearchParams({
+        userEmail,
+        currentFare: String(currentFare ?? "")
+      });
+      const r = await fetch(`${API_BASE}/api/price-alerts/evaluate?${params.toString()}`);
+      if (!r.ok) return new Set();
+      const data = await r.json();
+      const alerts = Array.isArray(data?.alerts) ? data.alerts : [];
+      const triggered = alerts.filter((a) =>
+        typeof a.threshold === "number" &&
+        typeof currentFare === "number" &&
+        currentFare <= a.threshold
+      );
+      return new Set(
+        triggered.map((a) =>
+          `${a.origin || ""}|${a.destination || ""}|${a.departureDate || ""}|${a.airline || ""}`
+        )
+      );
+    } catch {
+      return new Set();
+    }
+  }
 
   function renderEmptyState() {
     container.innerHTML = `
@@ -170,11 +66,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     return stops === 0 ? "Nonstop" : `${stops} stop(s)`;
   }
 
-  function renderFlights(flights) {
+  function flightKey(flight) {
+    return `${flight.origin || ""}|${flight.destination || ""}|${flight.departureDate || ""}|${flight.airline || ""}`;
+  }
+
+  async function renderFlights(flights) {
     if (!Array.isArray(flights) || flights.length === 0) {
+      setBadgeCount(0);
       renderEmptyState();
       return;
     }
+
+    const fareForEval = flights.find((f) => typeof f.totalFare === "number")?.totalFare;
+    const triggeredKeys = await getTriggeredAlertKeysByFare(fareForEval);
+    let triggeredCount = 0;
 
     container.innerHTML = "";
 
@@ -182,11 +87,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       const card = document.createElement("div");
       card.className = "flight-card";
 
+      const isTriggered = triggeredKeys.has(flightKey(flight));
+      if (isTriggered) triggeredCount += 1;
+
       card.innerHTML = `
         <div class="flight-top">
           <div>
             <div class="airline-name">${flight.airline || "Unknown Airline"}</div>
             <div>${flight.origin || "?"} → ${flight.destination || "?"}</div>
+            <div class="alert-chip ${isTriggered ? "alert-chip--hit" : "alert-chip--tracking"}">
+              ${isTriggered ? "🔔 Price alert triggered" : "🔔 Price alert tracking"}
+            </div>
           </div>
           <div class="saved-date">Saved ${new Date(flight.createdAt).toLocaleDateString()}</div>
         </div>
@@ -242,6 +153,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       container.appendChild(card);
     });
 
+    setBadgeCount(triggeredCount);
+
     container.querySelectorAll(".view-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
         const id = Number(btn.dataset.id);
@@ -274,6 +187,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
           btn.closest(".flight-card")?.remove();
           if (!container.querySelector(".flight-card")) {
+            setBadgeCount(0);
             renderEmptyState();
           }
         } catch (err) {
@@ -295,10 +209,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const payload = await response.json();
-    renderFlights(payload.flights || []);
+    await renderFlights(payload.flights || []);
   } catch (err) {
     console.error("Load saved flights request failed:", err);
     renderErrorState();
   }
 });
->>>>>>> main

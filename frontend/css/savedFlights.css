@@ -42,6 +42,56 @@ body {
   font-weight: 500;
 }
 
+.price-alert-nav {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.price-alert-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.price-alert-badge {
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+}
+
+.alert-chip {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #374151;
+}
+
+.alert-chip--hit {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.alert-chip--tracking {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
 .signout {
   padding: 6px 14px;
   border: 1px solid #ccc;
