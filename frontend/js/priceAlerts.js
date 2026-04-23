@@ -5,6 +5,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   const alertsListEl = document.getElementById("alertsList");
   const statusEl = document.getElementById("alertsStatus");
 
+  // TEMP DEMO HOOK (Price Alerts only): set to false to disable demo-triggered UI state.
+  const PRICE_ALERT_TEST_MODE = true;
+  const PRICE_ALERT_DEMO_KEY = "__PRICE_ALERT_DEMO_TRIGGERED__";
+
   if (!alertsListEl || !statusEl) return;
 
   function setStatus(message, tone = "info") {
@@ -111,20 +115,44 @@ document.addEventListener("DOMContentLoaded", async () => {
   async function render() {
     try {
       setStatus("Loading price alerts...", "info");
-      const savedFlights = await loadSavedFlights();
 
-      if (!savedFlights.length) {
-        renderEmpty();
-        setStatus("No saved flights found yet.", "info");
-        return;
-      }
+      // TEMP DEMO HOOK - REMOVE AFTER SHOWCASE:
+      // Inject directly into the exact array consumed by this render path
+      // and avoid reliance on live API data in demo mode.
+      let savedFlights = [];
+      let evalAlerts = [];
 
-      const firstFare = savedFlights.find((f) => typeof f.totalFare === "number")?.totalFare;
-      const evalAlerts = await loadEvaluatedAlerts(firstFare);
-      if (!evalAlerts.length) {
-        renderEmpty();
-        setStatus("No active price alerts yet.", "info");
-        return;
+      if (PRICE_ALERT_TEST_MODE) {
+        evalAlerts = [
+          {
+            origin: "SFO",
+            destination: "JFK",
+            departureDate: "2026-06-15",
+            airline: "Demo Air",
+            threshold: 350,
+            currentFare: 289,
+            baselineFare: 410,
+            triggered: true,
+            [PRICE_ALERT_DEMO_KEY]: true
+          }
+        ];
+      } else {
+        savedFlights = await loadSavedFlights();
+
+        if (!savedFlights.length) {
+          renderEmpty();
+          setStatus("No saved flights found yet.", "info");
+          return;
+        }
+
+        const firstFare = savedFlights.find((f) => typeof f.totalFare === "number")?.totalFare;
+        evalAlerts = await loadEvaluatedAlerts(firstFare);
+
+        if (!evalAlerts.length) {
+          renderEmpty();
+          setStatus("No active price alerts yet.", "info");
+          return;
+        }
       }
 
       const flightsByKey = new Map();
@@ -150,9 +178,11 @@ document.addEventListener("DOMContentLoaded", async () => {
           typeof alert.threshold === "number" ? alert.threshold : null;
 
         const triggered =
-          typeof currentFare === "number" &&
-          typeof threshold === "number" &&
-          currentFare <= threshold;
+          (PRICE_ALERT_TEST_MODE && alert?.[PRICE_ALERT_DEMO_KEY] === true) ||
+          alert?.triggered === true ||
+          (typeof currentFare === "number" &&
+            typeof threshold === "number" &&
+            currentFare <= threshold);
 
         if (triggered) triggeredCount += 1;
 
