@@ -18,28 +18,35 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
-  async function getTriggeredAlertKeysByFare(currentFare) {
+  async function getAlertsByFlightKey(flights) {
     try {
-      const params = new URLSearchParams({
-        userEmail,
-        currentFare: String(currentFare ?? "")
-      });
-      const r = await fetch(`${API_BASE}/api/price-alerts/evaluate?${params.toString()}`);
-      if (!r.ok) return new Set();
-      const data = await r.json();
-      const alerts = Array.isArray(data?.alerts) ? data.alerts : [];
-      const triggered = alerts.filter((a) =>
-        typeof a.threshold === "number" &&
-        typeof currentFare === "number" &&
-        currentFare <= a.threshold
-      );
-      return new Set(
-        triggered.map((a) =>
-          `${a.origin || ""}|${a.destination || ""}|${a.departureDate || ""}|${a.airline || ""}`
+      const fares = [
+        ...new Set(
+          flights
+            .map((f) => (typeof f.totalFare === "number" ? f.totalFare : null))
+            .filter((v) => typeof v === "number")
         )
-      );
+      ];
+
+      const alertsByKey = new Map();
+      for (const fare of fares) {
+        const params = new URLSearchParams({
+          userEmail,
+          currentFare: String(fare ?? "")
+        });
+        const r = await fetch(`${API_BASE}/api/price-alerts/evaluate?${params.toString()}`);
+        if (!r.ok) continue;
+        const data = await r.json();
+        const alerts = Array.isArray(data?.alerts) ? data.alerts : [];
+        alerts.forEach((a) => {
+          const key = `${a.origin || ""}|${a.destination || ""}|${a.departureDate || ""}|${a.airline || ""}`;
+          if (!alertsByKey.has(key)) alertsByKey.set(key, a);
+        });
+      }
+
+      return alertsByKey;
     } catch {
-      return new Set();
+      return new Map();
     }
   }
 
@@ -77,8 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       return;
     }
 
-    const fareForEval = flights.find((f) => typeof f.totalFare === "number")?.totalFare;
-    const triggeredKeys = await getTriggeredAlertKeysByFare(fareForEval);
+    const alertsByKey = await getAlertsByFlightKey(flights);
     let triggeredCount = 0;
 
     container.innerHTML = "";
@@ -87,7 +93,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       const card = document.createElement("div");
       card.className = "flight-card";
 
-      const isTriggered = triggeredKeys.has(flightKey(flight));
+      const alert = alertsByKey.get(flightKey(flight));
+      const threshold = typeof alert?.threshold === "number" ? alert.threshold : null;
+      const isTriggered =
+        typeof threshold === "number" &&
+        typeof flight.totalFare === "number" &&
+        flight.totalFare <= threshold;
       if (isTriggered) triggeredCount += 1;
 
       card.innerHTML = `
@@ -97,6 +108,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             <div>${flight.origin || "?"} → ${flight.destination || "?"}</div>
             <div class="alert-chip ${isTriggered ? "alert-chip--hit" : "alert-chip--tracking"}">
               ${isTriggered ? "🔔 Price alert triggered" : "🔔 Price alert tracking"}
+            </div>
+            <div class="alert-threshold">
+              ${typeof threshold === "number" ? `Threshold: $${threshold.toFixed(2)}` : "Threshold: not set"}
             </div>
           </div>
           <div class="saved-date">Saved ${new Date(flight.createdAt).toLocaleDateString()}</div>

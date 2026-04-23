@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Price Alerts</title>
+    <link rel="stylesheet" href="../css/priceAlerts.css" />
+    <link rel="stylesheet" href="../css/aiAssist.css" />
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="container navbar-inner">
+        <div class="logo">✈️ Flight Sight</div>
+        <nav>
+          <a href="Booking.html">My Trips</a>
+          <a href="Booking.html#saved">Saved Flights</a>
+          <a href="priceAlerts.html" class="price-alert-nav is-active" id="priceAlertNavPage" aria-label="Price alerts">
+            <span class="price-alert-icon" aria-hidden="true">🔔</span>
+            <span>Price Alerts</span>
+            <span class="price-alert-badge" id="priceAlertBadgePage" style="display:none;">0</span>
+          </a>
+          <a href="smartComparisons.html">Smart Comparisons</a>
+          <button class="signout" onclick="location.href = 'login.html'">Sign Out</button>
+        </nav>
+      </div>
+    </header>
+
+    <section class="page-header">
+      <div class="container header-inner">
+        <a href="homePage.html" class="back-link">←</a>
+        <div>
+          <h1>Price Alerts</h1>
+          <p>Manage thresholds and track when saved flight prices drop</p>
+        </div>
+      </div>
+    </section>
+
+    <main class="container">
+      <div id="alertsStatus" class="status status--info">Loading price alerts...</div>
+      <section id="alertsList" class="alerts-list" aria-live="polite"></section>
+    </main>
+
+    <script src="../js/assistantLoader.js"></script>
+    <script src="../js/AIAssist.js"></script>
+    <script src="../js/priceAlerts.js"></script>
+  </body>
+</html>

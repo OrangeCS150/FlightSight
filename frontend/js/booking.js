@@ -441,7 +441,7 @@ async function createPriceAlert(threshold = 100) {
       return;
     }
 
-    setPriceAlertStatus("Price alert created (threshold = $100). We'll watch for price drops.", "success");
+    setPriceAlertStatus(`Price alert created (threshold = $${Number(threshold).toFixed(2)}). We'll watch for price drops.`, "success");
   } catch (err) {
     console.error("[FlightSight] Create price alert failed:", err);
     setPriceAlertStatus("Error creating price alert.", "warn");
@@ -461,7 +461,7 @@ function setPriceAlertStatus(message, tone) {
 async function refreshPriceAlertBaseline() {
   const selectedFlight = getSelectedFlight();
   if (!selectedFlight) {
-    setPriceAlertStatus("Track this trip with a $100 alert.", "info");
+    setPriceAlertStatus("Set your own threshold to track this trip.", "info");
     return;
   }
   try {
@@ -489,10 +489,10 @@ async function refreshPriceAlertBaseline() {
         setPriceAlertStatus(`Price matches baseline ($${match.baselineFare.toFixed(2)}).`, "info");
       }
     } else {
-      setPriceAlertStatus("Track this trip with a $100 alert.", "info");
+      setPriceAlertStatus("Set your own threshold to track this trip.", "info");
     }
   } catch {
-    setPriceAlertStatus("Track this trip with a $100 alert.", "info");
+    setPriceAlertStatus("Set your own threshold to track this trip.", "info");
   }
 }
 
@@ -506,25 +506,54 @@ function ensurePriceAlertButton() {
     const status = document.createElement("div");
     status.id = "priceAlertStatus";
     status.className = "price-alert-status price-alert-status--info";
-    status.textContent = "Track this trip with a $100 alert.";
+    status.textContent = "Set your own threshold to track this trip.";
     actionButtons.insertBefore(status, actionButtons.firstChild);
   }
 
-  const btn = document.createElement("button");
-  btn.id = "btnPriceAlert";
-  btn.className = "btn-secondary";
-  btn.type = "button";
-  btn.textContent = "Set $100 Price Alert";
-  btn.addEventListener("click", async () => {
-    await createPriceAlert(100);
-    refreshPriceAlertBaseline();
-  });
+  if (!document.getElementById("priceAlertControls")) {
+    const controls = document.createElement("div");
+    controls.id = "priceAlertControls";
+    controls.style.display = "inline-flex";
+    controls.style.alignItems = "center";
+    controls.style.gap = "8px";
 
-  const btnSaveFlight = document.querySelector(".btn-primary");
-  if (btnSaveFlight && btnSaveFlight.parentNode === actionButtons) {
-    actionButtons.insertBefore(btn, btnSaveFlight.nextSibling);
-  } else {
-    actionButtons.appendChild(btn);
+    const input = document.createElement("input");
+    input.id = "priceAlertThreshold";
+    input.type = "number";
+    input.min = "1";
+    input.step = "1";
+    input.placeholder = "Target price";
+    input.setAttribute("aria-label", "Price alert threshold");
+    input.style.height = "36px";
+    input.style.padding = "0 10px";
+    input.style.border = "1px solid #d1d5db";
+    input.style.borderRadius = "8px";
+    input.style.width = "150px";
+
+    const btn = document.createElement("button");
+    btn.id = "btnPriceAlert";
+    btn.className = "btn-secondary";
+    btn.type = "button";
+    btn.textContent = "Set Price Alert";
+    btn.addEventListener("click", async () => {
+      const threshold = Number(input.value);
+      if (!Number.isFinite(threshold) || threshold <= 0) {
+        setPriceAlertStatus("Please enter a valid threshold above $0.", "warn");
+        return;
+      }
+      await createPriceAlert(threshold);
+      refreshPriceAlertBaseline();
+    });
+
+    controls.appendChild(input);
+    controls.appendChild(btn);
+
+    const btnSaveFlight = document.querySelector(".btn-primary");
+    if (btnSaveFlight && btnSaveFlight.parentNode === actionButtons) {
+      actionButtons.insertBefore(controls, btnSaveFlight.nextSibling);
+    } else {
+      actionButtons.appendChild(controls);
+    }
   }
 
   refreshPriceAlertBaseline();

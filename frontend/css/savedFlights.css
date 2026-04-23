@@ -92,6 +92,12 @@ body {
   color: #1d4ed8;
 }
 
+.alert-threshold {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #4b5563;
+}
+
 .signout {
   padding: 6px 14px;
   border: 1px solid #ccc;

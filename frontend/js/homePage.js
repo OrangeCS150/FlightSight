@@ -29,36 +29,41 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
       }
 
-      const fare = flights.find((f) => typeof f.totalFare === "number")?.totalFare;
-      if (typeof fare !== "number") {
+      const fares = [
+        ...new Set(
+          flights
+            .map((f) => (typeof f.totalFare === "number" ? f.totalFare : null))
+            .filter((v) => typeof v === "number")
+        )
+      ];
+
+      if (!fares.length) {
         setBadgeCount(0);
         return;
       }
 
-      const params = new URLSearchParams({ userEmail, currentFare: String(fare) });
-      const evalResp = await fetch(`${API_BASE}/api/price-alerts/evaluate?${params.toString()}`);
-      if (!evalResp.ok) {
-        setBadgeCount(0);
-        return;
+      const alertMap = new Map();
+      for (const fare of fares) {
+        const params = new URLSearchParams({ userEmail, currentFare: String(fare) });
+        const evalResp = await fetch(`${API_BASE}/api/price-alerts/evaluate?${params.toString()}`);
+        if (!evalResp.ok) continue;
+        const evalPayload = await evalResp.json();
+        const alerts = Array.isArray(evalPayload?.alerts) ? evalPayload.alerts : [];
+        alerts.forEach((a) => {
+          const key = `${a.origin || ""}|${a.destination || ""}|${a.departureDate || ""}|${a.airline || ""}`;
+          if (!alertMap.has(key)) alertMap.set(key, a);
+        });
       }
-
-      const evalPayload = await evalResp.json();
-      const alerts = Array.isArray(evalPayload?.alerts) ? evalPayload.alerts : [];
-      const alertKeys = new Set(
-        alerts.map((a) => `${a.origin || ""}|${a.destination || ""}|${a.departureDate || ""}|${a.airline || ""}`)
-      );
 
       let count = 0;
       flights.forEach((f) => {
         const key = `${f.origin || ""}|${f.destination || ""}|${f.departureDate || ""}|${f.airline || ""}`;
-        const matched = alertKeys.has(key);
-        const triggered = matched && typeof f.totalFare === "number"
-          ? alerts.some((a) =>
-              `${a.origin || ""}|${a.destination || ""}|${a.departureDate || ""}|${a.airline || ""}` === key &&
-              typeof a.threshold === "number" &&
-              f.totalFare <= a.threshold
-            )
-          : false;
+        const alert = alertMap.get(key);
+        const triggered =
+          !!alert &&
+          typeof alert.threshold === "number" &&
+          typeof f.totalFare === "number" &&
+          f.totalFare <= alert.threshold;
         if (triggered) count += 1;
       });
 
